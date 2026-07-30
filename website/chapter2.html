@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الفصل 2: المتغيرات وأنواع البيانات البسيطة - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+
+  .sidebar-header h1 {
+    font-size: 20px;
+    color: #fff;
+    margin-bottom: 5px;
+  }
+
+  .sidebar-header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link {
+    padding-right: 35px;
+    font-size: 13px;
+  }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+
+  .main-content {
+    margin-right: 0;
+    flex: 1;
+    padding: 0;
+    min-height: 100vh;
+    transition: margin-right 0.3s ease;
+  }
+  body.sidebar-active .main-content { margin-right: 320px; }
+
+  .chapter-page { padding: 0; }
+
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+
+  .chapter-content p {
+    margin-bottom: 15px;
+    font-size: 16px;
+  }
+
+  .chapter-content ul, .chapter-content ol {
+    margin: 10px 0 15px 35px;
+  }
+
+  .chapter-content li {
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+
+  .note strong { color: var(--primary); }
+
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+
+  .exercise strong { color: #4ade80; }
+
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+
+  .summary-box h3 {
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+
+  .summary-box ul { margin: 0; }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  @media (max-width: 767px) {
+    .sidebar {
+      transform: translateX(320px);
+      width: 280px;
+    }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .hero { padding: 40px 25px; }
+    .hero h1 { font-size: 28px; }
+    .container { padding: 20px; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+    .chapter-grid { grid-template-columns: 1fr; }
+  }
+
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb:hover { background: #555; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">📘 الجزء الأول: الأساسيات</span>
+      <h1>2. المتغيرات وأنواع البيانات البسيطة</h1>
+      <p>في هذا الفصل، سنتعرف على المتغيرات، السلاسل النصية، الأرقام، والتعليقات — اللبنات الأساسية لأي برنامج بايثون</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>في هذا الفصل، سنتعمق في أساسيات لغة بايثون. سنتعلم ما يحدث عندما تشغل برنامج <span class="inline-code">hello_world.py</span>، وكيفية استخدام المتغيرات لتخزين البيانات، والتعامل مع النصوص والأرقام. ستتعلم أيضاً كيفية كتابة تعليقات تجعل كودك أكثر وضوحاً، وفي النهاية سنمر على فلسفة بايثون التي توجه طريقة كتابة الكود في هذه اللغة.</p>
+
+      <h2 class="section-title">2.1 ماذا يحدث عند تشغيل hello_world.py؟</h2>
+      <p>دعنا نلقي نظرة أعمق على برنامج <span class="inline-code">hello_world.py</span> من الفصل السابق:</p>
+      <div class="code-block">
+<span class="bu">print</span>(<span class="str">"Hello World!"</span>)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا السطر هو أول برنامج تتعلم كتابته في بايثون. الدالة <code>print()</code> هي دالة مدمجة في بايثون تقوم بطباعة النص الذي تمرره لها على الشاشة. النص <code>"Hello World!"</code> هو سلسلة نصية (string) محاطة بعلامتي اقتباس مزدوجتين. عند تشغيل هذا الكود، سيقوم بايثون باستدعاء الدالة <code>print()</code> وعرض النص على الشاشة مباشرة. المخرجات ستكون: <code>Hello World!</code></p>
+      </div>
+
+      <p>عند تشغيل هذا الملف، يقوم بايثون بعدة خطوات:</p>
+      <ol>
+        <li><strong>المترجم (Interpreter):</strong> بايثون هي لغة مُفسَّرة (interpreted)، مما يعني أن هناك برنامجاً يسمى "مفسّر بايثون" يقرأ الكود الخاص بك سطراً سطراً</li>
+        <li><strong>التحليل (Parsing):</strong> يقوم المفسّر بتحليل الكود والتأكد من أنه يتبع قواعد بايثون النحوية</li>
+        <li><strong>التنفيذ (Execution):</strong> إذا كان الكود صحيحاً نحوياً، يقوم المفسّر بتنفيذ الأوامر</li>
+        <li><strong>الإخراج (Output):</strong> نتيجة التنفيذ تُطبع على الشاشة</li>
+      </ol>
+      <p>المترجم وجد الدالة <span class="inline-code">print()</span>، فقام باستدعائها وتمرير السلسلة النصية <span class="inline-code">"Hello World!"</span> إليها. الدالة <span class="inline-code">print()</span> بدورها أخذت هذه السلسلة وأرسلتها إلى الشاشة.</p>
+
+      <h2 class="section-title">2.2 المتغيرات (Variables)</h2>
+      <p>المتغيرات هي "صناديق" نخزن فيها البيانات في ذاكرة الكمبيوتر. يمكنك تخيل المتغير كملصق على صندوق — له اسم وتحتويه قيمة.</p>
+
+      <h3 class="subsection-title">2.2.1 تعريف المتغيرات</h3>
+      <p>في بايثون، تعريف المتغير سهل جداً — فقط اختر اسماً وأعطه قيمة باستخدام علامة <span class="inline-code">=</span>:</p>
+      <div class="code-block">
+message = <span class="str">"Hello Python World!"</span>
+<span class="bu">print</span>(message)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>في السطر الأول، قمنا بتعريف متغير باسم <code>message</code> وإسناد القيمة النصية <code>"Hello Python World!"</code> إليه باستخدام علامة الإسناد <code>=</code>. في السطر الثاني، استخدمنا الدالة <code>print(message)</code> لطباعة قيمة المتغير على الشاشة. لاحظ أننا لم نضطر لتحديد نوع المتغير — بايثون تستنتج النوع تلقائياً من القيمة. المخرجات ستكون: <code>Hello Python World!</code></p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+Hello Python World!
+      </div>
+      <p>لاحظ أننا لم نضطر لتحديد نوع المتغير. بايثون لغة <strong>مكتوبة ديناميكياً</strong> (dynamically typed)، مما يعني أنها تفهم نوع البيانات تلقائياً من القيمة التي تعطيها.</p>
+
+      <h3 class="subsection-title">2.2.2 تغيير قيمة المتغير</h3>
+      <p>يمكنك تغيير قيمة المتغير في أي وقت بمجرد إسناد قيمة جديدة له:</p>
+      <div class="code-block">
+message = <span class="str">"Hello Python World!"</span>
+<span class="bu">print</span>(message)
+
+message = <span class="str">"Hello Python Crash Course!"</span>
+<span class="bu">print</span>(message)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>في البداية، عرّفنا المتغير <code>message</code> بقيمة <code>"Hello Python World!"</code> وطبعناها. بعد ذلك، قمنا بتغيير قيمة المتغير نفسه إلى نص جديد <code>"Hello Python Crash Course!"</code> وطبعناه مرة أخرى. المتغير الواحد يمكن أن يحمل قيماً مختلفة في أوقات مختلفة — فالمتغير في بايثون هو مجرد تسمية (label) تشير إلى كائن في الذاكرة، ويمكننا تغيير التسمية لتشير إلى كائن آخر. المخرجات ستكون سطرين: الأول <code>Hello Python World!</code> والثاني <code>Hello Python Crash Course!</code></p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+Hello Python World!
+Hello Python Crash Course!
+      </div>
+      <p>في البداية، كان <span class="inline-code">message</span> يحتوي على "Hello Python World!". ثم غيرنا قيمته إلى النص الجديد، وعندما طبعناه مرة ثانية ظهرت القيمة الجديدة.</p>
+
+      <h3 class="subsection-title">2.2.3 قواعد تسمية المتغيرات</h3>
+      <p>لتسمية المتغيرات في بايثون، هناك قواعد يجب اتباعها:</p>
+      <ul>
+        <li><strong>الحروف والأرقام والشرطة السفلية:</strong> يمكن أن يحتوي اسم المتغير على أحرف (a-z, A-Z)، أرقام (0-9)، وشرطة سفلية (_)</li>
+        <li><strong>لا يبدأ برقم:</strong> يجب أن يبدأ اسم المتغير بحرف أو شرطة سفلية. <span class="inline-code">1var</span> غير صحيح، لكن <span class="inline-code">var1</span> صحيح</li>
+        <li><strong>لا مسافات:</strong> استخدم الشرطة السفلية вместо المسافة. <span class="inline-code">greeting_message</span> صحيح، <span class="inline-code">greeting message</span> غير صحيح</li>
+        <li><strong>حساس لحالة الأحرف:</strong> <span class="inline-code">Name</span> و <span class="inline-code">name</span> متغيران مختلفان</li>
+        <li><strong>لا تستخدم كلمات محجوزة:</strong> هناك كلمات لها معنى خاص في بايثون ولا يمكن استخدامها كأسماء متغيرات</li>
+      </ul>
+
+      <div class="note"><strong>ملاحظة:</strong> من أفضل الممارسات استخدام أسماء متغيرات <strong>وصفية</strong>. بدلاً من <span class="inline-code">x</span>، استخدم اسماً يصف المحتوى مثل <span class="inline-code">user_name</span> أو <span class="inline-code">total_score</span>. هذا يجعل الكود أكثر قابلية للقراءة.</div>
+
+      <h3 class="subsection-title">2.2.4 أخطاء الأسماء (Name Errors)</h3>
+      <p>إذا حاولت استخدام متغير لم تعرفه بعد، سيظهر خطأ <span class="inline-code">NameError</span>:</p>
+      <div class="code-block">
+<span class="bu">print</span>(undefined_variable)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يحاول طباعة متغير اسمه <code>undefined_variable</code> لم يتم تعريفه من قبل. في بايثون، لا يمكن استخدام متغير إلا بعد تعريفه وإسناد قيمة إليه. عندما يحاول بايثون تنفيذ هذا السطر، سيبحث عن هذا الاسم في الذاكرة ولن يجده، مما يؤدي إلى ظهور خطأ <code>NameError</code>. هذا الخطأ من أكثر الأخطاء شيوعاً للمبتدئين، ويعني ببساطة أن المتغير غير معرّف — أي أن الاسم الذي تحاول استخدامه لا يشير إلى أي كائن في الذاكرة.</p>
+      </div>
+
+      <div class="code-block">
+NameError: name 'undefined_variable' is not defined
+      </div>
+      <p>هذا يعني أن بايثون لا يعرف هذا الاسم. تأكد دائماً من أنك عرّفت المتغير قبل استخدامه.</p>
+
+      <h2 class="section-title">2.3 السلاسل النصية (Strings)</h2>
+      <p>السلسلة النصية هي ببساطة سلسلة من الأحرف. في بايثون، أي شيء بين علامتي اقتباس يُعتبر سلسلة نصية. يمكنك استخدام علامات الاقتباس المفردة أو المزدوجة:</p>
+      <div class="code-block">
+<span class="str">"This is a string."</span>
+<span class="str">'This is also a string.'</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>في بايثون، يمكن تعريف السلاسل النصية (strings) باستخدام علامات الاقتباس المزدوجة <code>"..."</code> أو المفردة <code>'...'</code>، ولا يوجد فرق عملي بينهما — كلا الأسلوبين صحيح ومقبول. السطر الأول يعرّف سلسلة نصية باستخدام الاقتباس المزدوج، والثاني باستخدام الاقتباس المفرد. عند تشغيل هذين السطرين فقط بدون <code>print()</code>، لن يظهر أي مخرجات لأنهما مجرد تعبيرات (expressions) وليست أوامر طباعة. المرونة في استخدام نوعي الاقتباس تسمح لك بتضمين أحد النوعين داخل النص دون مشاكل.</p>
+      </div>
+
+      <h3 class="subsection-title">2.3.1 تغيير حالة الأحرف (Case Methods)</h3>
+      <p>توفر السلاسل النصية عدة دوال (methods) للتعامل مع حالة الأحرف:</p>
+      <div class="code-block">
+name = <span class="str">"ada lovelace"</span>
+<span class="bu">print</span>(name.<span class="fn">title</span>())   <span class="cm"># Ada Lovelace</span>
+<span class="bu">print</span>(name.<span class="fn">upper</span>())   <span class="cm"># ADA LOVELACE</span>
+<span class="bu">print</span>(name.<span class="fn">lower</span>())   <span class="cm"># ada lovelace</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يوضح ثلاث دوال مهمة للتعامل مع حالة الأحرف في السلاسل النصية. المتغير <code>name</code> يخزن النص <code>"ada lovelace"</code>. الدالة <code>title()</code> تجعل الحرف الأول من كل كلمة كبيراً، فتصبح <code>"Ada Lovelace"</code>. الدالة <code>upper()</code> تحوّل جميع الأحرف إلى كبيرة، فتصبح <code>"ADA LOVELACE"</code>. الدالة <code>lower()</code> تحوّل جميع الأحرف إلى صغيرة، فتصبح <code>"ada lovelace"</code>. لاحظ أن هذه الدوال لا تعدّل النص الأصلي المخزّن في <code>name</code>، بل تُرجع نسخة جديدة منه بعد التعديل. المخرجات ستكون ثلاثة أسطر كما هو موضح في التعليقات.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+Ada Lovelace
+ADA LOVELACE
+ada lovelace
+      </div>
+      <p>الدالة <span class="inline-code">title()</span> تجعل الحرف الأول من كل كلمة كبيراً. <span class="inline-code">upper()</span> تحوّل الكل إلى أحرف كبيرة، و <span class="inline-code">lower()</span> تحوّل الكل إلى أحرف صغيرة. هذه الدوال مفيدة جداً عند التعامل مع إدخال المستخدم، لأنك لا تستطيع التحكم في كيف سيكتب المستخدم البيانات.</p>
+
+      <h3 class="subsection-title">2.3.2 دمج السلاسل النصية (Concatenation)</h3>
+      <p>يمكنك دمج سلسلتين نصيتين باستخدام علامة <span class="inline-code">+</span>:</p>
+      <div class="code-block">
+first_name = <span class="str">"ada"</span>
+last_name = <span class="str">"lovelace"</span>
+full_name = first_name + <span class="str">" "</span> + last_name
+<span class="bu">print</span>(full_name)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هنا نقوم بدمج السلاسل النصية باستخدام علامة <code>+</code>. المتغير <code>first_name</code> يحمل القيمة <code>"ada"</code> و <code>last_name</code> يحمل <code>"lovelace"</code>. في المتغير <code>full_name</code>، ندمج الاسم الأول مع مسافة (<code>" "</code>) ثم اسم العائلة باستخدام عامل الدمج <code>+</code>. ثم نطبع النتيجة باستخدام <code>print(full_name)</code>. المخرجات ستكون <code>ada lovelace</code>. الدمج (concatenation) هو أسلوب بسيط لكنه قد يصبح غير عملي مع النصوص الطويلة — لهذا السبب نوصي باستخدام f-strings في التطبيقات العملية.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+ada lovelace
+      </div>
+      <p>يمكنك دمج النصوص مع بعضها لإنشاء رسائل كاملة:</p>
+      <div class="code-block">
+first_name = <span class="str">"ada"</span>
+last_name = <span class="str">"lovelace"</span>
+full_name = first_name + <span class="str">" "</span> + last_name
+message = <span class="str">"Hello, "</span> + full_name.<span class="fn">title</span>() + <span class="str">"!"</span>
+<span class="bu">print</span>(message)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا المثال يوسّع على المثال السابق. بعد دمج الاسم الأول واسم العائلة في <code>full_name</code>، نستخدم الدالة <code>title()</code> لتنسيق الاسم الكامل بحيث يصبح <code>"Ada Lovelace"</code>. ثم ننشئ رسالة كاملة في المتغير <code>message</code> بدمج النص <code>"Hello, "</code> مع الاسم المنسّق وعلامة التعجب <code>"!"</code>. وأخيراً نطبع الرسالة الكاملة. المخرجات ستكون: <code>Hello, Ada Lovelace!</code>. لاحظ كيف يمكن دمج أكثر من سلسلة نصية معاً لبناء جملة مفيدة.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+Hello, Ada Lovelace!
+      </div>
+      <p>لاحظ كيف استخدمنا الدالة <span class="inline-code">title()</span> لتنسيق الاسم بشكل صحيح أولاً، ثم دمجناه مع رسالة الترحيب.</p>
+
+      <h3 class="subsection-title">2.3.3 المسافات البيضاء (Whitespace)</h3>
+      <p>المسافات البيضاء تشير إلى أي حرف غير مرئي — مثل المسافات، علامات التبويب (tabs)، والأسطر الجديدة. يمكنك استخدامها لتنسيق النص:</p>
+      <div class="code-block">
+<span class="bu">print</span>(<span class="str">"Python"</span>)
+<span class="bu">print</span>(<span class="str">"\tPython"</span>)   <span class="cm"># \t = تبويب (tab)</span>
+<span class="bu">print</span>(<span class="str">"Languages:\nPython\nC\nJavaScript"</span>)  <span class="cm"># \n = سطر جديد</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يوضح كيفية استخدام محارف المسافات البيضاء الخاصة. المحرف <code>\t</code> يمثل علامة تبويب (tab)، ويضيف مسافة أفقية قبل النص — ستظهر كلمة "Python" بعد فراغ واضح. المحرف <code>\n</code> يمثل سطراً جديداً (newline)، ويبدأ السطر التالي عند ظهوره داخل النص. في السطر الثالث، نستخدم <code>\n</code> لفصل أسماء اللغات كل منها في سطر منفصل. المخرجات ستكون: السطر الأول يطبع "Python" عادياً، الثاني يطبع "Python" بعد مسافة تبويب، والثالث يطبع الكلمات "Languages:" ثم "Python" و"C" و"JavaScript" كل في سطر جديد.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+Python
+    Python
+Languages:
+Python
+C
+JavaScript
+      </div>
+      <p>يمكنك أيضاً إزالة المسافات الزائدة من جوانب النص باستخدام دوال مثل <span class="inline-code">rstrip()</span> (إزالة من اليمين)، <span class="inline-code">lstrip()</span> (إزالة من اليسار)، و <span class="inline-code">strip()</span> (إزالة من الجانبين):</p>
+      <div class="code-block">
+language = <span class="str">"   Python   "</span>
+<span class="bu">print</span>(language.<span class="fn">rstrip</span>())   <span class="cm"># "   Python"</span>
+<span class="bu">print</span>(language.<span class="fn">lstrip</span>())   <span class="cm"># "Python   "</span>
+<span class="bu">print</span>(language.<span class="fn">strip</span>())    <span class="cm"># "Python"</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هنا نتعامل مع مسافات بيضاء زائدة في بداية ونهاية النص. المتغير <code>language</code> يحتوي على نص به 3 مسافات في البداية و 3 في النهاية. الدالة <code>rstrip()</code> تزيل المسافات من النهاية اليمنى فقط. الدالة <code>lstrip()</code> تزيل المسافات من البداية اليسرى فقط. الدالة <code>strip()</code> تزيل المسافات من كلا الجانبين معاً. من المهم أن تعرف أن هذه الدوال لا تعدّل النص الأصلي — بل تُرجع نسخة جديدة من النص بعد إزالة المسافات. هذه الدوال مفيدة جداً عند تنظيف إدخال المستخدم، حيث قد يضيف المستخدم مسافات إضافية بدون قصد.</p>
+      </div>
+
+      <h3 class="subsection-title">2.3.4 تجنب أخطاء بناء الجملة في السلاسل النصية</h3>
+      <p>أحد أشهر الأخطاء هو استخدام علامة اقتباس داخل السلسلة النصية بطريقة خاطئة. مثلاً:</p>
+      <div class="code-block">
+message = <span class="str">"One of Python's strengths is diversity"</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يوضح طريقة صحيحة للتعامل مع علامات الاقتباس داخل النص. هنا نستخدم علامات الاقتباس المزدوجة <code>"..."</code> لإحاطة النص الكامل، بينما الكلمة <code>Python's</code> تحتوي على اقتباس مفرد بداخلها. بما أن الاقتباس الخارجي مزدوج والاقتباس الداخلي مفرد، لا يحدث أي تعارض ويعمل الكود بشكل صحيح. هذا أسلوب شائع لتجنب أخطاء بناء الجملة (<code>SyntaxError</code>) — استخدم الاقتباس المزدوج عندما يحتوي النص على اقتباس مفرد، والعكس صحيح.</p>
+      </div>
+
+      <p>هذا يعمل بشكل صحيح لأننا استخدمنا علامات اقتباس مزدوجة، والاقتباس المفرد داخل النص لا يسبب مشكلة. لكن هذا سيسبب خطأ:</p>
+      <div class="code-block">
+message = <span class="str">'One of Python's strengths is diversity'</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يسبب خطأ لأننا استخدمنا علامات الاقتباس المفردة <code>'...'</code> لإحاطة النص، بينما النص نفسه يحتوي على اقتباس مفرد في كلمة <code>Python's</code>. عندما يصل بايثون إلى الاقتباس المفرد بعد كلمة "Python"، يظن أن السلسلة النصية قد انتهت، ثم يجد الحروف "s" بعدها ولا يفهم ماذا يفعل بها، مما يؤدي إلى خطأ <code>SyntaxError</code>. الحل بسيط: استخدم علامات الاقتباس المزدوجة عندما يحتوي النص على اقتباس مفرد، أو استخدم شرطة مائلة عكسية <code>\'</code> للهروب من الاقتباس الداخلي.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+SyntaxError: invalid syntax
+      </div>
+      <p>الحل: استخدم علامات اقتباس مزدوجة عندما تحتوي السلسلة على اقتباس مفرد، والعكس صحيح.</p>
+
+      <h2 class="section-title">2.4 الأرقام (Numbers)</h2>
+      <p>بايثون تتعامل مع الأرقام بفعالية كبيرة. هناك نوعان رئيسيان من الأرقام ستستخدمهما باستمرار: الأعداد الصحيحة والأعداد العشرية.</p>
+
+      <h3 class="subsection-title">2.4.1 الأعداد الصحيحة (Integers)</h3>
+      <p>يمكنك القيام بجميع العمليات الحسابية المعروفة:</p>
+      <div class="code-block">
+<span class="cm"># الجمع والطرح</span>
+<span class="bu">print</span>(<span class="num">2</span> + <span class="num">3</span>)     <span class="cm"># 5</span>
+<span class="bu">print</span>(<span class="num">3</span> - <span class="num">2</span>)     <span class="cm"># 1</span>
+
+<span class="cm"># الضرب والقسمة</span>
+<span class="bu">print</span>(<span class="num">2</span> * <span class="num">3</span>)     <span class="cm"># 6</span>
+<span class="bu">print</span>(<span class="num">3</span> / <span class="num">2</span>)     <span class="cm"># 1.5</span>
+
+<span class="cm"># الأس (exponent)</span>
+<span class="bu">print</span>(<span class="num">3</span> ** <span class="num">2</span>)    <span class="cm"># 9</span>
+<span class="bu">print</span>(<span class="num">10</span> ** <span class="num">6</span>)   <span class="cm"># 1000000</span>
+
+<span class="cm"># ترتيب العمليات</span>
+<span class="bu">print</span>(<span class="num">2</span> + <span class="num">3</span> * <span class="num">4</span>)   <span class="cm"># 14 (الضرب أولاً)</span>
+<span class="bu">print</span>((<span class="num">2</span> + <span class="num">3</span>) * <span class="num">4</span>) <span class="cm"># 20 (الأقواس أولاً)</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يوضح العمليات الحسابية الأساسية في بايثون. علامة <code>+</code> للجمع، <code>-</code> للطرح، <code>*</code> للضرب، <code>/</code> للقسمة (والنتيجة تكون عدداً عشرياً حتى لو كانت الأرقام صحيحة)، و <code>**</code> للأس (رفع عدد لأس عدد آخر). المثال قبل الأخير يوضح ترتيب العمليات — الضرب (<code>*</code>) له أولوية أعلى من الجمع (<code>+</code>)، لذلك <code>2 + 3 * 4</code> تحسب كـ <code>2 + 12 = 14</code>. استخدام الأقواس يغيّر ترتيب التنفيذ، فـ <code>(2 + 3) * 4</code> يحسب أوّلاً <code>2 + 3 = 5</code> ثم <code>5 * 4 = 20</code>. ملاحظة مهمة: القسمة في بايثون 3 ترجع دائماً عدداً عشرياً (float) حتى لو كان الناتج عدداً صحيحاً.</p>
+      </div>
+
+      <h3 class="subsection-title">2.4.2 الأعداد العشرية (Floats)</h3>
+      <p>الأعداد العشرية (floating-point numbers) هي أي عدد يحتوي على نقطة عشرية:</p>
+      <div class="code-block">
+<span class="bu">print</span>(<span class="num">0.1</span> + <span class="num">0.1</span>)     <span class="cm"># 0.2</span>
+<span class="bu">print</span>(<span class="num">0.2</span> + <span class="num">0.1</span>)     <span class="cm"># 0.30000000000000004 (دقة الأعداد العشرية)</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الأعداد العشرية (floats) هي أعداد تحتوي على نقطة عشرية. المثال الأول <code>0.1 + 0.1</code> يعطي <code>0.2</code> بشكل صحيح. لكن <code>0.2 + 0.1</code> يعطي <code>0.30000000000000004</code> وليس <code>0.3</code> بالضبط. هذا ليس خطأ في بايثون — بل هو نتيجة لطريقة تخزين الأعداد العشرية في النظام الثنائي (binary)، حيث لا يمكن تمثيل بعض الأعداد العشرية مثل <code>0.1</code> بدقة متناهية. هذه مشكلة موجودة في جميع لغات البرمجة، ويمكن التعامل معها لاحقاً باستخدام دوال مثل <code>round()</code> أو وحدة <code>decimal</code>.</p>
+      </div>
+
+      <div class="note"><strong>ملاحظة:</strong> قد تلاحظ أن النتيجة في المثال الثاني ليست دقيقة تماماً. هذا أمر طبيعي في جميع لغات البرمجة بسبب طريقة تخزين الأعداد العشرية في الذاكرة. لا تقلق — سنتعلم كيفية التعامل مع هذا لاحقاً.</div>
+
+      <h3 class="subsection-title">2.4.3 استخدام الدالة str() لتجنب الأخطاء</h3>
+      <p>عند دمج نص مع رقم، يجب تحويل الرقم إلى سلسلة نصية باستخدام الدالة <span class="inline-code">str()</span>:</p>
+      <div class="code-block">
+age = <span class="num">23</span>
+message = <span class="str">"Happy "</span> + <span class="bu">str</span>(age) + <span class="str">"rd Birthday!"</span>
+<span class="bu">print</span>(message)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هنا نواجه مشكلة دمج نص مع رقم. المتغير <code>age</code> هو عدد صحيح (int) قيمته 23. عند محاولة دمج النصوص مع الأرقام باستخدام <code>+</code>، نحتاج أولاً إلى تحويل الرقم إلى سلسلة نصية باستخدام الدالة <code>str()</code>. الدالة <code>str()</code> تأخذ أي قيمة وتحوّلها إلى تمثيلها النصي — فتصبح <code>23</code> الرقم نصاً هو <code>"23"</code>. بعد التحويل، يمكن دمج النتيجة مع بقية النصوص بسلاسة. المخرجات ستكون: <code>Happy 23rd Birthday!</code>. الأفضل من ذلك هو استخدام f-strings: <code>f"Happy {age}rd Birthday!"</code> وهي أسهل وأوضح.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+Happy 23rd Birthday!
+      </div>
+      <p>إذا حاولت دمج نص ورقم مباشرة دون تحويل:</p>
+      <div class="code-block">
+message = <span class="str">"Happy "</span> + age + <span class="str">"rd Birthday!"</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يسبب خطأ لأنه يحاول دمج نص (<code>"Happy "</code>) مع عدد صحيح (<code>age</code>) مباشرة باستخدام علامة <code>+</code>. في بايثون، لا يمكن دمج قيم من أنواع مختلفة (str و int) بهذه الطريقة. بايثون لغة مكتوبة بقوة (strongly typed) في هذا السياق — لا تقوم بتحويل الأنواع تلقائياً عند الدمج. هذا يؤدي إلى خطأ <code>TypeError</code> يوضح أنه لا يمكن دمج str مع int. الحل هو تحويل العدد إلى نص باستخدام <code>str(age)</code> قبل الدمج.</p>
+      </div>
+
+      <p>سيظهر خطأ:</p>
+      <div class="code-block">
+TypeError: can only concatenate str (not "int") to str
+      </div>
+      <p>هذا لأن بايثون لا تستطيع دمج نص (str) مع عدد صحيح (int) مباشرة. يجب تحويل العدد إلى نص أولاً.</p>
+
+      <h2 class="section-title">2.5 التعليقات (Comments)</h2>
+      <p>التعليقات هي نصوص في الكود يتجاهلها بايثون عند التنفيذ. نستخدمها لشرح ما يفعله الكود، مما يجعله أكثر وضوحاً للآخرين (ولنفسك عندما تعود إليه بعد فترة).</p>
+      <p>في بايثون، تبدأ التعليقات بعلامة <span class="inline-code">#</span>:</p>
+      <div class="code-block">
+<span class="cm"># هذا تعليق — بايثون سيتجاهله</span>
+<span class="bu">print</span>(<span class="str">"Hello World!"</span>)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يوضح كيفية كتابة التعليقات في بايثون. كل ما بعد علامة <code>#</code> في السطر يعتبر تعليقاً — يقرأه المبرمجون لكن بايثون يتجاهله تماماً أثناء التنفيذ. السطر الأول هو تعليق يشرح أن هذا النص سيتم تجاهله. السطر الثاني هو أمر فعلي <code>print("Hello World!")</code> يقوم بطباعة النص على الشاشة. التعليقات لا تؤثر على أداء البرنامج ولا تظهر في المخرجات، لكنها ضرورية لتوثيق الكود وشرح المنطق وراء كتابة أجزاء معينة. المخرجات ستكون: <code>Hello World!</code></p>
+      </div>
+
+      <p>التعليقات الجيدة تشرح <strong>لماذا</strong> تفعل شيئاً معيناً، وليس <strong>ماذا</strong> تفعل. الكود نفسه يجب أن يشرح ما يفعله:</p>
+      <div class="code-block">
+<span class="cm"># عرض تاريخ اليوم للمستخدم</span>
+<span class="bu">print</span>(<span class="str">"Today is a great day to code!"</span>)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هنا نرى مثالاً لتعليق مفيد يشرح الغرض من الكود وليس فقط وصفاً لما يفعله. التعليق <code># عرض تاريخ اليوم للمستخدم</code> يشرح لماذا نكتب هذا السطر — لإلهام المستخدم وجعله يشعر بالحماس للبرمجة. السطر التالي يطبع عبارة تحفيزية. التعليقات الجيدة تجيب على سؤال "لماذا" وليس "ماذا"، لأن الكود الجيد يجب أن يكون واضحاً كافياً بذاته لشرح ما يفعله. المخرجات ستكون: <code>Today is a great day to code!</code></p>
+      </div>
+
+      <p>يمكنك أيضاً كتابة تعليقات متعددة الأسطر باستخدام <span class="inline-code">#</span> في كل سطر:</p>
+      <div class="code-block">
+<span class="cm"># هذا مشروع لتطبيق إدارة المهام</span>
+<span class="cm"># الكاتب: أحمد</span>
+<span class="cm"># التاريخ: 2026</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>بايثون لا تمتلك صيغة خاصة للتعليقات متعددة الأسطر مثل بعض اللغات الأخرى (<code>/* */</code>). الطريقة الشائعة هي استخدام علامة <code>#</code> في بداية كل سطر على حدة. هنا نرى ثلاثة أسطر من التعليقات توثّق معلومات عن المشروع: اسمه والكاتب والتاريخ. هذا النمط مفيد في بداية الملفات لتقديم معلومات عامة عن الكود لقرّائه. جميع هذه الأسطر سيتم تجاهلها بالكامل أثناء التنفيذ ولن تظهر أي مخرجات عند تشغيل هذا الكود لأنه لا يحتوي على أي أوامر فعلية.</p>
+      </div>
+
+      <h2 class="section-title">2.6 فلسفة بايثون (The Zen of Python)</h2>
+      <p>لدى بايثون فلسفة جميلة توجه تصميم اللغة وطريقة كتابة الكود. يمكنك رؤيتها بنفسك بكتابة الأمر التالي في الوضع التفاعلي:</p>
+      <div class="code-block">
+<span class="op">&gt;&gt;&gt;</span> <span class="kw">import</span> this
+      </div>
+      <p>هذا سيعرض <strong>"The Zen of Python"</strong> (فلسفة بايثون)، وهي مجموعة من المبادئ كتبها Tim Peters. إليك بعضاً من أجملها:</p>
+      <ul>
+        <li><strong>Beautiful is better than ugly.</strong> — الجميل أفضل من القبيح</li>
+        <li><strong>Explicit is better than implicit.</strong> — الوضوح أفضل من الغموض</li>
+        <li><strong>Simple is better than complex.</strong> — البسيط أفضل من المعقد</li>
+        <li><strong>Complex is better than complicated.</strong> — المعقد أفضل من المُعقَّد</li>
+        <li><strong>Readability counts.</strong> — قابلية القراءة مهمة</li>
+        <li><strong>There should be one — and preferably only one — obvious way to do it.</strong> — يجب أن تكون هناك طريقة واحدة — ويفضّل أن تكون واحدة فقط — واضحة لفعل الشيء</li>
+        <li><strong>Now is better than never.</strong> — الآن أفضل من أبداً</li>
+      </ul>
+      <p>هذه المبادئ ليست مجرد كلمات جميلة — إنها توجه كل قرارات تصميم بايثون وتشجع المبرمجين على كتابة كود نظيف وسهل القراءة. كلما تعمقت في بايثون، ستجد نفسك تقدر هذه الفلسفة أكثر فأكثر.</p>
+
+      <div class="note"><strong>تذكير:</strong> فلسفة بايثون تؤكد على أن الكود يُقرأ أكثر مما يُكتب. لذلك، احرص دائماً على كتابة كود واضح وسهل الفهم. زملاؤك المبرمجون (ونفسك في المستقبل) سيشكرونك على ذلك.</div>
+
+      <h2 class="section-title">2.7 التمارين</h2>
+
+      <div class="exercise"><strong>تمرين 2-1: متغير بسيط</strong><br>
+      عرّف متغيراً باسم <span class="inline-code">message</span> وأعطه قيمة نصية. ثم اطبع قيمة المتغير.</div>
+
+      <div class="exercise"><strong>تمرين 2-2: متغيرات متعددة</strong><br>
+      عرّف متغيراً باسم <span class="inline-code">message</span> واطبعه. ثم غيّر قيمة المتغير إلى نص جديد واطبعه مرة أخرى.</div>
+
+      <div class="exercise"><strong>تمرين 2-3: رسالة شخصية</strong><br>
+      استخدم متغيراً لتخزين اسم شخص، ثم اطبع رسالة لذلك الشخص. مثلاً: "Hello Eric, would you like to learn some Python today?"</div>
+
+      <div class="exercise"><strong>تمرين 2-4: تغيير حالة الأحرف</strong><br>
+      خزّن اسم شخص في متغير، ثم اطبع الاسم بالأحرف الصغيرة والعنونة (title case) والأحرف الكبيرة.</div>
+
+      <div class="exercise"><strong>تمرين 2-5: اقتباس مشهور</strong><br>
+      استخدم متغيراً لتخزين اسم شخص ومتغيراً آخر لتخزين اقتباس له. اطبع الاقتباس مع اسم قائله. مثلاً: Albert Einstein once said, "A person who never made a mistake never tried anything new."</div>
+
+      <div class="exercise"><strong>تمرين 2-6: الاقتباس 2</strong><br>
+      كرر التمرين السابق، ولكن أنشئ متغيراً واحداً <span class="inline-code">famous_person</span> ثم قم بتركيب الرسالة وتخزينها في متغير جديد <span class="inline-code">message</span>، ثم اطبع <span class="inline-code">message</span>.</div>
+
+      <div class="exercise"><strong>تمرين 2-7: إزالة المسافات</strong><br>
+      خزّن اسماً مع مسافات بيضاء في البداية والنهاية (مثل <span class="inline-code">"\t\n   Ali   \n"</span>). اطبع الاسم مع المسافات، ثم اطعمه بعد استخدام <span class="inline-code">lstrip()</span> و <span class="inline-code">rstrip()</span> و <span class="inline-code">strip()</span>.</div>
+
+      <div class="exercise"><strong>تمرين 2-8: الرقم 8</strong><br>
+      اكتب عمليات جمع وطرح وضرب وقسمة تؤدي كلها إلى الرقم 8. استخدم الدالة <span class="inline-code">print()</span> لعرض كل عملية.</div>
+
+      <div class="exercise"><strong>تمرين 2-9: الرقم المفضّل</strong><br>
+      خزّن رقمك المفضّل في متغير. ثم أنشئ رسالة تخبر المستخدم برقمك المفضّل واطبعها.</div>
+
+      <div class="exercise"><strong>تمرين 2-10: إضافة تعليقات</strong><br>
+      أضف تعليقات إلى اثنين من البرامج التي كتبتها سابقاً. اشرح في التعليقات ما يفعله كل جزء من الكود.</div>
+
+      <div class="exercise"><strong>تمرين 2-11: فلسفة بايثون</strong><br>
+      في الوضع التفاعلي، اكتب <span class="inline-code">import this</span> واقرأ فلسفة بايثون. اختر مبدأً واحداً أعجبك واشرح بجملة أو جملتين لماذا تتفق معه.</div>
+
+      <h2 class="section-title">الكائنات: المتغيرات هي تسميات وليس صناديق</h2>
+      <p>في بايثون، المتغيرات ليست صناديق تخزن القيم — بل هي <strong>تسميات (labels)</strong> تشير إلى كائنات في الذاكرة. هذا الفرق مهم جداً لفهم سلوك الكود:</p>
+
+      <div class="code-block">
+<span class="cm"># في لغات أخرى: a = [1, 2, 3] ينسخ القائمة</span>
+<span class="cm"># في بايثون: a هو تسمية للكائن [1, 2, 3] في الذاكرة</span>
+a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+b = a           <span class="cm"># b يشير لنفس الكائن! لا ينسخ</span>
+b.append(<span class="num">4</span>)
+<span class="bu">print</span>(a)        <span class="cm"># [1, 2, 3, 4] — a أيضاً تغير!</span>
+
+<span class="cm"># التحقق من التساوي</span>
+<span class="bu">print</span>(a <span class="kw">is</span> b)   <span class="cm"># True — نفس الكائن بالضبط (id)</span>
+<span class="bu">print</span>(a == b)   <span class="cm"># True — نفس القيمة</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يوضح مفهوماً محورياً في بايثون: المتغيرات هي تسميات (labels) وليست صناديق. عندما كتبنا <code>b = a</code>، لم ننشئ نسخة جديدة من القائمة <code>[1, 2, 3]</code>، بل جعلنا <code>b</code> يشير إلى نفس الكائن تماماً في الذاكرة. لذلك عندما أضفنا الرقم 4 إلى <code>b</code> باستخدام <code>append()</code>، تغيرت القائمة الأصلية <code>a</code> أيضاً لأنها نفس الكائن. للتحقق من ذلك نستخدم <code>is</code> التي تقارن هوية الكائنات (العنوان في الذاكرة) — <code>a is b</code> تعيد <code>True</code> لأنهما نفس الكائن. بينما <code>==</code> تقارن القيم فقط. المخرجات ستكون: <code>[1, 2, 3, 4]</code> ثم <code>True</code> ثم <code>True</code>.</p>
+      </div>
+
+      <h3 class="subsection-title">النسخ: shallow vs deep copy</h3>
+      <div class="code-block">
+<span class="kw">import</span> copy
+
+original = [[<span class="num">1</span>, <span class="num">2</span>], [<span class="num">3</span>, <span class="num">4</span>]]
+
+<span class="cm"># Shallow copy — ينسخ القائمة الخارجية فقط</span>
+shallow = copy.copy(original)
+shallow[<span class="num">0</span>].append(<span class="num">99</span>)
+<span class="bu">print</span>(original)  <span class="cm"># [[1, 2, 99], [3, 4]] — تأثر!</span>
+
+<span class="cm"># Deep copy — ينسخ كل شيء</span>
+deep = copy.deepcopy(original)
+deep[<span class="num">0</span>].append(<span class="num">88</span>)
+<span class="bu">print</span>(original)  <span class="cm"># [[1, 2, 99], [3, 4]] — لم يتأثر</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يوضح الفرق بين النسخ السطحي (shallow copy) والنسخ العميق (deep copy) باستخدام وحدة <code>copy</code>. أوّلاً نستورد الوحدة بـ <code>import copy</code>. النسخ السطحي بـ <code>copy.copy()</code> ينسخ القائمة الخارجية فقط، لكن القوائم الداخلية تبقى مشتركة بين النسخة والأصل — لذلك عندما أضفنا 99 إلى <code>shallow[0]</code>، تأثرت القائمة <code>original</code> أيضاً. النسخ العميق بـ <code>copy.deepcopy()</code> ينسخ كل شيء بشكل متكرر، بما في ذلك الكائنات المتداخلة، لذلك لم يتأثر <code>original</code> عند تعديل <code>deep[0]</code>. مخرجات السطرين ستكون <code>[[1, 2, 99], [3, 4]]</code> مرتين — الأولى بعد التعديل بالنسخ السطحي، والثانية بعد التأكد من أن النسخ العميق لم يؤثر على الأصل.</p>
+      </div>
+
+      <h3 class="subsection-title">del وجمع القمامة (Garbage Collection)</h3>
+      <div class="code-block">
+<span class="cm"># del يحذف التسمية وليس الكائن</span>
+x = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+y = x
+<span class="kw">del</span> x           <span class="cm"># يحذف التسمية x فقط</span>
+<span class="bu">print</span>(y)          <span class="cm"># [1, 2, 3] — الكائن لا يزال موجوداً</span>
+
+<span class="cm"># الكائن يُحذف فقط عندما لا يبقى له أي تسمية</span>
+y = <span class="str">'new object'</span>  <span class="cm"># الآن [1, 2, 3] مرشح لجمع القمامة</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يوضح كيفية عمل <code>del</code> وجمع القمامة (garbage collection) في بايثون. الأمر <code>del x</code> لا يحذف الكائن <code>[1, 2, 3]</code> من الذاكرة، بل يحذف التسمية (المرجع) <code>x</code> فقط. الكائن يبقى موجوداً طالما أن هناك تسمية أخرى تشير إليه — هنا <code>y</code> لا يزال يشير إلى نفس القائمة، لذلك <code>print(y)</code> يطبع <code>[1, 2, 3]</code> بنجاح. عندما غيرنا <code>y</code> إلى كائن جديد بقيمة <code>'new object'</code>، أصبح الكائن <code>[1, 2, 3]</code> بدون أي مراجع، مما يجعله مرشحاً لجمع القمامة. بايثون تدير الذاكرة تلقائياً من خلال آلية العد المرجعي (reference counting) — عندما يصل العداد إلى صفر، يُحذف الكائن تلقائياً.</p>
+      </div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> فكر في المتغيرات كـ "تسميات لاصقة" على كائنات. عملية التخصيص <span class="inline-code">b = a</span> تضع تسمية جديدة على نفس الكائن. استخدم <span class="inline-code">copy.deepcopy</span> للنسخ الكامل للهياكل المتداخلة. <span class="inline-code">is</span> تقارن الهوية (id) و <span class="inline-code">==</span> تقارن القيمة.</div>
+
+      <h2 class="section-title">2.8 ملخص الفصل</h2>
+      <div class="summary-box">
+        <h3>📝 ملخص الفصل</h3>
+        <ul>
+          <li>تعلمت كيف يعمل مفسّر بايثون — يقرأ الكود سطراً سطراً ويحلله وينفذه</li>
+          <li>تعرفت على المتغيرات — كيفية تعريفها، تغيير قيمتها، وقواعد تسميتها</li>
+          <li>أتقنت التعامل مع السلاسل النصية — تغيير حالة الأحرف، الدمج، المسافات البيضاء، وتجنب الأخطاء</li>
+          <li>تعلمت العمليات الحسابية على الأعداد الصحيحة والعشرية</li>
+          <li>عرفت كيفية تحويل الأرقام إلى نصوص باستخدام <span class="inline-code">str()</span> لتجنب أخطاء الأنواع</li>
+          <li>اكتشفت أهمية التعليقات في توثيق الكود</li>
+          <li>تأملت فلسفة بايثون — مبادئ الجمال، البساطة، والوضوح في كتابة الكود</li>
+        </ul>
+      </div>
+
+    <div class="note"><strong>💡 نصيحة ذهبية:</strong> استخدم f-strings (<span class="inline-code">f"Hello {name}"</span>) بدلاً من إضافة النصوص (<span class="inline-code">"Hello " + name</span>). f-strings أسرع وأسهل للقراءة وتدعم التعبيرات (<span class="inline-code">f"{2 + 2}"</span>) وتنسيق الأرقام (<span class="inline-code">f"{price:.2f}"</span>).</div>
+
+    <div class="warning"><strong>⚠️ خطأ شائع:</strong> الخلط بين <span class="inline-code">=</span> (تخصيص) و <span class="inline-code">==</span> (مقارنة). <span class="inline-code">if x = 5:</span> سيعطيك خطأ لأنك لا يمكنك التخصيص داخل شرط. تذكر: <span class="inline-code">=</span> للتعيين، <span class="inline-code">==</span> للمقارنة.</div>
+
+    <div class="exercise"><strong>🏋️ تمرين:</strong> اكتب برنامجاً يطلب من المستخدم اسمه الأول واسم عائلته، ثم يطبع رسالة ترحيب منسقة باستخدام f-string. مثلاً: <span class="inline-code">مرحباً أحمد محمد! اسمك مكون من 9 أحرف.</span> استخدم <span class="inline-code">len()</span> لحساب طول الاسم.</div>
+
+    </div>
+
+    <div class="footer">
+      <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+      <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) { link.classList.add('active'); }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

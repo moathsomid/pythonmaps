@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تمارين وحلول إضافية - دورة بايثون المكثفة</title>
+<style>
+:root {
+  --primary: #58a6ff; --primary-light: #79c0ff; --secondary: #00b4d8;
+  --accent: #ffd166; --bg: #0d1117; --sidebar-bg: #161b22;
+  --sidebar-text: #c9d1d9; --card-bg: #1c2128; --text: #e6edf3;
+  --text-light: #8b949e; --code-bg: #1e1e2e; --border: #30363d;
+  --shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.8;
+  display: flex; min-height: 100vh;
+}
+.sidebar {
+  width: 320px; background: var(--sidebar-bg); color: var(--sidebar-text);
+  position: fixed; top: 0; right: 0; height: 100vh; overflow-y: auto;
+  z-index: 1000; transition: transform 0.3s ease;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+}
+.sidebar-header {
+  padding: 25px 20px; background: linear-gradient(135deg, #1f3a5f, #0d1117);
+  text-align: center; border-bottom: 3px solid var(--accent);
+}
+.sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+.sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+.sidebar-nav { padding: 15px 0; }
+.sidebar-nav a {
+  display: block; padding: 10px 20px; color: var(--sidebar-text);
+  text-decoration: none; font-size: 14px;
+  border-right: 3px solid transparent; transition: all 0.2s;
+}
+.sidebar-nav a:hover { background: rgba(255,255,255,0.08); border-right-color: var(--secondary); color: #fff; }
+.sidebar-nav .part-label { padding: 12px 20px 6px; font-size: 12px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+.sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+.sidebar-nav .chapter-link.active { background: rgba(255,255,255,0.12); border-right-color: var(--accent); color: #fff; }
+.sidebar-toggle {
+  display: block; position: fixed; top: 15px; right: 15px; z-index: 1100;
+  background: var(--primary); color: #fff; border: none; border-radius: 8px;
+  width: 45px; height: 45px; font-size: 22px; cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.main-content {
+  margin-right: 320px; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease;
+}
+.chapter-page { padding: 0; }
+.chapter-header {
+  background: linear-gradient(135deg, #0a1929, #1a3a5c);
+  color: #fff; padding: 40px 50px;
+}
+.chapter-header .part-badge {
+  display: inline-block; background: var(--accent); color: var(--sidebar-bg);
+  padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;
+  margin-bottom: 10px;
+}
+.chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+.chapter-header p { opacity: 0.85; font-size: 16px; }
+.chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+.section-title {
+  font-size: 24px; color: var(--primary); margin: 35px 0 15px;
+  padding-bottom: 8px; border-bottom: 3px solid var(--secondary);
+}
+.chapter-content p { margin-bottom: 15px; font-size: 16px; }
+.chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+.chapter-content li { margin-bottom: 8px; font-size: 15px; }
+.code-block {
+  background: var(--code-bg); color: #cdd6f4; border-radius: 10px;
+  padding: 0; margin: 15px 0 20px;
+  font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+  font-size: 14px; line-height: 1.7; overflow-x: auto;
+  direction: ltr; text-align: left; position: relative;
+  white-space: pre-wrap; word-break: break-word;
+}
+.code-block .kw { color: #cba6f7; }
+.code-block .fn { color: #89b4fa; }
+.code-block .str { color: #a6e3a1; }
+.code-block .cm { color: #6c7086; }
+.code-block .num { color: #fab387; }
+.code-block .op { color: #89dceb; }
+.code-block .bu { color: #f38ba8; }
+.code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+.code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+.code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+.code-block ol li:hover { background: rgba(255,255,255,0.05); }
+.inline-code { background: #2d333b; color: #e6edf3; padding: 2px 7px; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: 14px; direction: ltr; unicode-bidi: embed; }
+.exercise-box {
+  background: #0a3d1a; border-right: 4px solid #22c55e;
+  padding: 15px 20px; border-radius: 8px; margin: 15px 0;
+}
+.exercise-box strong { color: #4ade80; }
+.solution-toggle {
+  background: #1c2128; border: 1px solid var(--border);
+  color: var(--primary); padding: 8px 16px; border-radius: 6px;
+  cursor: pointer; font-size: 13px; margin: 5px 0 10px;
+}
+.solution-toggle:hover { background: #2d333b; }
+.solution { display: none; margin: 5px 0 15px; }
+.solution.show { display: block; }
+.lesson-tag { display: inline-block; background: #1f3a5f; color: var(--primary); padding: 2px 10px; border-radius: 12px; font-size: 11px; margin-left: 8px; }
+.footer { text-align: center; padding: 30px; color: var(--text-light); font-size: 13px; border-top: 1px solid var(--border); margin-top: 40px; }
+.back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px; }
+.back-link:hover { text-decoration: underline; }
+@media (max-width: 767px) {
+  .sidebar { transform: translateX(320px); width: 280px; }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-right: 0; }
+  .chapter-header { padding: 30px 25px; }
+  .chapter-header h1 { font-size: 24px; }
+  .chapter-content { padding: 25px; }
+}
+@media (min-width: 768px) {
+  .sidebar { transform: none; }
+  body:not(.sidebar-active) .sidebar { transform: translateX(320px); pointer-events: none; }
+  body:not(.sidebar-active) .main-content { margin-right: 0; }
+  .sidebar-toggle { right: 335px; }
+  body:not(.sidebar-active) .sidebar-toggle { right: 15px; }
+}
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header"><h1>🐍 دورة بايثون المكثفة</h1><p>Python Crash Course</p></div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="python_advanced.html" class="chapter-link">🐍 Python Advanced</a>
+    <a href="asyncio.html" class="chapter-link">AsyncIO</a>
+    <a href="sql.html" class="chapter-link">SQL</a>
+    <a href="postgresql.html" class="chapter-link">PostgreSQL متقدم</a>
+    <a href="linux.html" class="chapter-link">Linux</a>
+    <a href="git.html" class="chapter-link">Git/GitHub</a>
+    <a href="docker.html" class="chapter-link">Docker</a>
+    <div class="part-label">🚀 Backend + AI</div>
+    <a href="fastapi.html" class="chapter-link">FastAPI</a>
+    <a href="redis.html" class="chapter-link">Redis</a>
+    <a href="ai_fundamentals.html" class="chapter-link">🤖 أساسيات AI</a>
+    <div class="part-label">🔷 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link">OOP</a>
+    <div class="part-label">🚀 المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1</a>
+    <a href="project2.html" class="chapter-link">المشروع 2</a>
+    <a href="project3.html" class="chapter-link">المشروع 3</a>
+    <a href="project_data_api.html" class="chapter-link">المشروع 4: Data API</a>
+    <a href="project_ai_doc_chat.html" class="chapter-link">المشروع 5: AI Chat</a>
+    <div class="part-label">📎 تمارين إضافية</div>
+    <a href="exercises.html" class="chapter-link" style="color:#ffd166;font-weight:700;">📝 تمارين + حلول</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">📝 تمارين إضافية</span>
+      <h1>تمارين وحلول إضافية</h1>
+      <p>تمارين عملية لكل درس مع الحلول — اضغط على "عرض الحل" لكل تمرين</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p style="margin-bottom:25px;">تمارين إضافية (غير الموجودة في الدروس) لحلّها بنفسك. حاول أولاً ثم اطلع على الحل.</p>
+
+      <!-- ===== PYTHON BASICS ===== -->
+      <h2 class="section-title">📘 أساسيات بايثون</h2>
+
+      <h3 class="subsection-title" style="color:var(--primary-light);">المتغيرات والبيانات</h3>
+
+      <div class="exercise-box">
+        <strong>التمرين 1: حاسبة العمر</strong><br>
+        اكتب برنامجاً يطلب من المستخدم سنة ميلاده، ثم يطبع عمره.<br>
+        <em>إرشاد: استخدم <span class="inline-code">input()</span> و <span class="inline-code">int()</span></em>
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol1')">📋 عرض الحل</button>
+      <div class="solution" id="sol1">
+        <div class="code-block">birth = int(input("سنة ميلادك: "))
+age = 2026 - birth
+print(f"عمرك {age} سنة")</div>
+      </div>
+
+      <div class="exercise-box">
+        <strong>التمرين 2: محوّل درجات الحرارة</strong><br>
+        حول درجة حرارة من مئوي إلى فهرنهايت: <span class="inline-code">F = C * 9/5 + 32</span>
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol2')">📋 عرض الحل</button>
+      <div class="solution" id="sol2">
+        <div class="code-block">c = float(input("الحرارة بالمئوي: "))
+f = c * 9/5 + 32
+print(f"{c}°C = {f}°F")</div>
+      </div>
+
+      <h3 class="subsection-title" style="color:var(--primary-light);">القوائم والحلقات</h3>
+
+      <div class="exercise-box">
+        <strong>التمرين 3: تصفية الأعداد الزوجية</strong><br>
+        أعطيت القائمة <span class="inline-code">nums = [3, 8, 12, 5, 14, 7, 20]</span>. اطبع الأعداد الزوجية فقط.
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol3')">📋 عرض الحل</button>
+      <div class="solution" id="sol3">
+        <div class="code-block">nums = [3, 8, 12, 5, 14, 7, 20]
+even = [n for n in nums if n % 2 == 0]
+print(even)  # [8, 12, 14, 20]</div>
+      </div>
+
+      <div class="exercise-box">
+        <strong>التمرين 4: عدّ الكلمات</strong><br>
+        خذ جملة من المستخدم واطبع عدد الكلمات فيها.<br>
+        <em>إرشاد: <span class="inline-code">str.split()</span></em>
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol4')">📋 عرض الحل</button>
+      <div class="solution" id="sol4">
+        <div class="code-block">sentence = input("اكتب جملة: ")
+words = sentence.split()
+print(f"عدد الكلمات: {len(words)}")</div>
+      </div>
+
+      <h3 class="subsection-title" style="color:var(--primary-light);">الدوال والقواميس</h3>
+
+      <div class="exercise-box">
+        <strong>التمرين 5: دالة حساب الضريبة</strong><br>
+        اكتب دالة <span class="inline-code">calc_tax(price, rate=0.15)</span> تعيد السعر بعد الضريبة.
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol5')">📋 عرض الحل</button>
+      <div class="solution" id="sol5">
+        <div class="code-block">def calc_tax(price, rate=0.15):
+    return price * (1 + rate)
+
+print(calc_tax(100))      # 115.0
+print(calc_tax(100, 0.1)) # 110.0</div>
+      </div>
+
+      <div class="exercise-box">
+        <strong>التمرين 6: دفتر عناوين</strong><br>
+        قارئ يخزن الأسماء وأرقام الهواتف في قاموس. أضف 3 جهات، ثم اطبع جميع الأسماء.
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol6')">📋 عرض الحل</button>
+      <div class="solution" id="sol6">
+        <div class="code-block">contacts = {}
+for i in range(3):
+    name = input("الاسم: ")
+    phone = input("رقم الهاتف: ")
+    contacts[name] = phone
+
+print("جهات الاتصال:")
+for name in contacts:
+    print(f"  {name}: {contacts[name]}")</div>
+      </div>
+
+      <!-- ===== OOP ===== -->
+      <h2 class="section-title">🔷 OOP — البرمجة كائنية التوجه</h2>
+
+      <div class="exercise-box">
+        <strong>التمرين 7: كلاس BankAccount</strong><br>
+        أنشئ كلاس <span class="inline-code">BankAccount</span> بالدوال التالية:<br>
+        <span class="inline-code">deposit(amount)</span> — إيداع<br>
+        <span class="inline-code">withdraw(amount)</span> — سحب (إذا كان الرصيد كافياً)<br>
+        <span class="inline-code">get_balance()</span> — عرض الرصيد
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol7')">📋 عرض الحل</button>
+      <div class="solution" id="sol7">
+        <div class="code-block">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+        print(f"تم إيداع {amount}. الرصيد: {self.balance}")
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            print("رصيد غير كافٍ!")
+        else:
+            self.balance -= amount
+            print(f"تم سحب {amount}. الرصيد: {self.balance}")
+
+    def get_balance(self):
+        return self.balance
+
+acc = BankAccount("Ahmed", 1000)
+acc.deposit(500)
+acc.withdraw(200)
+print(acc.get_balance())  # 1300</div>
+      </div>
+
+      <div class="exercise-box">
+        <strong>التمرين 8: وراثة — SavingAccount</strong><br>
+        أنشئ كلاس <span class="inline-code">SavingAccount</span> يرث من <span class="inline-code">BankAccount</span> ويضيف خاصية <span class="inline-code">interest_rate</span>
+        ودالة <span class="inline-code">add_interest()</span>.
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol8')">📋 عرض الحل</button>
+      <div class="solution" id="sol8">
+        <div class="code-block">class SavingAccount(BankAccount):
+    def __init__(self, owner, balance=0, interest_rate=0.05):
+        super().__init__(owner, balance)
+        self.interest_rate = interest_rate
+
+    def add_interest(self):
+        interest = self.balance * self.interest_rate
+        self.deposit(interest)
+        print(f"فائدة {interest} أضيفت.")
+
+save = SavingAccount("Sara", 2000, 0.05)
+save.add_interest()
+print(save.get_balance())  # 2100.0</div>
+      </div>
+
+      <!-- ===== SQL ===== -->
+      <h2 class="section-title">🗄️ SQL — قواعد البيانات</h2>
+
+      <div class="exercise-box">
+        <strong>التمرين 9: استعلام JOIN</strong><br>
+        لديك جدولان: <span class="inline-code">customers(id, name)</span> و <span class="inline-code">orders(id, customer_id, total)</span>.
+        اكتب استعلاماً يعيد أسماء الزبائن مع مجموع مشترياتهم.
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol9')">📋 عرض الحل</button>
+      <div class="solution" id="sol9">
+        <div class="code-block">SELECT c.name, SUM(o.total) as total_spent
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id, c.name
+ORDER BY total_spent DESC;</div>
+      </div>
+
+      <!-- ===== FastAPI ===== -->
+      <h2 class="section-title">🚀 FastAPI</h2>
+
+      <div class="exercise-box">
+        <strong>التمرين 10: API for To-Do List</strong><br>
+        أنشئ API بسيط للمهام بمسارين:<br>
+        <span class="inline-code">GET /todos</span> — يعرض جميع المهام<br>
+        <span class="inline-code">POST /todos</span> — يضيف مهمة جديدة (body: {title, completed})
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol10')">📋 عرض الحل</button>
+      <div class="solution" id="sol10">
+        <div class="code-block">from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class Todo(BaseModel):
+    title: str
+    completed: bool = False
+
+todos = []
+
+@app.get("/todos")
+def list_todos():
+    return todos
+
+@app.post("/todos")
+def create_todo(todo: Todo):
+    todos.append(todo)
+    return todo</div>
+      </div>
+
+      <!-- ===== Redis ===== -->
+      <h2 class="section-title">⚡ Redis</h2>
+
+      <div class="exercise-box">
+        <strong>التمرين 11: عداد زيارات الصفحة</strong><br>
+        استخدم Redis لحساب عدد زيارات كل صفحة. زوّد العداد في كل طلب وأعده.
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol11')">📋 عرض الحل</button>
+      <div class="solution" id="sol11">
+        <div class="code-block">import redis
+from fastapi import FastAPI
+
+app = FastAPI()
+r = redis.Redis(host='localhost', port=6379, db=0)
+
+@app.get("/page/{page_id}")
+def visit_page(page_id: str):
+    count = r.incr(f"page_views:{page_id}")
+    return {"page": page_id, "views": count}</div>
+      </div>
+
+      <!-- ===== Docker ===== -->
+      <h2 class="section-title">🐳 Docker</h2>
+
+      <div class="exercise-box">
+        <strong>التمرين 12: Dockerfile + Compose</strong><br>
+        اكتب Dockerfile و docker-compose.yml لتطبيق Flask بسيط مع Redis.
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol12')">📋 عرض الحل</button>
+      <div class="solution" id="sol12">
+        <div class="code-block"># Dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["python", "app.py"]
+
+# docker-compose.yml
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+  redis:
+    image: redis:7-alpine</div>
+      </div>
+
+      <!-- ===== AI ===== -->
+      <h2 class="section-title">🤖 أساسيات AI</h2>
+
+      <div class="exercise-box">
+        <strong>التمرين 13: تشابه النصوص</strong><br>
+        استخدم <span class="inline-code">sentence-transformers</span> لحساب التشابه بين جملتين.
+      </div>
+      <button class="solution-toggle" onclick="toggleSol('sol13')">📋 عرض الحل</button>
+      <div class="solution" id="sol13">
+        <div class="code-block">from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+
+model = SentenceTransformer('all-MiniLM-L6-v2')
+sentences = ["أحب تعلم البرمجة", "البرمجة شغفي"]
+emb = model.encode(sentences)
+sim = cosine_similarity([emb[0]], [emb[1]])[0][0]
+print(f"نسبة التشابه: {sim:.2f}")</div>
+      </div>
+
+      <div class="summary-box">
+        <h3>📝 ملاحظة</h3>
+        <p>هذه تمارين إضافية. جميع الحلول قابلة للتشغيل المباشر. جرب بنفسك قبل النظر إلى الحل!</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.add('sidebar-active'); sidebar.classList.remove('open');
+    } else { document.body.classList.remove('sidebar-active'); }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) { document.body.classList.toggle('sidebar-active'); }
+    else { sidebar.classList.toggle('open'); }
+  });
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) { sidebar.classList.remove('open'); }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) { link.classList.add('active'); }
+  });
+
+  function toggleSol(id) {
+    var el = document.getElementById(id);
+    el.classList.toggle('show');
+  }
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

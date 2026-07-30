@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الفصل 1: البدء مع بايثون - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+
+  .sidebar-header h1 {
+    font-size: 20px;
+    color: #fff;
+    margin-bottom: 5px;
+  }
+
+  .sidebar-header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link {
+    padding-right: 35px;
+    font-size: 13px;
+  }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+
+  /* Toggle button */
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+
+  /* Main content */
+  .main-content {
+    margin-right: 0;
+    flex: 1;
+    padding: 0;
+    min-height: 100vh;
+    transition: margin-right 0.3s ease;
+  }
+  body.sidebar-active .main-content { margin-right: 320px; }
+
+  .hero {
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    color: #fff;
+    padding: 60px 50px;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+    margin-bottom: 15px;
+  }
+
+  .hero p {
+    font-size: 18px;
+    opacity: 0.9;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 30px 40px;
+  }
+
+  /* Chapter cards on index */
+  .chapter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+  }
+
+  .chapter-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #30363d;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+  }
+
+  .chapter-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 25px rgba(0,0,0,0.12);
+  }
+
+  .chapter-card .num {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    text-align: center;
+    line-height: 36px;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .chapter-card h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .chapter-card p {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+
+  /* Chapter page styles */
+  .chapter-page { padding: 0; }
+
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+
+  .chapter-content p {
+    margin-bottom: 15px;
+    font-size: 16px;
+  }
+
+  .chapter-content ul, .chapter-content ol {
+    margin: 10px 0 15px 35px;
+  }
+
+  .chapter-content li {
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+
+  /* Code blocks */
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+
+  /* Note boxes */
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+
+  .note strong { color: var(--primary); }
+
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+
+  /* Exercise */
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+
+  .exercise strong { color: #4ade80; }
+
+  /* Summary box */
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+
+  .summary-box h3 {
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+
+  .summary-box ul { margin: 0; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  /* Back link */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    .sidebar {
+      transform: translateX(320px);
+      width: 280px;
+    }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .hero { padding: 40px 25px; }
+    .hero h1 { font-size: 28px; }
+    .container { padding: 20px; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+    .chapter-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  /* Scrollbar */
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+  .sidebar::-webkit-scrollbar-thumb:hover { background: #555; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">📘 الجزء الأول: الأساسيات</span>
+      <h1>1. البدء مع بايثون</h1>
+      <p>في هذا الفصل، ستتعلم كيفية تثبيت بايثون على جهازك، تشغيل أول برنامج لك، والتعامل مع الأخطاء البرمجية</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>مرحباً بك في عالم البرمجة بلغة بايثون! في هذا الفصل، سنبدأ من الصفر. سنقوم بتثبيت بايثون على جهاز الكمبيوتر الخاص بك، ثم نكتب أول برنامج بسيط، ونتعرف على كيفية التعامل مع الأخطاء التي قد تواجهها كمبرمج مبتدئ. لا تقلق إذا كنت جديداً تماماً في البرمجة — فهذا الفصل صُمم خصيصاً لك.</p>
+
+      <h2 class="section-title">1.1 إعداد بيئة بايثون</h2>
+      <p>قبل أن نبدأ في كتابة الكود، نحتاج إلى تثبيت بايثون على جهاز الكمبيوتر. بايثون هي لغة برمجة مفتوحة المصدر ومتوفرة مجاناً لجميع أنظمة التشغيل الرئيسية.</p>
+      <p>النسخة الحالية المستقرة من بايثون هي النسخة 3.x. في هذا الكتاب، سنستخدم بايثون 3، حيث أن بايثون 2 لم تعد مدعومة رسمياً منذ يناير 2020.</p>
+
+      <h3 class="subsection-title">1.1.1 تثبيت بايثون على نظام Windows</h3>
+      <p>لتثبيت بايثون على ويندوز:</p>
+      <ol>
+        <li>اذهب إلى الموقع الرسمي <a href="https://python.org" target="_blank" rel="noopener">python.org</a></li>
+        <li>حمل أحدث نسخة من بايثون 3 (ستجد زر تحميل كبير في الصفحة الرئيسية)</li>
+        <li>شغّل ملف التثبيت الذي حملته</li>
+        <li><strong>مهم جداً:</strong> تأكد من تحديد خيار <span class="inline-code">Add Python to PATH</span> قبل الضغط على Install</li>
+        <li>اتبع التعليمات الظاهرة على الشاشة لإكمال التثبيت</li>
+      </ol>
+      <p>بعد التثبيت، يمكنك فتح <strong>موجه الأوامر (Command Prompt)</strong> وكتابة <span class="inline-code">python --version</span> للتأكد من أن التثبيت تم بنجاح.</p>
+
+      <h3 class="subsection-title">1.1.2 تثبيت بايثون على نظام macOS</h3>
+      <p>نظام macOS يأتي مع بايثون 2 مثبتاً مسبقاً، لكننا نحتاج بايثون 3. لديك خياران:</p>
+      <p><strong>الخيار الأول:</strong> حمل المثبت من <a href="https://python.org" target="_blank" rel="noopener">python.org</a> كما في ويندوز وشغّله.</p>
+      <p><strong>الخيار الثاني:</strong> استخدم <strong>Homebrew</strong> (مدير حزم لنظام macOS) لتثبيت بايثون بسهولة:</p>
+      <div class="code-block">
+<span class="cm"># تثبيت بايثون عبر Homebrew</span>
+brew install python3
+      </div>
+      <p>بعد التثبيت، اكتب <span class="inline-code">python3 --version</span> في الطرفية (Terminal) للتأكد.</p>
+
+      <h3 class="subsection-title">1.1.3 تثبيت بايثون على نظام Linux</h3>
+      <p>معظم توزيعات لينكس تأتي مع بايثون 3 مثبتاً مسبقاً. يمكنك التحقق بكتابة الأمر التالي في الطرفية:</p>
+      <div class="code-block">
+python3 --version
+      </div>
+      <p>إذا لم يكن بايثون 3 مثبتاً، يمكنك تثبيته باستخدام مدير الحزم الخاص بتوزيعتك:</p>
+      <div class="code-block">
+<span class="cm"># على Ubuntu/Debian</span>
+sudo apt update
+sudo apt install python3
+
+<span class="cm"># على Fedora</span>
+sudo dnf install python3
+      </div>
+
+      <div class="note"><strong>ملاحظة:</strong> في نظامي macOS و Linux، قد تحتاج إلى كتابة <span class="inline-code">python3</span> بدلاً من <span class="inline-code">python</span> لتشغيل بايثون 3. في ويندوز، يمكنك استخدام <span class="inline-code">python</span> مباشرة.</div>
+
+      <h3 class="subsection-title">1.1.4 محرر النصوص ومحرر الكود</h3>
+      <p>لكتابة كود بايثون، تحتاج إلى محرر نصوص. هناك عدة خيارات ممتازة:</p>
+      <ul>
+        <li><strong>VS Code:</strong> محرر مجاني وقوي من مايكروسوفت، مع إضافات ممتازة لبايثون</li>
+        <li><strong>PyCharm:</strong> بيئة تطوير متكاملة (IDE) مخصصة لبايثون</li>
+        <li><strong>Sublime Text:</strong> محرر خفيف وسريع</li>
+        <li><strong>IDLE:</strong> محرر بايثون البسيط الذي يأتي مع تثبيت بايثون</li>
+      </ul>
+      <p>لن نستخدم بيئة تطوير متكاملة معقدة في البداية. يكفينا محرر نصوص بسيط مثل VS Code أو حتى "المفكرة" (Notepad) على ويندوز.</p>
+
+      <h2 class="section-title">1.2 تشغيل أول برنامج بايثون — Hello World!</h2>
+      <p>حان الوقت لكتابة أول برنامج لك في بايثون! تقليدياً، أول برنامج نكتبه في أي لغة برمجة يطبع جملة "Hello World!".</p>
+
+      <h3 class="subsection-title">1.2.1 إنشاء ملف البرنامج</h3>
+      <p>افتح محرر النصوص الخاص بك وأنشئ ملفاً جديداً. اكتب السطر التالي فيه:</p>
+      <div class="code-block">
+<span class="bu">print</span>(<span class="str">"Hello World!"</span>)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>يحتوي هذا البرنامج على سطر واحد فقط من كود بايثون. الدالة <code>print()</code> هي دالة مدمجة في بايثون تقوم بطباعة أي شيء يوضع بين قوسيها إلى الشاشة. هنا نمرر لها السلسلة النصية <code>"Hello World!"</code> — وهي مجموعة من الأحرف محاطة بعلامتي اقتباس مزدوجتين. عند تشغيل الملف <code>hello_world.py</code>، سينفذ بايثون هذا السطر ويخرج النص <code>Hello World!</code> في الطرفية. هذه هي الطريقة الأساسية لعرض المعلومات في بايثون.</p>
+      </div>
+
+      <p>احفظ الملف باسم <span class="inline-code">hello_world.py</span>. امتداد <span class="inline-code">.py</span> يدل على أن هذا الملف هو ملف كود بايثون.</p>
+
+      <h3 class="subsection-title">1.2.2 تشغيل البرنامج من الطرفية (Terminal)</h3>
+      <p>لتشغيل البرنامج، افتح الطرفية (Command Prompt في ويندوز، أو Terminal في macOS/Linux) وانتقل إلى المجلد الذي حفظت فيه الملف، ثم اكتب:</p>
+      <div class="code-block">
+python3 hello_world.py
+      </div>
+      <div class="note"><strong>ملاحظة:</strong> على ويندوز، استخدم <span class="inline-code">python hello_world.py</span> بدلاً من <span class="inline-code">python3</span>.</div>
+      <p>إذا كان كل شيء يعمل بشكل صحيح، سترى الناتج التالي:</p>
+      <div class="code-block">
+Hello World!
+      </div>
+      <p>تهانينا! لقد كتبت وشغّلت أول برنامج بايثون لك! 🎉</p>
+
+      <h3 class="subsection-title">1.2.2 — شرح الكود</h3>
+      <p>دعنا نفهم ما حدث بالضبط:</p>
+      <ul>
+        <li><span class="inline-code">print()</span> هي دالة (function) مدمجة في بايثون تقوم بطباعة النص إلى الشاشة</li>
+        <li>النص <span class="inline-code">"Hello World!"</span> هو عبارة عن سلسلة نصية (string)، ونضعه بين علامتي اقتباس</li>
+        <li>عندما يشغّل بايثون الملف، ينفذ الأوامر سطراً سطراً من الأعلى إلى الأسفل</li>
+        <li>الدالة <span class="inline-code">print()</span> تأخذ ما بين القوسين وتخرجه إلى الشاشة</li>
+      </ul>
+
+      <div class="warning"><strong>تلميح:</strong> إذا واجهت خطأ مثل <span class="inline-code">'python3' is not recognized</span> على ويندوز، فهذا يعني أن بايثون لم يُضف إلى PATH. ارجع إلى خطوات التثبيت وتأكد من تحديد خيار "Add Python to PATH".</div>
+
+      <h2 class="section-title">1.3 التعامل مع الأخطاء (Troubleshooting)</h2>
+      <p>الأخطاء البرمجية (Bugs) جزء طبيعي من رحلة البرمجة. حتى المبرمجون المحترفون يكتبون أكواداً تحتوي على أخطاء طوال الوقت. المهم ليس تجنب الأخطاء، بل معرفة كيفية قراءة رسائل الخطأ وفهمها.</p>
+
+      <h3 class="subsection-title">1.3.1 أخطاء نحوية (Syntax Errors)</h3>
+      <p>الخطأ النحوي يحدث عندما لا يكتب الكود وفق قواعد بايثون. على سبيل المثال، إذا نسيت علامة الاقتباس:</p>
+      <div class="code-block">
+<span class="bu">print</span>(<span class="str">"Hello World!)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يحتوي على خطأ نحوي (SyntaxError) متعمد. الدالة <code>print()</code> تحاول طباعة سلسلة نصية، لكن علامة الاقتباس المغلقة مفقودة — السلسلة بدأت بعلامة اقتباس <code>"</code> ولكنها لم تُغلق. بايثون يقرأ الكود سطراً سطراً، وعندما يصل إلى نهاية السطر (End Of Line) دون أن يجد علامة الاقتباس المغلقة، يتوقف ويظهر الخطأ: <code>SyntaxError: EOL while scanning string literal</code>. هذا يعني "خطأ نحوي: وصلت لنهاية السطر أثناء قراءة سلسلة نصية". الحل بسيط: أضف علامة الاقتباس المفقودة ليصبح الكود <code>print("Hello World!")</code>.</p>
+      </div>
+
+      <p>سيظهر خطأ مثل هذا:</p>
+      <div class="code-block">
+SyntaxError: EOL while scanning string literal
+      </div>
+      <p>هذا يعني أن بايثون وصل إلى نهاية السطر (End Of Line) أثناء قراءة السلسلة النصية — أي أنك نسيت إغلاق علامة الاقتباس.</p>
+
+      <h3 class="subsection-title">1.3.2 أخطاء وقت التشغيل (Runtime Errors)</h3>
+      <p>هذه الأخطاء تحدث أثناء تشغيل البرنامج. مثلاً، قد تحاول استخدام متغير لم تعرفه بعد:</p>
+      <div class="code-block">
+<span class="bu">print</span>(message)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يستخدم الدالة <code>print()</code> لمحاولة طباعة قيمة المتغير <code>message</code>. لكن المتغير <code>message</code> لم يُعرف أو يُخزَّن له أي قيمة قبل استخدامه. بايثون يبحث في الذاكرة عن متغير بهذا الاسم ولا يجده، فيُظهر خطأ من نوع <code>NameError: name 'message' is not defined</code>، أي "خطأ في الاسم: المتغير 'message' غير معرَّف". الحل هو تعريف المتغير أولاً بتخزين قيمة فيه، مثلاً: <code>message = "أهلاً بالعالم"</code> ثم طباعته. تذكر: في بايثون، يجب تعريف المتغير قبل استخدامه.</p>
+      </div>
+
+      <div class="code-block">
+NameError: name 'message' is not defined
+      </div>
+      <p>هذا يعني أن بايثون لا يعرف <span class="inline-code">message</span> لأنك لم تعطه قيمة بعد.</p>
+
+      <h3 class="subsection-title">1.3.3 فهم رسائل الخطأ</h3>
+      <p>رسائل الخطأ في بايثون صديقة جداً للمبرمج. عادةً ما تخبرك:</p>
+      <ol>
+        <li>نوع الخطأ (مثل SyntaxError أو NameError)</li>
+        <li>رقم السطر الذي حدث فيه الخطأ</li>
+        <li>وصفاً مختصراً للمشكلة</li>
+      </ol>
+      <p>عندما تواجه خطأ، اقرأ رسالة الخطأ بعناية. غالباً ما ستجد أن الحل بسيط جداً!</p>
+
+      <h3 class="subsection-title">1.3.4 نصائح ذهبية للتعامل مع الأخطاء</h3>
+      <ul>
+        <li><strong>لا تخف من الأخطاء:</strong> كل مبرمج يراها يومياً</li>
+        <li><strong>اقرأ رسالة الخطأ:</strong> هي دليلك للحل</li>
+        <li><strong>ابحث عن رقم السطر:</strong> راجع الكود في ذلك السطر</li>
+        <li><strong>تأكد من الأقواس:</strong> غالباً ما تكون علامات الاقتباس أو الأقواس هي المشكلة</li>
+        <li><strong>جرب البحث:</strong> اكتب رسالة الخطأ في محرك بحث — غالباً ما وجدها غيرك قبل</li>
+      </ul>
+
+      <div class="note"><strong>ملاحظة:</strong> من أفضل الأصدقاء للمبرمج المبتدئ هو محرك البحث. إذا واجهت مشكلة، جرب البحث عنها. ستجد غالباً حلاً في منتديات مثل Stack Overflow.</div>
+
+      <h2 class="section-title">1.4 تشغيل بايثون من سطر الأوامر (Terminal)</h2>
+      <p>بالإضافة إلى تشغيل ملفات <span class="inline-code">.py</span>، يمكنك أيضاً تشغيل بايثون في الوضع التفاعلي (Interactive Mode) مباشرة في الطرفية.</p>
+
+      <h3 class="subsection-title">1.4.1 الوضع التفاعلي (Interactive Shell)</h3>
+      <p>اكتب <span class="inline-code">python3</span> في الطرفية (أو <span class="inline-code">python</span> على ويندوز) لفتح الوضع التفاعلي:</p>
+      <div class="code-block">
+$ python3
+Python 3.11.0 (main, ...)
+Type "help", "copyright", "credits" or "license" for more information.
+&gt;&gt;&gt;
+      </div>
+      <p>العلامة <span class="inline-code">&gt;&gt;&gt;</span> تعني أن بايثون ينتظر منك كتابة أمر. جرب كتابة:</p>
+      <div class="code-block">
+<span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(<span class="str">"Hello from interactive mode!"</span>)
+Hello from interactive mode!
+      </div>
+      <p>الوضع التفاعلي مفيد جداً لتجربة أوامر صغيرة بسرعة، لكن للتطبيقات الكبيرة سنستخدم ملفات <span class="inline-code">.py</span>.</p>
+
+      <h3 class="subsection-title">1.4.2 الخروج من الوضع التفاعلي</h3>
+      <p>للخروج من الوضع التفاعلي، اكتب:</p>
+      <div class="code-block">
+<span class="op">&gt;&gt;&gt;</span> <span class="bu">exit</span>()
+      </div>
+      <p>أو اضغط <span class="inline-code">Ctrl+D</span> (على macOS/Linux) أو <span class="inline-code">Ctrl+Z</span> ثم Enter (على ويندوز).</p>
+
+      <h2 class="section-title">1.5 التمارين</h2>
+      <p>الآن حان دورك لتطبق ما تعلمته. هذه التمارين مأخوذة من الكتاب الأصلي وستساعدك على تثبيت المفاهيم:</p>
+
+      <div class="exercise"><strong>تمرين 1-1: python.org</strong><br>
+      استعرض موقع <a href="https://python.org" target="_blank" rel="noopener">python.org</a> وابحث في قسم التنزيلات (Downloads). اقرأ عن أحدث إصدار من بايثون 3. هل هناك أي ملاحظات مثيرة للاهتمام حول هذه النسخة؟</div>
+
+      <div class="exercise"><strong>تمرين 1-2: أخطاء نحوية</strong><br>
+      جرب كتابة برنامج <span class="inline-code">hello_world.py</span> ولكن احذف إحدى علامتي الاقتباس. شغّل البرنامج وشاهد رسالة الخطأ. ثم احذف قوساً مفتوحاً أو مغلقاً وانظر ماذا يحدث.</div>
+
+      <div class="exercise"><strong>تمرين 1-3: الوضع التفاعلي</strong><br>
+      افتح الوضع التفاعلي لبايثون (بكتابة <span class="inline-code">python3</span> في الطرفية). اكتب الأوامر التالية جرباً:<br>
+      <span class="inline-code">print("مرحباً بالعالم")</span><br>
+      <span class="inline-code">2 + 3</span><br>
+      <span class="inline-code">"Hello " + "World"</span><br>
+      شاهد كيف يستجيب بايثون لكل أمر.</div>
+
+      <div class="exercise"><strong>تمرين 1-4: أول برنامج منفصل</strong><br>
+      أنشئ ملفاً جديداً باسم <span class="inline-code">hello_arabic.py</span> واكتب فيه:<br>
+      <span class="inline-code">print("مرحباً بالعالم")</span><br>
+      شغّله من الطرفية وتأكد من ظهور النص العربي بشكل صحيح.</div>
+
+      <h2 class="section-title">نموذج بيانات بايثون - Python Data Model</h2>
+      <p>في بايثون، كل شيء هو كائن. الدوال المدمجة مثل <span class="inline-code">len()</span> و <span class="inline-code">str()</span> و <span class="inline-code">bool()</span> تستدعي دوال خاصة (<strong>magic methods</strong>) خلف الكواليس. فهم هذا النموذج يجعلك تفهم "لماذا" تتصرف بايثون بهذه الطريقة:</p>
+
+      <div class="code-block">
+<span class="cm"># len() تستدعي __len__() داخلياً</span>
+<span class="bu">print</span>(<span class="bu">len</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]))  <span class="cm"># == [1,2,3].__len__()</span>
+
+<span class="cm"># str() تستدعي __str__()</span>
+<span class="bu">print</span>(<span class="bu">str</span>(<span class="num">42</span>))       <span class="cm"># == (42).__str__()</span>
+
+<span class="cm"># bool() تستدعي __bool__()، فإن لم توجد فتستدعي __len__()</span>
+<span class="bu">print</span>(<span class="bu">bool</span>([]))      <span class="cm"># False — لأن len([]) == 0</span>
+<span class="bu">print</span>(<span class="bu">bool</span>([<span class="num">1</span>]))     <span class="cm"># True — لأن len([1]) == 1</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا المقطع يوضح كيف تعمل دوال بايثون المدمجة خلف الكواليس عبر استدعاء دوال خاصة (magic methods) يملكها كل كائن. في السطر الأول، التعليق <code># len() تستدعي __len__() داخلياً</code> يشرح أن <code>len([1, 2, 3])</code> لا تحسب الطول بنفسها، بل تستدعي <code>__len__()</code> التي تعرفها القائمة وتعيد 3. في السطر الثاني، <code>str(42)</code> تستدعي <code>__str__()</code> لتحويل الرقم 42 إلى السلسلة النصية <code>"42"</code>. السطر الثالث يوضح أن <code>bool([])</code> تتحقق أولاً من وجود <code>__bool__()</code> في الكائن — القائمة الفارغة لا تملكها، فتلجأ إلى <code>__len__()</code> التي تعيد 0، وأي قيمة صفرية تعتبر <code>False</code> منطقياً. السطر الأخير: <code>bool([1])</code> — القائمة تحتوي على عنصر واحد، <code>__len__()</code> تعيد 1، والقيم غير الصفرية تعتبر <code>True</code>. الناتج النهائي عند التشغيل سيكون: <code>3</code>، <code>42</code>، <code>False</code>، <code>True</code> — كل منها في سطر منفصل.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># إضافة دالتين لمطالعة الكائن (سنرى التفاصيل لاحقاً)</span>
+<span class="kw">class</span> <span class="fn">Book</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, title, pages):
+        <span class="kw">self</span>.title = title
+        <span class="kw">self</span>.pages = pages
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):       <span class="cm"># للمطورين</span>
+        <span class="kw">return</span> <span class="str">f'Book({self.title!r})'</span>
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="kw">self</span>):        <span class="cm"># للمستخدمين</span>
+        <span class="kw">return</span> <span class="kw">self</span>.title
+
+    <span class="kw">def</span> <span class="fn">__len__</span>(<span class="kw">self</span>):        <span class="cm"># len() تعمل على الكائن</span>
+        <span class="kw">return</span> <span class="kw">self</span>.pages
+
+b = Book(<span class="str">'Fluent Python'</span>, <span class="num">983</span>)
+<span class="bu">print</span>(<span class="bu">repr</span>(b))   <span class="cm"># Book('Fluent Python') — عبر __repr__</span>
+<span class="bu">print</span>(b)         <span class="cm"># Fluent Python — عبر __str__</span>
+<span class="bu">print</span>(<span class="bu">len</span>(b))    <span class="cm"># 983 — عبر __len__</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يعرّف كلاس (class) باسم <code>Book</code> يمثل كتاباً. الكلاس يحتوي على أربع دوال خاصة (magic methods):
+        <br><strong>1. <code>__init__</code>:</strong> دالة البناء (constructor) — تُستدعى تلقائياً عند إنشاء كائن جديد. تأخذ وسيطين: <code>title</code> (عنوان الكتاب) و <code>pages</code> (عدد الصفحات). السطر <code>self.title = title</code> يخزّن العنوان في الكائن، و <code>self.pages = pages</code> يخزّن عدد الصفحات.
+        <br><strong>2. <code>__repr__</code>:</strong> تَعيد تمثيلاً دقيقاً للكائن يستهدف المطورين. تستخدم f-string مع <code>!r</code> لطباعة <code>repr()</code> الخاصة بالعنوان. ناتجها: <code>Book('Fluent Python')</code>.
+        <br><strong>3. <code>__str__</code>:</strong> تَعيد تمثيلاً مقروءاً للمستخدم (عنوان الكتاب فقط). تُستدعى عند استخدام <code>print()</code> على الكائن. ناتجها: <code>Fluent Python</code>.
+        <br><strong>4. <code>__len__</code>:</strong> تَعيد عدد الصفحات، مما يسمح باستخدام <code>len(b)</code> مباشرة على كائن <code>Book</code>. ناتجها: <code>983</code>.
+        <br>بعد تعريف الكلاس، ننشئ كائن <code>b = Book('Fluent Python', 983)</code> — هنا تستدعى <code>__init__</code>. ثم نطبع: <code>repr(b)</code> يستدعي <code>__repr__</code> → <code>Book('Fluent Python')</code>، <code>print(b)</code> يستدعي <code>__str__</code> → <code>Fluent Python</code>، <code>len(b)</code> يستدعي <code>__len__</code> → <code>983</code>. هذا يوضح كيف تدمج بايثون الدوال المدمجة مع الكلاسات المخصصة بسلاسة.</p>
+      </div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> <span class="inline-code">__repr__</span> يجب أن يعيد تمثيلاً دقيقاً يمكن استخدامه لإنشاء الكائن من جديد (إن أمكن). <span class="inline-code">__str__</span> يُستدعى بواسطة <span class="inline-code">print()</span> ويجب أن يكون مقروءاً للمستخدم. قاعدة ذهبية: <span class="inline-code">bool(obj)</span> ترجع <span class="inline-code">False</span> إذا كان <span class="inline-code">__bool__</span> أو <span class="inline-code">__len__</span> يعيد 0.</div>
+
+      <h2 class="section-title">1.6 ملخص الفصل</h2>
+      <div class="summary-box">
+        <h3>📝 ملخص الفصل</h3>
+        <ul>
+          <li>تعرّفت على لغة بايثون وكيفية تثبيتها على أنظمة ويندوز وmacOS ولينكس</li>
+          <li>تعلمت كتابة أول برنامج باستخدام الدالة <span class="inline-code">print()</span></li>
+          <li>عرفت كيفية تشغيل ملفات بايثون من الطرفية</li>
+          <li>تعلمت الفرق بين الخطأ النحوي (SyntaxError) وخطأ وقت التشغيل (NameError)</li>
+          <li>اكتشفت الوضع التفاعلي لبايثون وكيفية استخدامه للتجربة السريعة</li>
+          <li>أدركت أن الأخطاء جزء طبيعي من البرمجة — المهم هو فهم رسائل الخطأ</li>
+        </ul>
+      </div>
+
+      <div class="note"><strong>نصيحة:</strong> في الفصل القادم، سنتعمق في المتغيرات وأنواع البيانات. تأكد من أن بايثون مثبت ويعمل بشكل صحيح قبل الانتقال. جرب كتابة وتشغيل عدة برامج بسيطة حتى تشعر بالراحة مع العملية.</div>
+    </div>
+
+    <div class="note"><strong>💡 نصيحة ذهبية:</strong> أنشئ بيئة افتراضية (virtual environment) لكل مشروع باستخدام <span class="inline-code">python -m venv myenv</span>. هذا يفصل حزم كل مشروع عن الآخر ويمنع تعارض الإصدارات. فعّل البيئة بـ <span class="inline-code">source myenv/bin/activate</span> (لينكس) أو <span class="inline-code">myenv\Scripts\activate</span> (ويندوز).</div>
+
+    <div class="warning"><strong>⚠️ خطأ شائع:</strong> نسيان النقطتين الرأسيتين <span class="inline-code">:</span> بعد <span class="inline-code">def</span>، <span class="inline-code">if</span>، <span class="inline-code">for</span>، <span class="inline-code">while</span>. هذا من أكثر أخطاء المبتدئين شيوعاً. تأكد دائماً من وجود <span class="inline-code">:</span> في نهاية السطر الذي يفتح كتلة جديدة.</div>
+
+    <div class="exercise"><strong>🏋️ تمرين:</strong> اكتب برنامجاً يطبع مثلثاً قائماً باستخدام <span class="inline-code">*</span> بارتفاع 5 أسطر. استخدم <span class="inline-code">print()</span> مع الضرب في النصوص: <span class="inline-code">print('*' * 3)</span> يطبع <span class="inline-code">***</span>. جرب أن تجعل المستخدم يُدخل الارتفاع بنفسه.</div>
+
+    <div class="footer">
+      <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+      <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) { link.classList.add('active'); }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

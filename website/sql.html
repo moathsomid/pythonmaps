@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL - قواعد البيانات العلائقية - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <div class="part-badge">⚙️ Core Engineering</div>
+      <h1>SQL - قواعد البيانات العلائقية</h1>
+      <p>Structured Query Language — لغة الاستعلام البنيوية لقواعد البيانات</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        <strong>SQL</strong> (Structured Query Language) هي اللغة القياسية للتعامل مع قواعد البيانات العلائقية.
+        تتيح لك إنشاء البيانات وتعديلها واستعلامها بسهولة. في هذا الدليل، ستتعلم أساسيات SQL من الصفر
+        مع التركيز على الجانب العملي والتكامل مع بايثون.
+      </p>
+
+      <!-- ========== 1. مقدمة إلى SQL ========== -->
+      <h2 class="section-title">1. مقدمة إلى SQL</h2>
+
+      <p>
+        قواعد البيانات العلائقية (Relational Databases) تخزّن البيانات في <strong>جداول (Tables)</strong>
+        تتكون من <strong>صفوف (Rows)</strong> و <strong>أعمدة (Columns)</strong>. كل جدول يمثل كياناً
+        معيناً (مثل المستخدمين أو المنتجات)، والعلاقات بين الجداول تُبنى باستخدام المفاتيح.
+      </p>
+
+      <p>
+        SQL هي اللغة التي تستخدمها للتواصل مع قاعدة البيانات. تنقسم أوامر SQL إلى عدة أقسام رئيسية:
+      </p>
+
+      <ul>
+        <li><strong>DDL</strong> (Data Definition Language): إنشاء وتعديل هيكل الجداول — <span class="inline-code">CREATE</span>, <span class="inline-code">ALTER</span>, <span class="inline-code">DROP</span></li>
+        <li><strong>DML</strong> (Data Manipulation Language): التعامل مع البيانات — <span class="inline-code">SELECT</span>, <span class="inline-code">INSERT</span>, <span class="inline-code">UPDATE</span>, <span class="inline-code">DELETE</span></li>
+        <li><strong>DCL</strong> (Data Control Language): صلاحيات الوصول — <span class="inline-code">GRANT</span>, <span class="inline-code">REVOKE</span></li>
+      </ul>
+
+      <div class="code-block"><span class="cm">-- إنشاء جدول بسيط</span>
+<span class="kw">CREATE TABLE</span> users (
+    id <span class="kw">INTEGER PRIMARY KEY</span>,
+    name <span class="kw">TEXT NOT NULL</span>,
+    email <span class="kw">TEXT UNIQUE</span>,
+    age <span class="kw">INTEGER</span>
+);
+
+<span class="cm">-- إدراج بيانات</span>
+<span class="kw">INSERT INTO</span> users (name, email, age)
+<span class="kw">VALUES</span> (<span class="str">'Ahmed'</span>, <span class="str">'ahmed@example.com'</span>, <span class="num">25</span>);</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الأمر <code>CREATE TABLE</code> ينشئ جدولاً جديداً بأعمدة محددة وأنواع بياناتها. <code>PRIMARY KEY</code> يحدد المفتاح الأساسي الذي يعرّف كل صف بشكل فريد. <code>NOT NULL</code> يمنع القيم الفارغة. <code>INSERT INTO</code> يُضيف صفاً جديداً إلى الجدول بالقيم المحددة.</p></div>
+
+      <!-- ========== 2. SELECT ========== -->
+      <h2 class="section-title">2. SELECT - استعلام البيانات الأساسي</h2>
+
+      <p>
+        الأمر <span class="inline-code">SELECT</span> هو أكثر أوامر SQL استخداماً — وهو المسؤول عن جلب البيانات
+        من قاعدة البيانات. يمكنك تحديد الأعمدة التي تريدها، وشروط التصفية، والترتيب، وغير ذلك.
+      </p>
+
+      <div class="code-block"><span class="cm">-- اختيار كل الأعمدة</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users;
+
+<span class="cm">-- اختيار أعمدة محددة</span>
+<span class="kw">SELECT</span> name, email <span class="kw">FROM</span> users;
+
+<span class="cm">-- الحد من النتائج</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">LIMIT</span> <span class="num">5</span>;
+
+<span class="cm">-- تجاهل القيم المكررة</span>
+<span class="kw">SELECT DISTINCT</span> age <span class="kw">FROM</span> users;</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>SELECT * FROM</code> يجلب كل الأعمدة من الجدول. لتحديد أعمدة معينة، اكتب أسماءها بدلاً من <code>*</code>. <code>LIMIT</code> يحدد عدد الصفوف المرتجعة. <code>DISTINCT</code> يُزيل القيم المكررة من النتائج.</p></div>
+
+      <!-- ========== 3. WHERE ========== -->
+      <h2 class="section-title">3. WHERE - تصفية البيانات</h2>
+
+      <p>
+        جملة <span class="inline-code">WHERE</span> تُستخدم لتصفية الصفوف بناءً على شروط محددة.
+        تدعم SQL مجموعة كبيرة من عوامل المقارنة والمنطق.
+      </p>
+
+      <div class="code-block"><span class="cm">-- عوامل المقارنة الأساسية</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> age <span class="kw">=</span> <span class="num">25</span>;
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> age <span class="kw">!=</span> <span class="num">18</span>;
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> age <span class="kw">&gt;</span> <span class="num">21</span>;
+
+<span class="cm">-- LIKE - مطابقة الأنماط</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> email <span class="kw">LIKE</span> <span class="str">'%@gmail.com'</span>;
+
+<span class="cm">-- IN - ضمن مجموعة</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> age <span class="kw">IN</span> (<span class="num">20</span>, <span class="num">25</span>, <span class="num">30</span>);
+
+<span class="cm">-- BETWEEN - ضمن نطاق</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> age <span class="kw">BETWEEN</span> <span class="num">18</span> <span class="kw">AND</span> <span class="num">35</span>;
+
+<span class="cm">-- IS NULL - القيم الفارغة</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> email <span class="kw">IS NULL</span>;</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>جملة <code>WHERE</code> تصفي النتائج حسب شرط معين. <code>LIKE</code> يسمح بمطابقة الأنماط باستخدام <code>%</code> (تطابق أي عدد من الأحرف) و <code>_</code> (حرف واحد). <code>IN</code> تتحقق مما إذا كانت القيمة ضمن قائمة. <code>BETWEEN</code> تشمل القيم بين حدين. <code>IS NULL</code> تتحقق من القيم الفارغة.</p></div>
+
+      <!-- ========== 4. ORDER BY ========== -->
+      <h2 class="section-title">4. ORDER BY - الترتيب</h2>
+
+      <p>
+        لترتيب النتائج تصاعدياً أو تنازلياً، استخدم <span class="inline-code">ORDER BY</span> متبوعاً باسم العمود.
+      </p>
+
+      <div class="code-block"><span class="cm">-- ترتيب تصاعدي (افتراضي)</span>
+<span class="kw">SELECT</span> name, age <span class="kw">FROM</span> users <span class="kw">ORDER BY</span> age <span class="kw">ASC</span>;
+
+<span class="cm">-- ترتيب تنازلي</span>
+<span class="kw">SELECT</span> name, age <span class="kw">FROM</span> users <span class="kw">ORDER BY</span> age <span class="kw">DESC</span>;
+
+<span class="cm">-- ترتيب حسب أعمدة متعددة</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users
+<span class="kw">ORDER BY</span> age <span class="kw">DESC</span>, name <span class="kw">ASC</span>;</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>ORDER BY</code> يرتب النتائج حسب العمود المحدد. <code>ASC</code> للترتيب التصاعدي (الأصغر إلى الأكبر — هذا هو الافتراضي). <code>DESC</code> للترتيب التنازلي (الأكبر إلى الأصغر). يمكنك الترتيب بعدة أعمدة بفصلها بفاصلة.</p></div>
+
+      <!-- ========== 5. JOINs ========== -->
+      <h2 class="section-title">5. JOINs - ربط الجداول</h2>
+
+      <p>
+        أكثر ميزة قوية في SQL هي ربط الجداول ببعضها. <strong>JOIN</strong> يدمج صفوفاً من جدولين
+        أو أكثر بناءً على علاقة بين أعمدة معينة.
+      </p>
+
+      <p>لنفترض أن لدينا جدولين — <span class="inline-code">users</span> و <span class="inline-code">orders</span>:</p>
+
+      <div class="code-block"><span class="cm">-- INNER JOIN: فقط الصفوف المتطابقة في كلا الجدولين</span>
+<span class="kw">SELECT</span> users.name, orders.product, orders.amount
+<span class="kw">FROM</span> users
+<span class="kw">INNER JOIN</span> orders <span class="kw">ON</span> users.id <span class="kw">=</span> orders.user_id;
+
+<span class="cm">-- LEFT JOIN: كل الصفوف من الجدول الأيسر حتى لو لم يكن هناك تطابق</span>
+<span class="kw">SELECT</span> users.name, orders.product
+<span class="kw">FROM</span> users
+<span class="kw">LEFT JOIN</span> orders <span class="kw">ON</span> users.id <span class="kw">=</span> orders.user_id;
+
+<span class="cm">-- RIGHT JOIN: كل الصفوف من الجدول الأيمن</span>
+<span class="kw">SELECT</span> users.name, orders.product
+<span class="kw">FROM</span> users
+<span class="kw">RIGHT JOIN</span> orders <span class="kw">ON</span> users.id <span class="kw">=</span> orders.user_id;</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>INNER JOIN</code> يُرجع فقط الصفوف التي تطابق الشرط في كلا الجدولين. <code>LEFT JOIN</code> يُرجع كل صفوف الجدول الأيسر (users) والقيم المطابقة من الجدول الأيمن (orders) — والقيم غير المطابقة تكون <code>NULL</code>. <code>RIGHT JOIN</code> العكس: كل صفوف الجدول الأيمن.</p></div>
+
+      <div class="code-block"><span class="cm">-- مثال عملي: المستخدمون وطلباتهم مع الربط</span>
+<span class="kw">SELECT</span>
+    u.name,
+    u.email,
+    <span class="kw">COUNT</span>(o.id) <span class="kw">AS</span> total_orders,
+    <span class="kw">SUM</span>(o.amount) <span class="kw">AS</span> total_spent
+<span class="kw">FROM</span> users u
+<span class="kw">LEFT JOIN</span> orders o <span class="kw">ON</span> u.id <span class="kw">=</span> o.user_id
+<span class="kw">GROUP BY</span> u.id
+<span class="kw">ORDER BY</span> total_spent <span class="kw">DESC</span>;</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هذا الاستعلام يجمع بين <code>LEFT JOIN</code> و <code>GROUP BY</code> ودوال التجميع. نستخدم الأسماء المستعارة (<code>u</code> و <code>o</code>) لتبسيط الكتابة. <code>COUNT(o.id)</code> يحسب عدد الطلبات لكل مستخدم، و <code>SUM(o.amount)</code> يحسب المجموع. النتيجة تُرتب حسب أعلى قيمة إنفاق.</p></div>
+
+      <!-- ========== 6. Aggregate Functions ========== -->
+      <h2 class="section-title">6. Aggregate Functions - دوال التجميع</h2>
+
+      <p>
+        دوال التجميع تُجري حسابات على مجموعة من الصفوف وتُعيد قيمة واحدة. غالباً ما تُستخدم
+        مع <span class="inline-code">GROUP BY</span> لتقسيم النتائج إلى مجموعات.
+      </p>
+
+      <div class="code-block"><span class="cm">-- COUNT: عدد الصفوف</span>
+<span class="kw">SELECT</span> <span class="kw">COUNT</span>(*) <span class="kw">AS</span> total_users <span class="kw">FROM</span> users;
+
+<span class="cm">-- SUM: مجموع القيم</span>
+<span class="kw">SELECT</span> <span class="kw">SUM</span>(amount) <span class="kw">AS</span> revenue <span class="kw">FROM</span> orders;
+
+<span class="cm">-- AVG: متوسط القيم</span>
+<span class="kw">SELECT</span> <span class="kw">AVG</span>(age) <span class="kw">AS</span> avg_age <span class="kw">FROM</span> users;
+
+<span class="cm">-- MIN / MAX: أدنى وأعلى قيمة</span>
+<span class="kw">SELECT</span> <span class="kw">MIN</span>(age), <span class="kw">MAX</span>(age) <span class="kw">FROM</span> users;
+
+<span class="cm">-- GROUP BY + HAVING</span>
+<span class="kw">SELECT</span> user_id, <span class="kw">COUNT</span>(*) <span class="kw">AS</span> order_count
+<span class="kw">FROM</span> orders
+<span class="kw">GROUP BY</span> user_id
+<span class="kw">HAVING</span> order_count <span class="kw">&gt;=</span> <span class="num">3</span>;</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>COUNT</code> يحسب عدد الصفوف. <code>SUM</code> يجمع القيم الرقمية. <code>AVG</code> يحسب المتوسط. <code>MIN</code> و <code>MAX</code> ترجعان أدنى وأعلى قيمة. <code>GROUP BY</code> يُجمّع الصفوف حسب عمود معين. <code>HAVING</code> يُصفّي المجموعات (مثل <code>WHERE</code> لكن بعد التجميع — <code>WHERE</code> قبل التجميع، <code>HAVING</code> بعده).</p></div>
+
+      <!-- ========== 7. Subqueries ========== -->
+      <h2 class="section-title">7. Subqueries - الاستعلامات الفرعية</h2>
+
+      <p>
+        الاستعلام الفرعي (Subquery) هو استعلام داخل استعلام آخر. يمكنك استخدامه في جمل
+        <span class="inline-code">WHERE</span>، أو <span class="inline-code">FROM</span>،
+        أو حتى في <span class="inline-code">SELECT</span> نفسها.
+      </p>
+
+      <div class="code-block"><span class="cm">-- Subquery في WHERE</span>
+<span class="kw">SELECT</span> name <span class="kw">FROM</span> users
+<span class="kw">WHERE</span> id <span class="kw">IN</span> (
+    <span class="kw">SELECT DISTINCT</span> user_id <span class="kw">FROM</span> orders <span class="kw">WHERE</span> amount <span class="kw">&gt;</span> <span class="num">100</span>
+);
+
+<span class="cm">-- Subquery في FROM (استعلام فرعي كجدول مؤقت)</span>
+<span class="kw">SELECT</span> avg_stats.avg_age
+<span class="kw">FROM</span> (
+    <span class="kw">SELECT</span> <span class="kw">AVG</span>(age) <span class="kw">AS</span> avg_age <span class="kw">FROM</span> users
+) <span class="kw">AS</span> avg_stats
+<span class="kw">WHERE</span> avg_stats.avg_age <span class="kw">&gt;</span> <span class="num">30</span>;</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><strong>الاستعلام الفرعي المتصل (Correlated Subquery)</strong> هو استعلام فرعي يعتمد على قيم من الاستعلام الخارجي. يتم تنفيذه لكل صف في النتيجة الخارجية. في المثال الأول، نجد المستخدمين الذين لديهم طلبات بقيمة أكبر من 100. في المثال الثاني، نستخدم استعلاماً فرعياً في <code>FROM</code> كجدول مؤقت.</p></div>
+
+      <div class="code-block"><span class="cm">-- Correlated Subquery</span>
+<span class="kw">SELECT</span> name, age
+<span class="kw">FROM</span> users u
+<span class="kw">WHERE</span> age <span class="kw">&gt;</span> (
+    <span class="kw">SELECT</span> <span class="kw">AVG</span>(age) <span class="kw">FROM</span> users <span class="kw">WHERE</span> id <span class="kw">!=</span> u.id
+);</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هذا <strong>استعلام فرعي مرتبط (Correlated Subquery)</strong> — الاستعلام الداخلي يُنفذ لكل صف من الاستعلام الخارجي. كل صف من <code>users u</code> يقارن عمره بمتوسط أعمار باقي المستخدمين (<code>id != u.id</code>). هذا مثال متقدم لكنه قوي جداً.</p></div>
+
+      <!-- ========== 8. CTE ========== -->
+      <h2 class="section-title">8. CTE - Common Table Expressions</h2>
+
+      <p>
+        <strong>Common Table Expressions (CTE)</strong> تسمح لك بتعريف استعلامات مؤقتة بأسماء
+        باستخدام جملة <span class="inline-code">WITH</span>. هذا يجعل الاستعلامات المعقدة أكثر
+        قابلية للقراءة وإعادة الاستخدام.
+      </p>
+
+      <div class="code-block"><span class="cm">-- CTE بسيط</span>
+<span class="kw">WITH</span> active_users <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> age <span class="kw">&gt;=</span> <span class="num">18</span>
+)
+<span class="kw">SELECT</span> name, age <span class="kw">FROM</span> active_users <span class="kw">ORDER BY</span> age <span class="kw">DESC</span>;
+
+<span class="cm">-- CTEs متعددة</span>
+<span class="kw">WITH</span>
+    user_stats <span class="kw">AS</span> (
+        <span class="kw">SELECT</span> user_id, <span class="kw">COUNT</span>(*) <span class="kw">AS</span> orders, <span class="kw">SUM</span>(amount) <span class="kw">AS</span> total
+        <span class="kw">FROM</span> orders <span class="kw">GROUP BY</span> user_id
+    ),
+    top_users <span class="kw">AS</span> (
+        <span class="kw">SELECT</span> * <span class="kw">FROM</span> user_stats <span class="kw">WHERE</span> total <span class="kw">&gt;</span> <span class="num">500</span>
+    )
+<span class="kw">SELECT</span> u.name, t.orders, t.total
+<span class="kw">FROM</span> top_users t
+<span class="kw">JOIN</span> users u <span class="kw">ON</span> t.user_id <span class="kw">=</span> u.id;</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><strong>CTE</strong> تُعرِّف جدولاً مؤقتاً باسم يمكن الرجوع إليه في الاستعلام الرئيسي. باستخدام CTEs متعددة، يمكنك بناء استعلامات معقدة خطوة بخطوة. كل CTE مفصول بفاصلة، والأخير هو الاستعلام الرئيسي. هذا أفضل بكثير من الاستعلامات الفرعية المتداخلة.</p></div>
+
+      <div class="code-block"><span class="cm">-- Recursive CTE: تسلسل الأرقام</span>
+<span class="kw">WITH RECURSIVE</span> numbers(n) <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span>           <span class="cm">-- base case</span>
+    <span class="kw">UNION ALL</span>
+    <span class="kw">SELECT</span> n <span class="kw">+</span> <span class="num">1</span> <span class="kw">FROM</span> numbers <span class="kw">WHERE</span> n <span class="kw">&lt;</span> <span class="num">10</span>
+)
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> numbers;
+
+<span class="cm">-- Recursive CTE: هيكل تنظيمي</span>
+<span class="kw">WITH RECURSIVE</span> org_tree <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> id, name, manager_id, <span class="num">1</span> <span class="kw">AS</span> level
+    <span class="kw">FROM</span> employees <span class="kw">WHERE</span> manager_id <span class="kw">IS NULL</span>
+    <span class="kw">UNION ALL</span>
+    <span class="kw">SELECT</span> e.id, e.name, e.manager_id, t.level <span class="kw">+</span> <span class="num">1</span>
+    <span class="kw">FROM</span> employees e
+    <span class="kw">JOIN</span> org_tree t <span class="kw">ON</span> e.manager_id <span class="kw">=</span> t.id
+)
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> org_tree <span class="kw">ORDER BY</span> level, name;</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><strong>Recursive CTE</strong> يستدعي نفسه لبناء بيانات هرمية أو متكررة. يتكون من جزأين: <strong>base case</strong> (نقطة البداية) و <strong>recursive step</strong> (الخطوة المتكررة) يفصل بينهما <code>UNION ALL</code>. المثال الأول يُنشئ تسلسل أرقام. الثاني يبني هيكلاً تنظيمياً من جدول الموظفين.</p></div>
+
+      <!-- ========== 9. Indexes ========== -->
+      <h2 class="section-title">9. Indexes - الفهارس</h2>
+
+      <p>
+        <strong>الفهارس (Indexes)</strong> هي هياكل بيانات تسرّع استعلامات البحث في الجداول.
+        تعمل مثل فهرس الكتاب — بدلاً من تصفح كل صفحة، تذهب مباشرة إلى الموقع المطلوب.
+      </p>
+
+      <div class="code-block"><span class="cm">-- إنشاء فهرس</span>
+<span class="kw">CREATE INDEX</span> idx_users_email <span class="kw">ON</span> users(email);
+
+<span class="cm">-- فهرس مركب (على عدة أعمدة)</span>
+<span class="kw">CREATE INDEX</span> idx_users_age_name <span class="kw">ON</span> users(age, name);
+
+<span class="cm">-- فهرس فريد</span>
+<span class="kw">CREATE UNIQUE INDEX</span> idx_users_username <span class="kw">ON</span> users(username);
+
+<span class="cm">-- حذف فهرس</span>
+<span class="kw">DROP INDEX</span> idx_users_email;</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>CREATE INDEX</code> يُنشئ فهرساً على عمود معين لتسريع البحث والترتيب. <strong>الفهرس المركب</strong> على عدة أعمدة مفيد للاستعلامات التي تُصفّي بعدة أعمدة. <strong>الفهرس الفريد</strong> يضمن عدم وجود قيم مكررة في العمود. الفهارس تُسرّع القراءة لكنها تُبطئ الكتابة (<code>INSERT</code>/<code>UPDATE</code>).</p></div>
+
+      <div class="code-block"><span class="cm">-- تحليل أداء الاستعلام</span>
+<span class="kw">EXPLAIN ANALYZE</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> email <span class="kw">=</span> <span class="str">'ahmed@example.com'</span>;
+
+<span class="cm">-- الاستعلام بدون فهرس: مسح كامل للجدل (Seq Scan)</span>
+<span class="cm">-- الاستعلام مع فهرس: بحث سريع عبر الفهرس (Index Scan)</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>EXPLAIN ANALYZE</code> يُظهر خطة تنفيذ الاستعلام والوقت الفعلي المستغرق. بدون فهرس، تقوم قاعدة البيانات بمسح الجدول كاملاً (<code>Seq Scan</code>). مع الفهرس، تستخدم <code>Index Scan</code> وتجد الصف المطلوب بسرعة كبيرة — فرق قد يكون من ثوانٍ إلى أجزاء من الألف من الثانية.</p></div>
+
+      <!-- ========== 10. Python + SQL ========== -->
+      <h2 class="section-title">10. Python + SQL - الاتصال من بايثون</h2>
+
+      <p>
+        يمكنك الاتصال بقواعد البيانات من بايثون باستخدام مكتبات مثل <span class="inline-code">sqlite3</span>
+        (مضمنة) أو <span class="inline-code">psycopg2</span> (لـ PostgreSQL) أو <span class="inline-code">mysql-connector</span>.
+        المبدأ واحد: إنشاء اتصال، تنفيذ استعلام، معالجة النتائج.
+      </p>
+
+      <div class="code-block"><span class="kw">import</span> sqlite3
+
+<span class="cm"># إنشاء اتصال بقاعدة بيانات (تُنشأ ملفاً إذا لم تكن موجودة)</span>
+conn = sqlite3.<span class="fn">connect</span>(<span class="str">'store.db'</span>)
+cursor = conn.<span class="fn">cursor</span>()
+
+<span class="cm"># إنشاء جدول</span>
+cursor.<span class="fn">execute</span>(<span class="str">'''CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    age INTEGER
+)'''</span>)
+
+<span class="cm"># إدراج بيانات مع عنصر نائب (parameterized query)</span>
+cursor.<span class="fn">execute</span>(
+    <span class="str">'INSERT INTO users (name, email, age) VALUES (?, ?, ?)'</span>,
+    (<span class="str">'Sara'</span>, <span class="str">'sara@example.com'</span>, <span class="num">28</span>)
+)
+conn.<span class="fn">commit</span>()</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>sqlite3.connect()</code> يُنشئ اتصالاً بقاعدة البيانات. <code>cursor()</code> يُنشئ مؤشراً لتنفيذ الاستعلامات. <strong>الاستعلامات المParametrized</strong> تستخدم <code>?</code> كعناصر نائبة للقيم — هذا يمنع هجمات <strong>SQL Injection</strong> تماماً. <code>commit()</code> يحفظ التغييرات.</p></div>
+
+      <div class="code-block"><span class="cm"># استعلام وجلب النتائج</span>
+cursor.<span class="fn">execute</span>(<span class="str">'SELECT * FROM users WHERE age > ?'</span>, (<span class="num">21</span>,))
+rows = cursor.<span class="fn">fetchall</span>()  <span class="cm"># list of tuples</span>
+<span class="kw">for</span> row <span class="kw">in</span> rows:
+    <span class="bu">print</span>(row)
+
+<span class="cm"># fetchone - صف واحد فقط</span>
+row = cursor.<span class="fn">execute</span>(
+    <span class="str">'SELECT * FROM users WHERE email = ?'</span>,
+    (<span class="str">'sara@example.com'</span>,)
+).<span class="fn">fetchone</span>()
+
+<span class="cm"># إغلاق الاتصال</span>
+conn.<span class="fn">close</span>()</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>fetchall()</code> يُرجع كل الصفوف المطابقة كقائمة من tuples. <code>fetchone()</code> يُرجع الصف الأول فقط أو <code>None</code> إذا لم توجد نتائج. من المهم دائماً إغلاق الاتصال بـ <code>close()</code> لتحرير الموارد. يمكنك أيضاً استخدام <code>fetchmany(n)</code> لجلب عدد محدد من الصفوف.</p></div>
+
+      <div class="code-block"><span class="cm"># مثال مع PostgreSQL (psycopg2)</span>
+<span class="cm"># pip install psycopg2-binary</span>
+<span class="kw">import</span> psycopg2
+
+conn = psycopg2.<span class="fn">connect</span>(
+    host=<span class="str">'localhost'</span>,
+    dbname=<span class="str">'mydb'</span>,
+    user=<span class="str">'admin'</span>,
+    password=<span class="str">'secret'</span>
+)
+cursor = conn.<span class="fn">cursor</span>()
+
+<span class="cm"># عناصر نائبة بـ %s (PostgreSQL)</span>
+cursor.<span class="fn">execute</span>(
+    <span class="str">'INSERT INTO users (name, email) VALUES (%s, %s)'</span>,
+    (<span class="str">'Khaled'</span>, <span class="str">'khaled@example.com'</span>)
+)
+conn.<span class="fn">commit</span>()
+cursor.<span class="fn">close</span>()
+conn.<span class="fn">close</span>()</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>مع <strong>psycopg2</strong> (PostgreSQL) نستخدم <code>%s</code> كعناصر نائبة بدلاً من <code>?</code>. الاتصال يتطلب host، dbname، user، password. المبدأ نفسه: <code>execute()</code> لتنفيذ الاستعلام، <code>commit()</code> لحفظ التغييرات. <code>fetchall()</code> و <code>fetchone()</code> تعملان بنفس الطريقة.</p></div>
+
+      <!-- ========== 11. Transactions ========== -->
+      <h2 class="section-title">11. Transactions - المعاملات</h2>
+
+      <p>
+        <strong>المعاملات (Transactions)</strong> تسمح بتنفيذ مجموعة من العمليات مع ضمان
+        أن كل العمليات تنجح أو تفشل معاً — لا حالة وسطية. هذا يضمن <strong>سلامة البيانات</strong>.
+      </p>
+
+      <p>
+        مبدأ <strong>ACID</strong> يضمن:
+        <strong>Atomicity</strong> (الذرية — كل شيء أو لا شيء)،
+        <strong>Consistency</strong> (الاتساق — البيانات تبقى صحيحة)،
+        <strong>Isolation</strong> (العزل — المعاملات لا تتداخل)،
+        <strong>Durability</strong> (الديمومة — التغييرات تبقى حتى بعد الأعطال).
+      </p>
+
+      <div class="code-block"><span class="cm">-- SQL: معاملة صريحة</span>
+<span class="kw">BEGIN</span>;
+
+<span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance <span class="kw">=</span> balance <span class="kw">-</span> <span class="num">100</span>
+<span class="kw">WHERE</span> id <span class="kw">=</span> <span class="num">1</span>;
+
+<span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance <span class="kw">=</span> balance <span class="kw">+</span> <span class="num">100</span>
+<span class="kw">WHERE</span> id <span class="kw">=</span> <span class="num">2</span>;
+
+<span class="kw">COMMIT</span>;  <span class="cm">-- أو ROLLBACK; للتراجع</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>BEGIN</code> يبدأ معاملة جديدة. <code>COMMIT</code> يحفظ كل التغييرات في المعاملة. إذا حدث خطأ قبل <code>COMMIT</code>، يمكنك استخدام <code>ROLLBACK</code> للتراجع عن كل التغييرات. هذا يضمن أن تحويل الأموال مثلاً إما يتم بالكامل أو لا يتم أبداً — لا يمكن خصم المبلغ من طرف دون إضافته للطرف الآخر.</p></div>
+
+      <div class="code-block"><span class="cm">-- المعاملات في بايثون</span>
+<span class="kw">import</span> sqlite3
+
+conn = sqlite3.<span class="fn">connect</span>(<span class="str">'bank.db'</span>)
+cursor = conn.<span class="fn">cursor</span>()
+
+<span class="kw">try</span>:
+    <span class="cm"># بدء المعاملة</span>
+    cursor.<span class="fn">execute</span>(<span class="str">'BEGIN'</span>)
+
+    <span class="cm"># خصم من الحساب الأول</span>
+    cursor.<span class="fn">execute</span>(
+        <span class="str">'UPDATE accounts SET balance = balance - ? WHERE id = ?'</span>,
+        (<span class="num">100</span>, <span class="num">1</span>)
+    )
+
+    <span class="cm"># إضافة للحساب الثاني</span>
+    cursor.<span class="fn">execute</span>(
+        <span class="str">'UPDATE accounts SET balance = balance + ? WHERE id = ?'</span>,
+        (<span class="num">100</span>, <span class="num">2</span>)
+    )
+
+    <span class="cm"># تأكيد المعاملة — كل شيء أو لا شيء</span>
+    conn.<span class="fn">commit</span>()
+    <span class="bu">print</span>(<span class="str">'✅ التحويل تم بنجاح'</span>)
+
+<span class="kw">except</span> <span class="bu">Exception</span> <span class="kw">as</span> e:
+    <span class="cm"># تراجع عن كل التغييرات في حال حدوث خطأ</span>
+    conn.<span class="fn">rollback</span>()
+    <span class="bu">print</span>(<span class="str">f'❌ فشل التحويل: {e}'</span>)
+
+<span class="kw">finally</span>:
+    conn.<span class="fn">close</span>()</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>في بايثون، نبدأ معاملة بـ <code>BEGIN</code> ثم ننفذ العمليات داخل <code>try</code>. إذا نجحت كل العمليات، نستدعي <code>commit()</code> لحفظ التغييرات. إذا حدث أي خطأ، نستدعي <code>rollback()</code> في <code>except</code> للتراجع عن كل شيء. هذا يضمن أن قاعدة البيانات تبقى في حالة متسقة دائماً.</p></div>
+
+      <!-- ========== Summary ========== -->
+      <div class="summary-box">
+        <h3>📝 ملخص SQL</h3>
+        <p>في هذا الدليل تعلمت:</p>
+        <ul>
+          <li>ما هي SQL وقواعد البيانات العلائقية والجداول والصفوف والأعمدة</li>
+          <li>جلب البيانات باستخدام <span class="inline-code">SELECT</span>, <span class="inline-code">FROM</span>, <span class="inline-code">LIMIT</span>, <span class="inline-code">DISTINCT</span></li>
+          <li>تصفية البيانات بـ <span class="inline-code">WHERE</span> مع <span class="inline-code">LIKE</span>, <span class="inline-code">IN</span>, <span class="inline-code">BETWEEN</span>, <span class="inline-code">IS NULL</span></li>
+          <li>ترتيب النتائج بـ <span class="inline-code">ORDER BY ASC</span> / <span class="inline-code">DESC</span></li>
+          <li>ربط الجداول بـ <span class="inline-code">INNER JOIN</span>, <span class="inline-code">LEFT JOIN</span>, <span class="inline-code">RIGHT JOIN</span></li>
+          <li>دوال التجميع <span class="inline-code">COUNT</span>, <span class="inline-code">SUM</span>, <span class="inline-code">AVG</span>, <span class="inline-code">MIN</span>, <span class="inline-code">MAX</span> مع <span class="inline-code">GROUP BY</span> و <span class="inline-code">HAVING</span></li>
+          <li>الاستعلامات الفرعية (Subqueries) بأنواعها</li>
+          <li>Common Table Expressions (CTE) مع <span class="inline-code">WITH</span> — البسيط والمتكرر</li>
+          <li>الفهارس (Indexes) وتسريع الاستعلامات بـ <span class="inline-code">EXPLAIN ANALYZE</span></li>
+          <li>الاتصال بقواعد البيانات من بايثون باستخدام <span class="inline-code">sqlite3</span> و <span class="inline-code">psycopg2</span></li>
+          <li>المعاملات (Transactions) ومبدأ ACID — <span class="inline-code">BEGIN</span>, <span class="inline-code">COMMIT</span>, <span class="inline-code">ROLLBACK</span></li>
+        </ul>
+      </div>
+
+      <div class="note"><strong>💡 نصيحة ذهبية:</strong> تعلّم SQL استثمار رائع — هي لغة موجودة منذ 50 عاماً وستبقى لعقود. ابدأ بجداول بسيطة وانتقل تدريجياً للاستعلامات المعقدة. استخدم <code>EXPLAIN ANALYZE</code> لتحسين أداء استعلاماتك. والأهم: استخدم الاستعلامات المParametrized (<code>?</code> أو <code>%s</code>) لحماية تطبيقاتك من SQL Injection.</div>
+
+      <div class="warning"><strong>⚠️ خطأ شائع:</strong> نسيان <code>WHERE</code> مع <code>UPDATE</code> أو <code>DELETE</code> — هذا سيُعدّل أو يحذف كل الصفوف في الجدول! دائماً تأكد من وجود شرط <code>WHERE</code> قبل تنفيذ هذه الأوامر. أيضاً، لا تنسَ استدعاء <code>commit()</code> بعد التعديلات — وإلا ستفقد تغييراتك عند إغلاق الاتصال.</div>
+
+      <div class="exercise"><strong>🏋️ تمرين:</strong> أنشئ قاعدة بيانات SQLite للمكتبة تحتوي على جدولين: <code>books</code> (id, title, author_id, year, price) و <code>authors</code> (id, name, country). اكتب استعلامات: (1) كل الكتب مع اسم المؤلف باستخدام JOIN. (2) المؤلفون الذين لديهم أكثر من كتاب مع COUNT. (3) أغلى كتاب لكل مؤلف مع MAX. (4) CTE يعرض الكتب التي صدرت بعد 2000 مع اسم المؤلف.</div>
+
+      <div class="footer">
+        <p>دورة بايثون المكثفة - دليل SQL لقواعد البيانات العلائقية</p>
+        <p style="margin-top:5px;">جميع أمثلة SQL قابلة للتشغيل على SQLite و PostgreSQL</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+    }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

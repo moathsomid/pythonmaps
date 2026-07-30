@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الملاحق - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">📎 الملاحق</span>
+      <h1>الملاحق</h1>
+      <p>ملاحق إضافية لمساعدتك في إعداد بيئة العمل والحصول على المساعدة أثناء رحلتك مع بايثون</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <!-- ============================================ -->
+      <!-- APPENDIX A -->
+      <!-- ============================================ -->
+      <h2 class="section-title">الملحق أ: تثبيت بايثون على أنظمة التشغيل المختلفة</h2>
+
+      <p>قبل أن تبدأ رحلتك مع بايثون، تحتاج إلى تثبيتها على جهازك. في هذا الملحق، سنشرح كيفية تثبيت بايثون على أنظمة التشغيل الرئيسية الثلاثة: Windows و macOS و Linux.</p>
+
+      <div class="note">
+        <strong>ملاحظة:</strong> بايثون 3 هي الإصدار المستخدم في هذا الكتاب. تأكد من تثبيت الإصدار 3.6 أو أحدث. لم تعد بايثون 2 مدعومة منذ يناير 2020.
+      </div>
+
+      <h3 class="subsection-title">تثبيت بايثون على Windows</h3>
+
+      <p>تثبيت بايثون على Windows عملية بسيطة. اتبع الخطوات التالية:</p>
+
+      <ol>
+        <li>اذهب إلى الموقع الرسمي <a href="https://python.org" target="_blank">python.org</a>.</li>
+        <li>حمل أحدث إصدار من بايثون 3 (ستجد زر تحميل أصفر في الصفحة الرئيسية).</li>
+        <li>شغّل ملف التثبيت <span class="inline-code">.exe</span> الذي حملته.</li>
+        <li><strong>مهم جداً:</strong> حدد الخيار <strong>"Add Python to PATH"</strong> في أسفل نافذة المثبت قبل النقر على "Install Now". هذا يسمح لك بتشغيل بايثون من سطر الأوامر.</li>
+        <li>انقر على "Install Now" واتبع التعليمات.</li>
+        <li>بعد اكتمال التثبيت، افتح موجه الأوامر (Command Prompt) واكتب <span class="inline-code">python --version</span> لتأكيد التثبيت.</li>
+      </ol>
+
+      <div class="code-block"><span class="bu">C:\Users\YourName&gt;</span> python --version
+<span class="bu">Python 3.12.0</span></div>
+
+      <h3 class="subsection-title">تثبيت بايثون على macOS</h3>
+
+      <p>نظام macOS يأتي مع بايثون 2 مثبتة مسبقاً، لكننا نحتاج بايثون 3. هناك طريقتان للتثبيت:</p>
+
+      <p><strong>الطريقة الأولى: استخدام المثبت الرسمي</strong></p>
+      <ol>
+        <li>اذهب إلى <a href="https://python.org" target="_blank">python.org</a> وحمل مثبت macOS.</li>
+        <li>شغّل ملف <span class="inline-code">.pkg</span> واتبع التعليمات.</li>
+        <li>بعد التثبيت، افتح Terminal واكتب <span class="inline-code">python3 --version</span>.</li>
+      </ol>
+
+      <p><strong>الطريقة الثانية: استخدام Homebrew (موصى بها للمطورين)</strong></p>
+      <ol>
+        <li>شغّل Terminal.</li>
+        <li>إذا لم يكن Homebrew مثبتاً، ثبته بتشغيل الأمر التالي:
+          <div class="code-block">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</div>
+        </li>
+        <li>ثم ثبّت بايثون باستخدام الأمر:
+          <div class="code-block">brew install python3</div>
+        </li>
+        <li>تأكد من التثبيت:
+          <div class="code-block">python3 --version</div>
+        </li>
+      </ol>
+
+      <div class="note">
+        <strong>ملاحظة:</strong> على macOS، قد تحتاج إلى كتابة <span class="inline-code">python3</span> بدلاً من <span class="inline-code">python</span> لتشغيل بايثون 3. وبالمثل، استخدم <span class="inline-code">pip3</span> بدلاً من <span class="inline-code">pip</span>.
+      </div>
+
+      <h3 class="subsection-title">تثبيت بايثون على Linux</h3>
+
+      <p>معظم توزيعات Linux تأتي مع بايثون 3 مثبتة مسبقاً. يمكنك التحقق عن طريق تشغيل:</p>
+
+      <div class="code-block">python3 --version</div>
+
+      <p>إذا لم يكن بايثون 3 مثبتاً، استخدم مدير الحزم الخاص بتوزيعتك:</p>
+
+      <p><strong>Ubuntu / Debian:</strong></p>
+      <div class="code-block">sudo apt update
+sudo apt install python3 python3-pip python3-venv</div>
+
+      <p><strong>Fedora:</strong></p>
+      <div class="code-block">sudo dnf install python3 python3-pip</div>
+
+      <p><strong>Arch Linux:</strong></p>
+      <div class="code-block">sudo pacman -S python python-pip</div>
+
+      <h3 class="subsection-title">تثبيت pip و venv</h3>
+
+      <p><span class="inline-code">pip</span> هو مدير حزم بايثون، و <span class="inline-code">venv</span> هو أداة لإنشاء بيئات افتراضية. معظم مثبتات بايثون الحديثة تتضمنهما تلقائياً.</p>
+
+      <p>للتحقق من تثبيت pip:</p>
+      <div class="code-block">pip --version     <span class="cm"># Windows</span>
+pip3 --version    <span class="cm"># macOS / Linux</span></div>
+
+      <p>لإنشاء بيئة افتراضية وتفعيلها:</p>
+      <div class="code-block"><span class="cm"># إنشاء البيئة الافتراضية</span>
+python -m venv myenv
+
+<span class="cm"># تفعيلها على Windows</span>
+myenv\Scripts\activate
+
+<span class="cm"># تفعيلها على macOS / Linux</span>
+source myenv/bin/activate</div>
+
+      <h3 class="subsection-title">تشغيل بايثون لأول مرة</h3>
+
+      <p>بعد تثبيت بايثون، يمكنك تشغيل أول برنامج لك بطريقتين:</p>
+
+      <p><strong>1. الوضع التفاعلي (Interactive Shell):</strong> اكتب <span class="inline-code">python</span> (أو <span class="inline-code">python3</span>) في سطر الأوامر:</p>
+      <div class="code-block"><span class="bu">$</span> python
+<span class="bu">Python 3.12.0</span> (default, Oct 16 2023, 12:00:00)
+[GCC 11.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+&gt;&gt;&gt; print("Hello, World!")
+Hello, World!
+&gt;&gt;&gt; exit()</div>
+
+      <p><strong>2. تشغيل ملف بايثون:</strong> أنشئ ملفاً باسم <span class="inline-code">hello.py</span> بالمحتوى التالي:</p>
+      <div class="code-block">print("Hello, World!")</div>
+      <p>ثم شغّله:</p>
+      <div class="code-block">python hello.py</div>
+
+      <div class="summary-box">
+        <h3>خلاصة الملحق أ</h3>
+        <ul>
+          <li>حمل بايثون من <a href="https://python.org" target="_blank">python.org</a> أو استخدم مدير الحزم الخاص بنظامك.</li>
+          <li>تأكد من تحديد "Add Python to PATH" عند التثبيت على Windows.</li>
+          <li>استخدم <span class="inline-code">python3</span> على macOS/Linux و <span class="inline-code">python</span> على Windows.</li>
+          <li>تأكد من تثبيت pip واستخدم البيئات الافتراضية (<span class="inline-code">venv</span>) لفصل مشاريعك.</li>
+        </ul>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- APPENDIX B -->
+      <!-- ============================================ -->
+      <h2 class="section-title">الملحق ب: محررات النصوص</h2>
+
+      <p>محرر النصوص هو الأداة الأساسية التي ستستخدمها لكتابة أكواد بايثون. في هذا الملحق، سنستعرض أفضل محررات النصوص والبيئات المتكاملة (IDEs) المتاحة، مع التركيز على الخيارات المناسبة للمبتدئين والمحترفين على حد سواء.</p>
+
+      <h3 class="subsection-title">ما الذي يميز محرراً جيداً لبايثون؟</h3>
+      <p>المحرر الجيد لبايثون يجب أن يوفر:</p>
+      <ul>
+        <li><strong>تظليل الكود (Syntax Highlighting):</strong> تلوين الكلمات المفتاحية والأكواد لتسهيل القراءة.</li>
+        <li><strong>الإكمال التلقائي (Autocompletion):</strong> اقتراح أسماء الدوال والمتغيرات أثناء الكتابة.</li>
+        <li><strong>فحص الأخطاء (Linting):</strong> التنبيه إلى الأخطاء البرمجية أثناء الكتابة.</li>
+        <li><strong>تصحيح الأخطاء (Debugging):</strong> إمكانية تشغيل الكود خطوة بخطوة لاكتشاف المشاكل.</li>
+        <li><strong>إدارة المشاريع:</strong> القدرة على التعامل مع مجلدات وملفات متعددة.</li>
+      </ul>
+
+      <h3 class="subsection-title">VS Code (الخيار الموصى به للمبتدئين)</h3>
+
+      <p>Visual Studio Code هو محرر نصوص مجاني ومفتوح المصدر من Microsoft. يعتبر الخيار الأكثر شعبية لبرمجة بايثون حالياً.</p>
+
+      <p><strong>مميزاته:</strong></p>
+      <ul>
+        <li>مجاني بالكامل وخفيف الوزن.</li>
+        <li>متوفر على Windows و macOS و Linux.</li>
+        <li>مكتبة ضخمة من الإضافات (Extensions).</li>
+        <li>تكامل ممتاز مع Git والتحكم بالإصدارات.</li>
+        <li>واجهة مستخدم عربية (يمكن تغيير اللغة من لوحة الإضافات).</li>
+      </ul>
+
+      <p><strong>تثبيت VS Code:</strong></p>
+      <ol>
+        <li>اذهب إلى <a href="https://code.visualstudio.com" target="_blank">code.visualstudio.com</a>.</li>
+        <li>حمل المثبت المناسب لنظام تشغيلك.</li>
+        <li>شغّل المثبت واتبع التعليمات.</li>
+      </ol>
+
+      <p><strong>إعداد VS Code لبايثون:</strong></p>
+      <ol>
+        <li>افتح VS Code.</li>
+        <li>اضغط على أيقونة الإضافات (Extensions) في الشريط الجانبي الأيسر أو استخدم الاختصار <span class="inline-code">Ctrl+Shift+X</span>.</li>
+        <li>ابحث عن "Python" وثبّت الإضافة الرسمية من Microsoft (Python Extension Pack).</li>
+        <li>افتح ملف بايثون (<span class="inline-code">.py</span>) أو أنشئ مشروعاً جديداً.</li>
+        <li>لتشغيل الكود، اضغط على زر المثلث الأخضر (▶️) في أعلى يمين المحرر أو استخدم <span class="inline-code">Ctrl+F5</span>.</li>
+      </ol>
+
+      <div class="note">
+        <strong>ملاحظة:</strong> VS Code سيطلب منك تحديد مفسر بايثون (Python Interpreter) عند فتح أول ملف بايثون. اختر الإصدار الذي ثبته في الملحق أ.
+      </div>
+
+      <h3 class="subsection-title">PyCharm (بيئة تطوير متكاملة احترافية)</h3>
+
+      <p>PyCharm هو بيئة تطوير متكاملة (IDE) متخصصة في بايثون من شركة JetBrains. يتوفر بنسختين: مجانية (Community) ومدفوعة (Professional).</p>
+
+      <p><strong>مميزاته:</strong></p>
+      <ul>
+        <li>محرر بايثون متقدم مع إكمال ذكي للكود (Intelligent Code Completion).</li>
+        <li>مصحح أخطاء قوي جداً (Debugger).</li>
+        <li>أدوات متكاملة لاختبار الكود وتغطيته.</li>
+        <li>دعم مدمج لقواعد البيانات (في النسخة المدفوعة).</li>
+        <li>إدارة متقدمة للمشاريع والبيئات الافتراضية.</li>
+      </ul>
+
+      <p><strong>تثبيت PyCharm:</strong></p>
+      <ol>
+        <li>اذهب إلى <a href="https://jetbrains.com/pycharm" target="_blank">jetbrains.com/pycharm</a>.</li>
+        <li>حمل النسخة Community (المجانية) أو Professional (للاستخدام التجاري).</li>
+        <li>شغّل المثبت. على Windows، تأكد من تحديد الخيارات "Add to PATH" و "Create Desktop Shortcut".</li>
+      </ol>
+
+      <h3 class="subsection-title">محررات أخرى</h3>
+
+      <p><strong>Sublime Text:</strong> محرر نصوص سريع وخفيف جداً. مناسب للكتابة السريعة لكنه يتطلب إضافات لبرمجة بايثون. غير مجاني لكن يمكنك استخدام نسخته التقييمية إلى أجل غير مسمى.</p>
+
+      <p><strong>Vim / Neovim:</strong> محرر نصوص يعمل بالكامل من سطر الأوامر. منحنى تعلمه حاد لكنه يوفر إنتاجية هائلة بعد إتقانه. شائع جداً بين مطوري Linux.</p>
+
+      <p><strong>IDLE:</strong> بيئة التطوير المدمجة مع بايثون. تأتي تلقائياً مع تثبيت بايثون. بسيطة جداً ومناسبة للمبتدئين لتجربة الأكواد القصيرة.</p>
+
+      <p><strong>Thonny:</strong> IDE بسيط موجه للمبتدئين تماماً. يوضح كيفية تنفيذ الكود خطوة بخطوة بشكل مرئي. ممتاز لتعلم أساسيات البرمجة.</p>
+
+      <div class="summary-box">
+        <h3>خلاصة الملحق ب</h3>
+        <ul>
+          <li>VS Code هو الخيار الأفضل للمبتدئين وللاستخدام اليومي.</li>
+          <li>PyCharm مثالي للمشاريع الكبيرة والاحترافية.</li>
+          <li>جرب عدة محررات واختر ما يناسب أسلوب عملك.</li>
+          <li>بغض النظر عن المحرر الذي تختاره، الأهم هو فهم أساسيات لغة بايثون نفسها.</li>
+        </ul>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- APPENDIX C -->
+      <!-- ============================================ -->
+      <h2 class="section-title">الملحق ج: الحصول على المساعدة</h2>
+
+      <p>كل مبرمج يحتاج إلى المساعدة أحياناً، وهذا أمر طبيعي تماماً. في هذا الملحق، سنستعرض أفضل المصادر والطرق للحصول على المساعدة عندما تعلق في مشكلة برمجية.</p>
+
+      <h3 class="subsection-title">أولاً: حاول أن تحل المشكلة بنفسك</h3>
+
+      <p>قبل أن تطلب المساعدة من الآخرين، جرب هذه الخطوات بنفسك:</p>
+
+      <ul>
+        <li><strong>اقرأ رسالة الخطأ بعناية:</strong> بايثون تخبرك بالضبط أين وقع الخطأ ونوعه. ابحث عن اسم الخطأ (مثل <span class="inline-code">SyntaxError</span> أو <span class="inline-code">TypeError</span>) ورقم السطر.</li>
+        <li><strong>استخدم print() للتحقق:</strong> أضف جمل طباعة مؤقتة لترى قيم المتغيرات في نقاط مختلفة من البرنامج.</li>
+        <li><strong>ابحث في جوجل:</strong> اكتب رسالة الخطأ أو وصف المشكلة في جوجل بالعربية أو الإنجليزية.</li>
+        <li><strong>أعد قراءة الكود:</strong> خذ استراحة قصيرة ثم اقرأ الكود مرة أخرى. أحياناً يختفي الخطأ بمجرد إلقاء نظرة جديدة.</li>
+      </ul>
+
+      <h3 class="subsection-title">وثائق بايثون الرسمية</h3>
+
+      <p>المرجع الرسمي للغة بايثون هو أفضل مصدر للمعلومات الدقيقة والموثوقة.</p>
+
+      <ul>
+        <li><strong>الموقع الرسمي:</strong> <a href="https://docs.python.org/3/" target="_blank">docs.python.org/3/</a> - يحتوي على كل شيء: دروس تعليمية، مرجع المكتبة القياسية، ودليل تثبيت.</li>
+        <li><strong>Python Tutor:</strong> موقع تفاعلي يشرح كيفية تنفيذ كود بايثون خطوة بخطوة بشكل مرئي على <a href="https://pythontutor.com" target="_blank">pythontutor.com</a>.</li>
+        <li><strong>PEP 8:</strong> دليل أسلوب كتابة كود بايثون. مفيد جداً لتعلم كتابة كود نظيف وقابل للقراءة.</li>
+      </ul>
+
+      <h3 class="subsection-title">مجتمعات بايثون العربية والعالمية</h3>
+
+      <p><strong>المجتمعات العربية:</strong></p>
+      <ul>
+        <li><strong>مجموعات فيسبوك:</strong> مجموعات مثل "بايثون بالعربي" و"مبرمجي بايثون العرب" تقدم دعماً ممتازاً باللغة العربية.</li>
+        <li><strong>منصة أكاديمية الزيرو:</strong> محتوى عربي متميز في تعليم البرمجة بلغة بايثون.</li>
+        <li><strong>تليجرام:</strong> قنوات ومجموعات بايثون عربية متعددة.</li>
+        <li><strong>منصة طاسك:</strong> محتوى عربي متخصص في البرمجة وتعلم الآلة.</li>
+      </ul>
+
+      <p><strong>المجتمعات العالمية:</strong></p>
+      <ul>
+        <li><strong>Stack Overflow:</strong> أكبر موقع للأسئلة والأجوبة البرمجية في العالم. ابحث عن مشكلتك أولاً، وإذا لم تجد حلاً، اطرح سؤالاً واضحاً مع تضمين الكود ورسالة الخطأ.</li>
+        <li><strong>Reddit:</strong> مجتمع <span class="inline-code">r/learnpython</span> مخصص للمبتدئين في بايثون. مجتمع ودود ومفيد جداً.</li>
+        <li><strong>Python.org Community:</strong> قوائم بريدية ومنتديات رسمية لمستخدمي بايثون.</li>
+        <li><strong>Discord / Slack:</strong> خوادم متخصصة في بايثون حيث يمكنك الحصول على مساعدة فورية.</li>
+      </ul>
+
+      <h3 class="subsection-title">كيف تطرح سؤالاً برمجياً بشكل صحيح</h3>
+
+      <p>طرح سؤال جيد هو مهارة بحد ذاتها. اتبع هذه الإرشادات للحصول على إجابات مفيدة:</p>
+
+      <ol>
+        <li><strong>ابحث أولاً:</strong> تأكد من أن سؤالك لم يُطرح ويُجاب عنه من قبل.</li>
+        <li><strong>كن محدداً:</strong> بدلاً من "الكود لا يعمل"، قل: "عند تشغيل الحلقة for، تظهر رسالة IndexError: list index out of range".</li>
+        <li><strong>ضَمّن الكود ورسالة الخطأ:</strong> انسخ الكود الذي يسبب المشكلة ورسالة الخطأ الكاملة.</li>
+        <li><strong>اشرح ما جربته:</strong> أخبر الآخرين بالخطوات التي قمت بها لحل المشكلة.</li>
+        <li><strong>استخدم Minimal Reproducible Example:</strong> اختصر الكود إلى أصغر جزء يسبب المشكلة.</li>
+        <li><strong>التنسيق مهم:</strong> استخدم تنسيق الكود في المنتديات ليسهل قراءة الأكواد.</li>
+      </ol>
+
+      <div class="note">
+        <strong>نصيحة ذهبية:</strong> اقرأ مساعدة بايثون المدمجة! اكتب <span class="inline-code">help(اسم_الدالة)</span> في الوضع التفاعلي للحصول على شرح لأي دالة أو وحدة. مثال: <span class="inline-code">help(print)</span> أو <span class="inline-code">help(list.append)</span>.
+      </div>
+
+      <h3 class="subsection-title">أدوات المساعدة المدمجة في بايثون</h3>
+
+      <p>بايثون توفر أدوات مساعدة قوية مدمجة في اللغة نفسها:</p>
+
+      <ul>
+        <li><span class="inline-code">help()</span>: شرح تفاعلي لأي دالة أو وحدة.</li>
+        <li><span class="inline-code">dir()</span>: عرض جميع الخصائص والدوال المتاحة لكائن معين.</li>
+        <li><span class="inline-code">type()</span>: معرفة نوع أي قيمة أو متغير.</li>
+        <li><span class="inline-code">__doc__</span>: عرض سلسلة التوثيق (docstring) لأي دالة.</li>
+      </ul>
+
+      <div class="summary-box">
+        <h3>خلاصة الملحق ج</h3>
+        <ul>
+          <li>حاول حل المشكلة بنفسك أولاً بقراءة رسالة الخطأ واستخدام print().</li>
+          <li>استخدم <a href="https://docs.python.org/3/" target="_blank">docs.python.org</a> كمرجع أساسي.</li>
+          <li>انضم إلى مجتمعات بايثون العربية والعالمية للاستفادة من خبرات الآخرين.</li>
+          <li>اطرح أسئلتك بشكل واضح ومنظم مع تضمين الكود ورسالة الخطأ.</li>
+          <li>تذكر قول اريك ماتيس: "كل مبرمج محترف كان مبتدئاً في يوم من الأيام. لا تتردد في طلب المساعدة."</li>
+        </ul>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- APPENDIX D -->
+      <!-- ============================================ -->
+      <h2 class="section-title">الملحق د: استخدام Git للتحكم بالإصدارات</h2>
+
+      <p>Git هو نظام التحكم بالإصدارات (Version Control System) الأكثر استخداماً في عالم البرمجة. يتيح لك تتبع التغييرات في الكود الخاص بك، والعودة إلى إصدارات سابقة، والتعاون مع الآخرين على نفس المشروع. في هذا الملحق، سنتعلم أساسيات Git.</p>
+
+      <h3 class="subsection-title">ما هو التحكم بالإصدارات ولماذا هو مهم؟</h3>
+
+      <p>تخيل أنك تعمل على مشروع بايثون وتريد تجربة فكرة جديدة. ماذا لو أفسدت الكود؟ بدون Git، ستضطر إلى نسخ الملفات يدوياً قبل كل تعديل (مثل <span class="inline-code">project_final_v3_actually_final.py</span>). Git يحل هذه المشكلة تماماً.</p>
+
+      <p>فوائد Git:</p>
+      <ul>
+        <li>تتبع كل تغيير تجريه على الكود مع إمكانية الرجوع لأي إصدار سابق.</li>
+        <li>العمل على فروع (Branches) مختلفة لتجربة أفكار جديدة دون التأثير على الكود الرئيسي.</li>
+        <li>التعاون مع فريق بسلاسة عبر دمج التغييرات.</li>
+        <li>نسخ احتياطي للمشروع على خدمات مثل GitHub و GitLab.</li>
+        <li>توثيق تطور المشروع عبر رسائل الالتزام (Commit Messages).</li>
+      </ul>
+
+      <h3 class="subsection-title">تثبيت Git</h3>
+
+      <p><strong>Windows:</strong></p>
+      <ol>
+        <li>اذهب إلى <a href="https://git-scm.com" target="_blank">git-scm.com</a> وحمل المثبت.</li>
+        <li>شغّل المثبت. يمكنك ترك الخيارات الافتراضية في معظم الخطوات.</li>
+        <li>اختر "Git from the command line and also from 3rd-party software" عند ظهور الخيار.</li>
+        <li>بعد التثبيت، افتح Git Bash أو موجه الأوامر واكتب <span class="inline-code">git --version</span> للتأكيد.</li>
+      </ol>
+
+      <p><strong>macOS:</strong></p>
+      <div class="code-block"><span class="cm"># باستخدام Homebrew</span>
+brew install git
+
+<span class="cm"># أو التثبيت عبر Xcode Command Line Tools</span>
+xcode-select --install</div>
+
+      <p><strong>Linux (Ubuntu/Debian):</strong></p>
+      <div class="code-block">sudo apt update
+sudo apt install git</div>
+
+      <h3 class="subsection-title">إعداد Git لأول مرة</h3>
+
+      <p>قبل البدء، قم بتعريف اسمك وبريدك الإلكتروني. هذه المعلومات ستظهر في كل التزام (Commit) تقوم به:</p>
+
+      <div class="code-block">git config --global user.name "اسمك"
+git config --global user.email "بريدك@example.com"</div>
+
+      <p>للتحقق من الإعدادات:</p>
+      <div class="code-block">git config --list</div>
+
+      <h3 class="subsection-title">أوامر Git الأساسية</h3>
+
+      <p>سنستعرض الآن أهم أوامر Git التي ستحتاجها يومياً. لننشئ مشروعاً تجريبياً لتطبيق ما نتعلمه:</p>
+
+      <p><strong>1. إنشاء مستودع (Repository):</strong></p>
+      <div class="code-block"><span class="cm"># أنشئ مجلداً جديداً وادخل إليه</span>
+mkdir my_python_project
+cd my_python_project
+
+<span class="cm"># أنشئ مستودع Git جديد</span>
+git init</div>
+
+      <p><strong>2. إنشاء ملف وإضافة محتوى:</strong></p>
+      <div class="code-block"><span class="cm"># أنشئ ملف hello.py</span>
+echo 'print("Hello, Git!")' > hello.py
+
+<span class="cm"># تحقق من حالة المستودع</span>
+git status</div>
+
+      <p><strong>3. إضافة الملفات إلى منطقة التجهيز (Staging Area):</strong></p>
+      <div class="code-block"><span class="cm"># أضف ملفاً واحداً</span>
+git add hello.py
+
+<span class="cm"># أو أضف جميع الملفات</span>
+git add .</div>
+
+      <p><strong>4. الالتزام بالتغييرات (Commit):</strong></p>
+      <div class="code-block">git commit -m "إضافة ملف hello.py الأول"</div>
+
+      <div class="note">
+        <strong>نصيحة:</strong> اكتب رسائل commit واضحة ومفيدة. تخيل أنك تقرأ هذه الرسالة بعد 6 أشهر، هل ستفهم ما الذي تغير؟ استخدم العربية أو الإنجليزية، المهم أن تكون واضحة.
+      </div>
+
+      <p><strong>5. عرض تاريخ الالتزامات:</strong></p>
+      <div class="code-block">git log
+
+<span class="cm"># عرض بشكل مختصر</span>
+git log --oneline</div>
+
+      <p><strong>6. مقارنة التغييرات:</strong></p>
+      <div class="code-block"><span class="cm"># التغييرات غير المضافة</span>
+git diff
+
+<span class="cm"># الفرق بين آخر commit والملفات الحالية</span>
+git diff HEAD</div>
+
+      <h3 class="subsection-title">الفروع (Branches)</h3>
+
+      <p>الفروع تسمح لك بالعمل على ميزات جديدة بشكل منعزل عن الكود الرئيسي. الفرع الرئيسي يسمى <span class="inline-code">main</span> (أو <span class="inline-code">master</span> في الإصدارات القديمة).</p>
+
+      <div class="code-block"><span class="cm"># اعرض كل الفروع</span>
+git branch
+
+<span class="cm"># أنشئ فرعاً جديداً</span>
+git branch new-feature
+
+<span class="cm"># انتقل إلى فرع آخر</span>
+git checkout new-feature
+
+<span class="cm"># أنشئ وانتقل إلى فرع جديد مباشرة (اختصار للخطوتين السابقتين)</span>
+git checkout -b new-feature</div>
+
+      <p>بعد إجراء تغييرات في الفرع الجديد، يمكنك دمجها مع الفرع الرئيسي:</p>
+      <div class="code-block"><span class="cm"># عد إلى الفرع الرئيسي</span>
+git checkout main
+
+<span class="cm"># ادمج الفرع الجديد مع الرئيسي</span>
+git merge new-feature</div>
+
+      <h3 class="subsection-title">GitHub والتواصل مع المستودعات البعيدة</h3>
+
+      <p>GitHub هي خدمة استضافة لمستودعات Git على الإنترنت. تتيح لك نسخ مشروعك احتياطياً ومشاركته مع الآخرين.</p>
+
+      <p><strong>ربط مشروعك المحلي بـ GitHub:</strong></p>
+      <ol>
+        <li>أنشئ حساباً على <a href="https://github.com" target="_blank">github.com</a>.</li>
+        <li>اضغط على زر "+" في أعلى اليمين ثم "New repository".</li>
+        <li>سمِّ المستودع (مثلاً <span class="inline-code">my-python-project</span>) واترك الخيارات الافتراضية.</li>
+        <li>في صفحة المستودع الجديد، ستجد أوامر لربطه بمشروعك المحلي. الأهم هو:
+          <div class="code-block">git remote add origin https://github.com/اسمك/my-python-project.git
+git push -u origin main</div>
+        </li>
+      </ol>
+
+      <p><strong>الأوامر الأساسية للتعامل مع المستودع البعيد:</strong></p>
+      <div class="code-block"><span class="cm"># رفع التغييرات المحلية إلى GitHub</span>
+git push
+
+<span class="cm"># جلب آخر التغييرات من GitHub</span>
+git pull
+
+<span class="cm"># نسخ (Clone) مستودع من GitHub إلى جهازك</span>
+git clone https://github.com/اسم_المستخدم/اسم_المشروع.git</div>
+
+      <h3 class="subsection-title">ممارسات مهمة في Git</h3>
+
+      <ul>
+        <li><strong>قم بالـ commit بانتظام:</strong> بعد كل خطوة صغيرة ناجحة، قم بعمل commit. هذا يجعل العودة إلى إصدار سابق أسهل.</li>
+        <li><strong>اكتب رسائل commit وصفية:</strong> "تم إصلاح خطأ القسمة على صفر" أفضل من "تحديث".</li>
+        <li><strong>استخدم <span class="inline-code">.gitignore</span>:</strong> أنشئ ملف <span class="inline-code">.gitignore</span> في مجلد المشروع لتجاهل الملفات التي لا تريد تتبعها (مثل <span class="inline-code">__pycache__/</span> و <span class="inline-code">.env</span> و <span class="inline-code">venv/</span>).</li>
+        <li><strong>لا ترفع الملفات الكبيرة أو الحساسة:</strong> لا تضع كلمات السر أو المفاتيح الخاصة في المستودع.</li>
+        <li><strong>اسحب التغييرات (pull) قبل الدفع (push):</strong> دائماً اسحب أحدث التغييرات من المستودع البعيد قبل رفع تغييراتك لتجنب التعارضات.</li>
+      </ul>
+
+      <div class="code-block"><span class="cm"># نموذج ملف .gitignore لمشروع بايثون</span>
+__pycache__/
+*.py[cod]
+*.so
+.env
+venv/
+.vscode/
+.idea/
+*.db</div>
+
+      <div class="warning">
+        <strong>تحذير:</strong> إذا تعارضت التغييرات (Merge Conflict)، لا تقلق! هذا أمر طبيعي. اقرأ رسالة الخطأ، افتح الملف، وستجد أقساماً محددة بعلامات <span class="inline-code">&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span> و <span class="inline-code">=======</span> و <span class="inline-code">&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span>. اختر التغيير الصحيح واحذف العلامات، ثم قم بـ commit مرة أخرى.
+      </div>
+
+      <div class="summary-box">
+        <h3>خلاصة الملحق د</h3>
+        <ul>
+          <li>Git يتتبع تغييرات الكود ويتيح لك الرجوع لأي إصدار سابق.</li>
+          <li>الأوامر الأساسية: <span class="inline-code">git init</span>، <span class="inline-code">git add</span>، <span class="inline-code">git commit</span>، <span class="inline-code">git push</span>، <span class="inline-code">git pull</span>.</li>
+          <li>الفروع تسمح بالعمل على ميزات متعددة بشكل مستقل.</li>
+          <li>GitHub يخزن مستودعاتك على الإنترنت ويتيح التعاون مع الآخرين.</li>
+          <li>استخدم <span class="inline-code">.gitignore</span> واكتب رسائل commit واضحة.</li>
+          <li>التعارضات طبيعية وقابلة للحل بسهولة.</li>
+        </ul>
+      </div>
+
+      <div class="note">
+        <strong>ختاماً:</strong> هذه الملاحق صممت لمساعدتك على البدء. كلما تقدمت في رحلتك مع بايثون، ستجد أن هذه الأدوات تصبح جزءاً طبيعياً من سير عملك. تذكر أن التعلم المستمر والممارسة هما مفتاح الإتقان. وفقك الله في رحلتك البرمجية!
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+      <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+    }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

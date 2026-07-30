@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الفصل 3: مقدمة إلى القوائم - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+
+  .sidebar-header h1 {
+    font-size: 20px;
+    color: #fff;
+    margin-bottom: 5px;
+  }
+
+  .sidebar-header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link {
+    padding-right: 35px;
+    font-size: 13px;
+  }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+
+  .main-content {
+    margin-right: 0;
+    flex: 1;
+    padding: 0;
+    min-height: 100vh;
+    transition: margin-right 0.3s ease;
+  }
+  body.sidebar-active .main-content { margin-right: 320px; }
+
+  .chapter-page { padding: 0; }
+
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+
+  .chapter-content p {
+    margin-bottom: 15px;
+    font-size: 16px;
+  }
+
+  .chapter-content ul, .chapter-content ol {
+    margin: 10px 0 15px 35px;
+  }
+
+  .chapter-content li {
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+
+  .note strong { color: var(--primary); }
+
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+
+  .exercise strong { color: #4ade80; }
+
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+
+  .summary-box h3 {
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+
+  .summary-box ul { margin: 0; }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  @media (max-width: 767px) {
+    .sidebar {
+      transform: translateX(320px);
+      width: 280px;
+    }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .hero { padding: 40px 25px; }
+    .hero h1 { font-size: 28px; }
+    .container { padding: 20px; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+    .chapter-grid { grid-template-columns: 1fr; }
+  }
+
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb:hover { background: #555; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">📘 الجزء الأول: الأساسيات</span>
+      <h1>3. مقدمة إلى القوائم</h1>
+      <p>في هذا الفصل، سنتعرف على القوائم — أقوى هيكل بيانات في بايثون — وكيفية الوصول إلى عناصرها وتعديلها وتنظيمها</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>في هذا الفصل، سنتعرف على <strong>القوائم (Lists)</strong> — وهي من أقوى وأكثر هياكل البيانات استخداماً في بايثون. القائمة هي مجموعة من العناصر المرتبة التي يمكنك التعامل معها بسهولة. سواء كنت تتعامل مع أسماء المستخدمين، نتائج اللعبة، أو نقاط الإحداثيات، القوائم ستكون صديقك المفضل.</p>
+
+      <h2 class="section-title">3.1 ما هي القائمة؟</h2>
+      <p>القائمة (list) هي مجموعة من العناصر المرتبة. في بايثون، نكتب القائمة بوضع العناصر بين قوسين معقوفين <span class="inline-code">[]</span> ونفصل بينها بفواصل:</p>
+      <div class="code-block">
+bicycles = [<span class="str">"trek"</span>, <span class="str">"cannondale"</span>, <span class="str">"redline"</span>, <span class="str">"specialized"</span>]
+<span class="bu">print</span>(bicycles)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>في هذا المثال، ننشئ قائمة باسم <code>bicycles</code> تحتوي على أربع سلاسل نصية تمثل أسماء دراجات هوائية. القائمة تُكتب بين قوسين معقوفين <code>[]</code> وتفصل عناصرها بفواصل. ثم نستخدم الدالة <code>print()</code> لطباعة القائمة كاملة، حيث ستظهر بايثون القائمة بشكلها الكامل مع الأقواس والفواصل بين العناصر — وهو تنسيق بايثون الافتراضي لعرض القوائم.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+[<span class="str">'trek'</span>, <span class="str">'cannondale'</span>, <span class="str">'redline'</span>, <span class="str">'specialized'</span>]
+      </div>
+      <p>لاحظ أن بايثون يطبع القائمة بشكل كامل — مع الأقواس والفواصل. لكن في التطبيقات العملية، سنحتاج للوصول إلى عناصر محددة من القائمة.</p>
+
+      <div class="note"><strong>ملاحظة:</strong> يمكن للقائمة أن تحتوي على أي نوع من البيانات، ويمكن أن تحتوي على أنواع مختلفة في نفس القائمة. لكن من الأفضل أن تحتوي القائمة على عناصر من نفس النوع لتسهيل التعامل معها.</div>
+
+      <h2 class="section-title">3.2 الوصول إلى عناصر القائمة</h2>
+      <p>للوصول إلى عنصر معين في القائمة، نستخدم <strong>الرقم الترتيبي (Index)</strong> للعنصر. الرقم الترتيبي يوضع بين قوسين معقوفين بعد اسم القائمة.</p>
+
+      <h3 class="subsection-title">3.2.1 الترقيم يبدأ من 0</h3>
+      <p>أحد أهم الأشياء التي يجب تذكرها: في بايثون (وفي معظم لغات البرمجة)، الترقيم يبدأ من 0 وليس من 1:</p>
+      <div class="code-block">
+bicycles = [<span class="str">"trek"</span>, <span class="str">"cannondale"</span>, <span class="str">"redline"</span>, <span class="str">"specialized"</span>]
+<span class="bu">print</span>(bicycles[<span class="num">0</span>])   <span class="cm"># العنصر الأول: trek</span>
+<span class="bu">print</span>(bicycles[<span class="num">1</span>])   <span class="cm"># العنصر الثاني: cannondale</span>
+<span class="bu">print</span>(bicycles[<span class="num">3</span>])   <span class="cm"># العنصر الرابع: specialized</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>نصل إلى عناصر القائمة باستخدام الرقم الترتيبي (index) بين قوسين معقوفين. الرقم <code>0</code> يشير إلى العنصر الأول "trek"، والرقم <code>1</code> إلى العنصر الثاني "cannondale"، والرقم <code>3</code> إلى العنصر الرابع "specialized". تذكّر أن الترقيم في بايثون يبدأ من 0 وليس من 1، وهذا من أهم المفاهيم الأساسية التي يجب استيعابها جيداً لأنها تؤثر على كل تعاملاتك مع القوائم والمصفوفات.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+trek
+cannondale
+specialized
+      </div>
+      <p>لذلك، للوصول إلى العنصر <strong>الأول</strong> نستخدم <span class="inline-code">[0]</span>، وإلى العنصر <strong>الثاني</strong> نستخدم <span class="inline-code">[1]</span>، وهكذا.</p>
+
+      <h3 class="subsection-title">3.2.2 استخدام الدوال مع عناصر القائمة</h3>
+      <p>يمكنك استخدام أي دالة من دوال السلاسل النصية على عناصر القائمة (إذا كانت من نوع نصي):</p>
+      <div class="code-block">
+bicycles = [<span class="str">"trek"</span>, <span class="str">"cannondale"</span>, <span class="str">"redline"</span>, <span class="str">"specialized"</span>]
+message = <span class="str">"My first bicycle was a "</span> + bicycles[<span class="num">0</span>].<span class="fn">title</span>() + <span class="str">"."</span>
+<span class="bu">print</span>(message)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>نستخدم دالة السلاسل النصية <code>title()</code> على عنصر من القائمة مباشرةً. نصل إلى العنصر الأول <code>bicycles[0]</code> وهو "trek"، ثم نطبق عليه <code>.title()</code> لتحويل أول حرف إلى كبير فتصبح "Trek". الناتج النهائي هو جملة كاملة "My first bicycle was a Trek." يتم تكوينها بدمج النصوص مع بعضها باستخدام عامل الجمع <code>+</code>، مما يوضح كيف يمكن دمج محتويات القائمة داخل نصوص مخصصة.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+My first bicycle was a Trek.
+      </div>
+      <p>لاحظ كيف استخدمنا <span class="inline-code">bicycles[0].title()</span> — هذا يأخذ العنصر الأول من القائمة ويطبق عليه الدالة <span class="inline-code">title()</span>.</p>
+
+      <h3 class="subsection-title">3.2.3 الترقيم السالب (Negative Indexing)</h3>
+      <p>بايثون تدعم الترقيم السالب، حيث أن <span class="inline-code">-1</span> يشير إلى <strong>آخر</strong> عنصر في القائمة، <span class="inline-code">-2</span> إلى العنصر قبل الأخير، وهكذا:</p>
+      <div class="code-block">
+bicycles = [<span class="str">"trek"</span>, <span class="str">"cannondale"</span>, <span class="str">"redline"</span>, <span class="str">"specialized"</span>]
+<span class="bu">print</span>(bicycles[<span class="op">-</span><span class="num">1</span>])   <span class="cm"># specialized</span>
+<span class="bu">print</span>(bicycles[<span class="op">-</span><span class="num">2</span>])   <span class="cm"># redline</span>
+<span class="bu">print</span>(bicycles[<span class="op">-</span><span class="num">3</span>])   <span class="cm"># cannondale</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>بايثون تدعم الترقيم السالب للوصول إلى العناصر من نهاية القائمة. الرقم <code>1-</code> يشير إلى آخر عنصر "specialized"، و <code>2-</code> إلى قبل الأخير "redline"، و <code>3-</code> إلى العنصر الثالث من النهاية "cannondale". هذه الميزة مفيدة جداً عندما نريد الوصول إلى عناصر قرب النهاية دون معرفة طول القائمة، خاصة في القوائم الطويلة أو المتغيرة الطول — فلا حاجة لحساب <code>len(list) - 1</code> في كل مرة.</p>
+      </div>
+
+      <p>هذا مفيد جداً عندما تريد الوصول إلى العناصر من نهاية القائمة دون معرفة طولها.</p>
+
+      <h2 class="section-title">3.3 تعديل وإضافة وإزالة العناصر</h2>
+      <p>القوائم في بايثون <strong>قابلة للتعديل (mutable)</strong> — يمكنك تغيير محتوياتها بعد إنشائها.</p>
+
+      <h3 class="subsection-title">3.3.1 تعديل عنصر</h3>
+      <p>لتعديل عنصر، أشر إليه بالرقم الترتيبي وأسند إليه قيمة جديدة:</p>
+      <div class="code-block">
+motorcycles = [<span class="str">"honda"</span>, <span class="str">"yamaha"</span>, <span class="str">"suzuki"</span>]
+<span class="bu">print</span>(motorcycles)
+
+motorcycles[<span class="num">0</span>] = <span class="str">"ducati"</span>
+<span class="bu">print</span>(motorcycles)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>نبدأ بإنشاء قائمة <code>motorcycles</code> ثم نعدّل العنصر الأول عن طريق إسناد قيمة جديدة <code>"ducati"</code> إلى الرقم الترتيبي <code>0</code>. القوائم في بايثون قابلة للتعديل (mutable)، مما يعني أننا نستطيع تغيير محتوياتها بعد إنشائها. الطباعة الأولى تُظهر القائمة الأصلية، والثانية تُظهر القائمة بعد التعديل حيث استُبدلت "honda" بـ "ducati" — لاحظ أن بقية العناصر لم تتأثر.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+[<span class="str">'honda'</span>, <span class="str">'yamaha'</span>, <span class="str">'suzuki'</span>]
+[<span class="str">'ducati'</span>, <span class="str">'yamaha'</span>, <span class="str">'suzuki'</span>]
+      </div>
+      <p>استبدلنا "honda" بـ "ducati" في الرقم الترتيبي 0.</p>
+
+      <h3 class="subsection-title">3.3.2 إضافة عناصر — الدالة append()</h3>
+      <p>لإضافة عنصر <strong>في نهاية</strong> القائمة، استخدم الدالة <span class="inline-code">append()</span>:</p>
+      <div class="code-block">
+motorcycles = [<span class="str">"honda"</span>, <span class="str">"yamaha"</span>, <span class="str">"suzuki"</span>]
+motorcycles.<span class="fn">append</span>(<span class="str">"ducati"</span>)
+<span class="bu">print</span>(motorcycles)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الدالة <code>append()</code> تُضيف عنصراً جديداً في نهاية القائمة. هنا نضيف السلسلة <code>"ducati"</code> إلى قائمة <code>motorcycles</code> التي تحتوي على ثلاثة عناصر، فتصبح القائمة من أربعة عناصر. من مميزات <code>append()</code> أنها تعدّل القائمة الأصلية مباشرة (in-place) ولا تُرجع قائمة جديدة، لذا نلاحظ التغيير فوراً عند طباعتها. هذه الطريقة مثالية عندما تريد بناء قائمة تدريجياً دون معرفة عدد العناصر مسبقاً.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+[<span class="str">'honda'</span>, <span class="str">'yamaha'</span>, <span class="str">'suzuki'</span>, <span class="str">'ducati'</span>]
+      </div>
+      <p>الدالة <span class="inline-code">append()</span> مفيدة جداً لبناء القوائم ديناميكياً. يمكنك البدء بقائمة فارغة ثم إضافة العناصر إليها واحدة تلو الأخرى:</p>
+      <div class="code-block">
+motorcycles = []
+motorcycles.<span class="fn">append</span>(<span class="str">"honda"</span>)
+motorcycles.<span class="fn">append</span>(<span class="str">"yamaha"</span>)
+motorcycles.<span class="fn">append</span>(<span class="str">"suzuki"</span>)
+<span class="bu">print</span>(motorcycles)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا مثال على بناء القوائم ديناميكياً باستخدام <code>append()</code>. نبدأ بقائمة فارغة <code>[]</code>، ثم نضيف عنصراً تلو الآخر باستخدام <code>append()</code>. هذه الطريقة شائعة جداً في البرمجة العملية، خاصة عندما لا نعرف مسبقاً عدد العناصر التي سنحتاجها — مثلاً عند قراءة بيانات من ملف أو من مدخلات المستخدم. كل استدعاء لـ <code>append()</code> يُضيف العنصر في نهاية القائمة.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+[<span class="str">'honda'</span>, <span class="str">'yamaha'</span>, <span class="str">'suzuki'</span>]
+      </div>
+
+      <h3 class="subsection-title">3.3.3 إضافة عنصر في موقع معين — الدالة insert()</h3>
+      <p>إذا أردت إضافة عنصر في موقع معين (وليس في النهاية)، استخدم <span class="inline-code">insert()</span>. تأخذ هذه الدالة رقمين: الرقم الترتيبي للموقع، وقيمة العنصر الجديد:</p>
+      <div class="code-block">
+motorcycles = [<span class="str">"honda"</span>, <span class="str">"yamaha"</span>, <span class="str">"suzuki"</span>]
+motorcycles.<span class="fn">insert</span>(<span class="num">0</span>, <span class="str">"ducati"</span>)
+<span class="bu">print</span>(motorcycles)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الدالة <code>insert()</code> تأخذ معاملين: الرقم الترتيبي للموقع الذي نريد الإضافة عنده، وقيمة العنصر الجديد. هنا نُدرج <code>"ducati"</code> في الموقع <code>0</code> (أول القائمة). جميع العناصر الموجودة تنزاح إلى اليمين بمقدار خانة واحدة لإفساح المجال للعنصر الجديد، وهذا يختلف عن <code>append()</code> التي تُضيف في النهاية فقط. بعد الإدراج، تصبح "ducati" هي العنصر الأول وتتزحزح "honda" إلى الموقع الثاني.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+[<span class="str">'ducati'</span>, <span class="str">'honda'</span>, <span class="str">'yamaha'</span>, <span class="str">'suzuki'</span>]
+      </div>
+      <p>لاحظ أن العناصر الموجودة انزاحت إلى اليمين لإفساح المجال للعنصر الجديد.</p>
+
+      <h3 class="subsection-title">3.3.4 إزالة العناصر — del</h3>
+      <p>إذا كنت تعرف الرقم الترتيبي للعنصر الذي تريد حذفه، استخدم الأمر <span class="inline-code">del</span>:</p>
+      <div class="code-block">
+motorcycles = [<span class="str">"honda"</span>, <span class="str">"yamaha"</span>, <span class="str">"suzuki"</span>]
+<span class="kw">del</span> motorcycles[<span class="num">1</span>]
+<span class="bu">print</span>(motorcycles)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الأمر <code>del</code> يحذف عنصراً من القائمة باستخدام رقمه الترتيبي. هنا نحذف العنصر ذا الرقم <code>1</code> وهو "yamaha". الحذف باستخدام <code>del</code> نهائي ولا يمكن استرجاع العنصر المحذوف — لا تعيده الدالة إلينا كما تفعل <code>pop()</code>. بعد الحذف، تبقى القائمة تحتوي على "honda" و "suzuki" فقط، ويتقلص طول القائمة تلقائياً. لاحظ أن العناصر التي تلي المحذوف تنزاح لملء الفراغ.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+[<span class="str">'honda'</span>, <span class="str">'suzuki'</span>]
+      </div>
+      <p>لاحظ أن <span class="inline-code">del</span> يحذف العنصر نهائياً — لا يمكنك استخدامه بعد الحذف.</p>
+
+      <h3 class="subsection-title">3.3.5 إزالة العنصر باستخدام pop()</h3>
+      <p>الدالة <span class="inline-code">pop()</span> تزيل العنصر <strong>وتعيده لك</strong> — مما يتيح لك استخدامه بعد إزالته. بشكل افتراضي، تزيل <span class="inline-code">pop()</span> آخر عنصر في القائمة:</p>
+      <div class="code-block">
+motorcycles = [<span class="str">"honda"</span>, <span class="str">"yamaha"</span>, <span class="str">"suzuki"</span>]
+popped_motorcycle = motorcycles.<span class="fn">pop</span>()
+<span class="bu">print</span>(motorcycles)
+<span class="bu">print</span>(popped_motorcycle)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الدالة <code>pop()</code> تزيل آخر عنصر من القائمة وتُعيد قيمته إلينا. هنا ننشئ متغيراً جديداً <code>popped_motorcycle</code> يخزن القيمة المُرجعة من <code>pop()</code> وهي "suzuki". بعد استدعاء <code>pop()</code>، نجد أن القائمة الأصلية فقدت آخر عنصر وأصبحت تحتوي على عنصرين فقط، بينما المتغير الجديد يحمل القيمة المُزالة. هذا مفيد جداً عندما نريد معالجة العنصر بعد إزالته، مثل نقله إلى قائمة أخرى.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+[<span class="str">'honda'</span>, <span class="str">'yamaha'</span>]
+suzuki
+      </div>
+      <p>يمكنك أيضاً إزالة عنصر من موقع معين باستخدام <span class="inline-code">pop()</span> مع الرقم الترتيبي:</p>
+      <div class="code-block">
+motorcycles = [<span class="str">"honda"</span>, <span class="str">"yamaha"</span>, <span class="str">"suzuki"</span>]
+second = motorcycles.<span class="fn">pop</span>(<span class="num">1</span>)
+<span class="bu">print</span>(second)   <span class="cm"># yamaha</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>يمكننا تمرير رقم ترتيبي للدالة <code>pop()</code> لإزالة عنصر من موقع محدد بدلاً من إزالة آخر عنصر فقط. هنا نزيل العنصر ذا الرقم <code>1</code> (الثاني) وهو "yamaha" ونخزّنه في المتغير <code>second</code>. هذه المرونة تجعل <code>pop()</code> أداة قوية، حيث يمكننا إزالة أي عنصر من أي موقع مع الاحتفاظ بقيمته لاستخدامها لاحقاً. بعد الإزالة، تتقلص القائمة وتنزاح العناصر التي تلي المحذوف إلى اليسار.</p>
+      </div>
+
+      <h3 class="subsection-title">3.3.6 إزالة العنصر حسب القيمة — remove()</h3>
+      <p>إذا كنت تعرف <strong>قيمة</strong> العنصر (وليس رقمه الترتيبي)، استخدم <span class="inline-code">remove()</span>:</p>
+      <div class="code-block">
+motorcycles = [<span class="str">"honda"</span>, <span class="str">"yamaha"</span>, <span class="str">"suzuki"</span>, <span class="str">"ducati"</span>]
+motorcycles.<span class="fn">remove</span>(<span class="str">"ducati"</span>)
+<span class="bu">print</span>(motorcycles)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الدالة <code>remove()</code> تحذف عنصراً حسب قيمته وليس رقمه الترتيبي. هنا نمرر القيمة <code>"ducati"</code> للدالة، فتبحث عنها في القائمة وتحذف أول ظهور لها فقط. الميزة أنك لست بحاجة لمعرفة الرقم الترتيبي للعنصر، فقط قيمته. لكن انتبه — إذا تكررت القيمة أكثر من مرة، ستحتاج إلى تكرار <code>remove()</code> في حلقة لحذف جميع التكرارات لأنها تزيل أول ظهور فقط.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+[<span class="str">'honda'</span>, <span class="str">'yamaha'</span>, <span class="str">'suzuki'</span>]
+      </div>
+      <div class="note"><strong>ملاحظة:</strong> الدالة <span class="inline-code">remove()</span> تزيل <strong>أول ظهور فقط</strong> للقيمة. إذا تكررت القيمة أكثر من مرة، ستحتاج إلى استخدام حلقة (سنعرفها لاحقاً) لإزالتها جميعاً.</div>
+
+      <h2 class="section-title">3.4 تنظيم القوائم</h2>
+      <p>عند التعامل مع القوائم، غالباً ما تحتاج إلى ترتيبها بطريقة معينة. بايثون توفر عدة طرق لذلك.</p>
+
+      <h3 class="subsection-title">3.4.1 الترتيب الدائم — sort()</h3>
+      <p>الدالة <span class="inline-code">sort()</span> ترتب القائمة <strong>بشكل دائم</strong> (تعدل القائمة الأصلية) ترتيباً أبجدياً تصاعدياً:</p>
+      <div class="code-block">
+cars = [<span class="str">"bmw"</span>, <span class="str">"audi"</span>, <span class="str">"toyota"</span>, <span class="str">"subaru"</span>]
+cars.<span class="fn">sort</span>()
+<span class="bu">print</span>(cars)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الدالة <code>sort()</code> ترتب عناصر القائمة ترتيباً أبجدياً تصاعدياً بشكل دائم — أي أنها تعدّل القائمة الأصلية ولا تُرجع قائمة جديدة. بعد استدعائها، تصبح القائمة مرتبة من "audi" إلى "toyota". هذا الترتيب لا يمكن التراجع عنه إلا إذا كنت قد احتفظت بنسخة احتياطية من القائمة قبل الترتيب. تُستخدم <code>sort()</code> بكثرة عندما تريد تنظيم البيانات بشكل دائم للعرض أو المعالجة اللاحقة.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+[<span class="str">'audi'</span>, <span class="str">'bmw'</span>, <span class="str">'subaru'</span>, <span class="str">'toyota'</span>]
+      </div>
+      <p>للترتيب تنازلياً (من Z إلى A)، مرر المعامل <span class="inline-code">reverse=True</span>:</p>
+      <div class="code-block">
+cars = [<span class="str">"bmw"</span>, <span class="str">"audi"</span>, <span class="str">"toyota"</span>, <span class="str">"subaru"</span>]
+cars.<span class="fn">sort</span>(reverse=<span class="kw">True</span>)
+<span class="bu">print</span>(cars)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>بتمرير المعامل <code>reverse=True</code> للدالة <code>sort()</code>، نحصل على ترتيب تنازلي (من الأكبر إلى الأصغر، أو من Z إلى A للنصوص). القائمة الأصلية تُعدّل بشكل دائم لتصبح "toyota" أولاً و "audi" أخيراً. المعامل <code>reverse</code> اختياري وقيمته الافتراضية <code>False</code>، لذا إذا لم تمرره سترتب القائمة تصاعدياً. هذا الخيار مفيد لعرض البيانات بترتيب عكسي مثل قائمة الأعلى أجراً أو الأحدث تاريخياً.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+[<span class="str">'toyota'</span>, <span class="str">'subaru'</span>, <span class="str">'bmw'</span>, <span class="str">'audi'</span>]
+      </div>
+
+      <h3 class="subsection-title">3.4.2 الترتيب المؤقت — sorted()</h3>
+      <p>الدالة <span class="inline-code">sorted()</span> ترتب القائمة <strong>مؤقتاً</strong> (دون تغيير القائمة الأصلية) وتعيد نسخة مرتبة:</p>
+      <div class="code-block">
+cars = [<span class="str">"bmw"</span>, <span class="str">"audi"</span>, <span class="str">"toyota"</span>, <span class="str">"subaru"</span>]
+<span class="bu">print</span>(<span class="bu">sorted</span>(cars))    <span class="cm"># مرتبة</span>
+<span class="bu">print</span>(cars)              <span class="cm"># الأصلية كما هي</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الدالة <code>sorted()</code> تختلف عن <code>sort()</code> في أنها لا تعدّل القائمة الأصلية، بل تُعيد نسخة جديدة مرتبة منها. السطر الأول يطبع القائمة مرتبة ترتيباً تصاعدياً، والسطر الثاني يطبع القائمة الأصلية التي لم تتغير — مما يثبت أن <code>sorted()</code> لا تؤثر على القائمة الأصلية. هذا مفيد جداً عندما نريد عرض القائمة بترتيب معين دون فقدان الترتيب الأصلي، مثل عرض النتائج بترتيب مختلف مؤقتاً.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+[<span class="str">'audi'</span>, <span class="str">'bmw'</span>, <span class="str">'subaru'</span>, <span class="str">'toyota'</span>]
+[<span class="str">'bmw'</span>, <span class="str">'audi'</span>, <span class="str">'toyota'</span>, <span class="str">'subaru'</span>]
+      </div>
+
+      <h3 class="subsection-title">3.4.3 عكس الترتيب — reverse()</h3>
+      <p>الدالة <span class="inline-code">reverse()</span> تعكس ترتيب العناصر في القائمة <strong>بشكل دائم</strong> (عكس الترتيب الحالي، وليس ترتيباً أبجدياً):</p>
+      <div class="code-block">
+cars = [<span class="str">"bmw"</span>, <span class="str">"audi"</span>, <span class="str">"toyota"</span>, <span class="str">"subaru"</span>]
+cars.<span class="fn">reverse</span>()
+<span class="bu">print</span>(cars)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الدالة <code>reverse()</code> تعكس ترتيب العناصر في القائمة بشكل دائم — هي لا ترتب أبجدياً، بل تأخذ الترتيب الحالي وتقلبه رأساً على عقب. هنا العنصر الأول "bmw" يصبح الأخير، والأخير "subaru" يصبح الأول. يمكن العودة إلى الترتيب الأصلي بتطبيق <code>reverse()</code> مرة أخرى، لأن عكس الترتيب مرتين يُعيدك إلى الترتيب الأولي. هذا يختلف عن <code>sort()</code> الذي يرتب حسب القيمة وليس حسب الموقع.</p>
+      </div>
+
+      <p>الناتج:</p>
+      <div class="code-block">
+[<span class="str">'subaru'</span>, <span class="str">'toyota'</span>, <span class="str">'audi'</span>, <span class="str">'bmw'</span>]
+      </div>
+      <p>يمكنك دائماً العودة إلى الترتيب الأصلي بتطبيق <span class="inline-code">reverse()</span> مرة أخرى.</p>
+
+      <h3 class="subsection-title">3.4.4 طول القائمة — len()</h3>
+      <p>الدالة <span class="inline-code">len()</span> تعيد عدد العناصر في القائمة:</p>
+      <div class="code-block">
+cars = [<span class="str">"bmw"</span>, <span class="str">"audi"</span>, <span class="str">"toyota"</span>, <span class="str">"subaru"</span>]
+<span class="bu">print</span>(<span class="bu">len</span>(cars))   <span class="cm"># 4</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الدالة <code>len()</code> تعيد عدد العناصر في القائمة (وليس آخر رقم ترتيبي). قائمتنا تحتوي على 4 عناصر، لذا تطبع <code>4</code>. تذكّر أن آخر رقم ترتيبي هو <code>len(list) - 1</code> ويساوي <code>3</code>، لأن الترقيم يبدأ من 0. <code>len()</code> مفيدة جداً في الحلقات التكرارية وعند التحقق من حجم البيانات، وتُستخدم أيضاً مع السلاسل النصية والقواميس والمجموعات لحساب عدد العناصر فيها.</p>
+      </div>
+
+      <p>هذه الدالة مفيدة جداً عندما تريد معرفة حجم القائمة، خاصة في الحلقات التكرارية التي سنتعلمها في الفصل القادم.</p>
+
+      <h2 class="section-title">3.5 تجنب أخطاء الرقم الترتيبي (Index Errors)</h2>
+      <p>أحد أشهر الأخطاء التي يواجهها المبرمجون الجدد هو <strong>IndexError</strong> — يحدث هذا عندما تحاول الوصول إلى عنصر برقم ترتيبي غير موجود في القائمة:</p>
+      <div class="code-block">
+motorcycles = [<span class="str">"honda"</span>, <span class="str">"yamaha"</span>, <span class="str">"suzuki"</span>]
+<span class="bu">print</span>(motorcycles[<span class="num">3</span>])
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يسبب خطأ IndexError عن قصد لتوضيح كيفية حدوثه. القائمة <code>motorcycles</code> تحتوي على 3 عناصر بأرقام ترتيبية 0 و 1 و 2 فقط. محاولة الوصول إلى الرقم <code>3</code> تسبب خطأ <code>IndexError: list index out of range</code> لأن هذا الرقم خارج نطاق القائمة. هذا من أشهر الأخطاء التي تواجه المبرمجين الجدد، والحل هو التأكد من أن الرقم الترتيبي المطلوب يقع بين 0 و <code>len(list) - 1</code>.</p>
+      </div>
+
+      <div class="code-block">
+IndexError: list index out of range
+      </div>
+      <p>قائمتنا تحتوي على 3 عناصر فقط (أرقام ترتيبية: 0, 1, 2). محاولة الوصول إلى الرقم الترتيبي 3 تسبب خطأ لأن هذا الرقم غير موجود.</p>
+
+      <p>هذا الخطأ شائع جداً، خاصة مع الترقيم السالب. مثلاً، إذا حاولت الوصول إلى العنصر قبل الأخير في قائمة فارغة:</p>
+      <div class="code-block">
+motorcycles = []
+<span class="bu">print</span>(motorcycles[<span class="op">-</span><span class="num">1</span>])   <span class="cm"># IndexError!</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هنا ننشئ قائمة فارغة ثم نحاول الوصول إلى العنصر <code>1-</code> (آخر عنصر). القائمة الفارغة لا تحتوي على أي عناصر، لذا تظهر رسالة <code>IndexError: list index out of range</code>. القاعدة الذهبية: تأكد دائماً من أن القائمة ليست فارغة قبل استخدام الترقيم السالب للوصول إلى آخر عنصر. يمكنك التحقق من ذلك باستخدام <code>if list:</code> أو <code>if len(list) > 0:</code> قبل الوصول إلى العناصر.</p>
+      </div>
+
+      <div class="warning"><strong>تلميح مهم:</strong> إذا حدث معك IndexError، انظر إلى القائمة واسأل نفسك: "هل العنصر الذي أحاول الوصول إليه موجود فعلاً؟". تذكر أن الترقيم يبدأ من 0، لذلك آخر عنصر هو <span class="inline-code">len(list) - 1</span>.</div>
+
+      <p>طريقة آمنة للوصول إلى آخر عنصر هي استخدام <span class="inline-code">-1</span> — ولكن فقط إذا كنت متأكداً من أن القائمة ليست فارغة!</p>
+
+      <h2 class="section-title">3.6 التمارين</h2>
+
+      <div class="exercise"><strong>تمرين 3-1: الأسماء</strong><br>
+      خزّن أسماء بعض أصدقائك في قائمة باسم <span class="inline-code">names</span>. اطبع كل اسم بالوصول إليه برقمه الترتيبي.</div>
+
+      <div class="exercise"><strong>تمرين 3-2: التحية</strong><br>
+      استمراراً من التمرين السابق، اطبع رسالة لكل صديق. يجب أن تحتوي الرسالة على نفس النص لكل صديق، ولكن مع اسمه.</div>
+
+      <div class="exercise"><strong>تمرين 3-3: قائمة وسائل النقل</strong><br>
+      أنشئ قائمة بأنواع وسائل النقل التي تستخدمها. اطبع جملة عن كل وسيلة مثل: "I would like to own a Honda motorcycle."</div>
+
+      <div class="exercise"><strong>تمرين 3-4: قائمة الضيوف</strong><br>
+      أنشئ قائمة بأسماء 3 أشخاص على الأقل ترغب في دعوتهم إلى العشاء. اطبع دعوة لكل شخص.</div>
+
+      <div class="exercise"><strong>تمرين 3-5: تغيير قائمة الضيوف</strong><br>
+      أحد ضيوف العشاء لا يمكنه الحضور. استخدم <span class="inline-code">print()</span> لتعلن ذلك. ثم عدّل القائمة باستبدال اسم الضيف المعتذر باسم ضيف جديد. اطبع الدعوات مرة أخرى.</div>
+
+      <div class="exercise"><strong>تمرين 3-6: مزيد من الضيوف</strong><br>
+      وجدت طاولة عشاء أكبر! أضف 3 ضيوف جدد: واحد في بداية القائمة باستخدام <span class="inline-code">insert()</span>، واحد في المنتصف، وآخر في النهاية باستخدام <span class="inline-code">append()</span>. اطبع الدعوات.</div>
+
+      <div class="exercise"><strong>تمرين 3-7: تقليص قائمة الضيوف</strong><br>
+      طاولة العشاء الجديدة لن تصل في الوقت المناسب! يمكنك دعوة شخصين فقط. استخدم <span class="inline-code">pop()</span> لإزالة الضيوف واحداً تلو الآخر واطبع رسالة اعتذار لكل من تمت إزالته. آخر شخصين — اطبع لهما رسالة تأكيد. ثم استخدم <span class="inline-code">del</span> لإزالة آخر اسمين واطبع القائمة الفارغة.</div>
+
+      <div class="exercise"><strong>تمرين 3-8: رؤية العالم</strong><br>
+      أنشئ قائمة بالأماكن التي ترغب في زيارتها في العالم (5 أماكن على الأقل). ثم:
+      <ol>
+        <li>اطبع القائمة بالترتيب الأصلي</li>
+        <li>استخدم <span class="inline-code">sorted()</span> لطباعتها مرتبة (دون تغيير الأصل)</li>
+        <li>أظهر أن القائمة الأصلية لم تتغير</li>
+        <li>استخدم <span class="inline-code">sorted()</span> بمعامل <span class="inline-code">reverse=True</span></li>
+        <li>أظهر أن القائمة الأصلية لم تتغير</li>
+        <li>استخدم <span class="inline-code">reverse()</span> لعكس الترتيب</li>
+        <li>استخدم <span class="inline-code">reverse()</span> مرة أخرى للعودة</li>
+        <li>استخدم <span class="inline-code">sort()</span> للترتيب الدائم</li>
+        <li>استخدم <span class="inline-code">sort(reverse=True)</span> للترتيب التنازلي الدائم</li>
+      </ol>
+      </div>
+
+      <div class="exercise"><strong>تمرين 3-9: عدد الضيوف</strong><br>
+      استخدم <span class="inline-code">len()</span> لطباعة عدد الأشخاص الذين دعوتهم إلى العشاء في التمرين 3-6.</div>
+
+      <div class="exercise"><strong>تمرين 3-10: دوال القوائم</strong><br>
+      أنشئ قائمة تحتوي على 5 عناصر على الأقل. جرب استخدام كل دالة تعلمتها: <span class="inline-code">append()</span>، <span class="inline-code">insert()</span>، <span class="inline-code">remove()</span>، <span class="inline-code">pop()</span>، <span class="inline-code">del</span>، <span class="inline-code">sort()</span>، <span class="inline-code">sorted()</span>، <span class="inline-code">reverse()</span>، <span class="inline-code">len()</span>. اختبر ما يحدث عند استخدام <span class="inline-code">pop()</span> على قائمة فارغة.</div>
+
+      <div class="exercise"><strong>تمرين 3-11: تعمّد حدوث خطأ</strong><br>
+      حاول عمداً أن تحدث IndexError بقائمة. تأكد من فهمك لرسالة الخطأ. ثم صحّح الخطأ.</div>
+
+      <h2 class="section-title">collections.deque - قوائم انتظام سريعة</h2>
+      <p>من مكتبة <span class="inline-code">collections</span>، <span class="inline-code">deque</span> (اختصار double-ended queue) هي قائمة محسّنة للإضافة والحذف من الطرفين بسرعة <span class="inline-code">O(1)</span>، بينما القائمة العادية تحتاج <span class="inline-code">O(n)</span> للإضافة من البداية:</p>
+
+      <div class="code-block">
+<span class="kw">from</span> collections <span class="kw">import</span> deque
+
+<span class="cm"># إنشاء deque</span>
+queue = deque([<span class="str">'ahmed'</span>, <span class="str">'sara'</span>, <span class="str">'khaled'</span>])
+
+<span class="cm"># إضافة من اليمين (O(1))</span>
+queue.append(<span class="str">'nora'</span>)
+
+<span class="cm"># إضافة من اليسار (O(1)) - القائمة العادية تحتاج O(n)</span>
+queue.appendleft(<span class="str">'mohamed'</span>)
+
+<span class="cm"># إزالة من اليمين</span>
+right = queue.pop()
+
+<span class="cm"># إزالة من اليسار</span>
+left = queue.popleft()
+
+<span class="bu">print</span>(queue)  <span class="cm"># deque(['ahmed', 'sara', 'khaled'])</span>
+
+<span class="cm"># deque محدد الطول - يحذف القديم تلقائياً عند الامتلاء</span>
+ recent = deque(maxlen=<span class="num">3</span>)
+ <span class="kw">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="num">10</span>):
+     recent.append(i)
+ <span class="bu">print</span>(recent)  <span class="cm"># deque([7, 8, 9], maxlen=3)</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يشرح <code>deque</code> (مزدوجة النهاية) من مكتبة <code>collections</code>. نستورد <code>deque</code> ثم ننشئ كائن deque بقائمة أولية. <code>append()</code> و <code>appendleft()</code> تُضيفان عناصر من اليمين واليسار على التوالي بكفاءة O(1)، بينما <code>pop()</code> و <code>popleft()</code> تزيلان من اليمين واليسار. الجزء الثاني يوضح <code>maxlen=3</code> الذي يحافظ على آخر 3 عناصر فقط — عندما نضيف عنصراً رابعاً، يُحذف الأقدم تلقائياً. هذه الميزة مثالية لتخزين آخر N عنصر مثل سجل التصفح أو الإشعارات الأخيرة، وهي أسرع بكثير من استخدام القائمة العادية.</p>
+      </div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> استخدم <span class="inline-code">deque</span> للـ queues, buffers, وآخر N عنصر. استخدام <span class="inline-code">list.pop(0)</span> ينسخ القائمة كلها — بطيء جداً للقوائم الكبيرة. <span class="inline-code">deque.popleft()</span> فوري.</div>
+
+      <h2 class="section-title">التقطيع المتقدم (Advanced Slicing) ومكتبة bisect</h2>
+      <p>التقطيع (Slicing) في بايثون أقوى بكثير مما يبدو. يمكنك تقطيع أي تسلسل (قائمة، tuple، سلسلة) بصيغة <span class="inline-code">seq[start:stop:step]</span>، والتخصيص للشرائح يعدّل القائمة في مكانها:</p>
+
+      <div class="code-block">
+<span class="cm"># صيغة التقطيع الكاملة</span>
+nums = [<span class="num">0</span>, <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>, <span class="num">7</span>, <span class="num">8</span>, <span class="num">9</span>]
+
+<span class="bu">print</span>(nums[:<span class="num">3</span>])     <span class="cm"># [0, 1, 2]</span>
+<span class="bu">print</span>(nums[<span class="num">3</span>:])     <span class="cm"># [3, 4, 5, 6, 7, 8, 9]</span>
+<span class="bu">print</span>(nums[::<span class="num">2</span>])    <span class="cm"># [0, 2, 4, 6, 8] — خطوة</span>
+<span class="bu">print</span>(nums[::-<span class="num">1</span>])   <span class="cm"># [9, 8, 7, 6, 5, 4, 3, 2, 1, 0] — عكس القائمة</span>
+
+<span class="cm"># التخصيص لشريحة — يستبدل العناصر في مكانها</span>
+nums[<span class="num">2</span>:<span class="num">5</span>] = [<span class="num">99</span>, <span class="num">100</span>]
+<span class="bu">print</span>(nums)  <span class="cm"># [0, 1, 99, 100, 5, 6, 7, 8, 9]</span>
+
+<span class="cm"># حذف شريحة</span>
+nums[<span class="num">2</span>:<span class="num">4</span>] = []
+<span class="bu">print</span>(nums)  <span class="cm"># [0, 1, 5, 6, 7, 8, 9]</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>التقطيع (slicing) باستخدام الصيغة <code>[start:stop:step]</code> يتيح لنا استخراج أجزاء من القائمة. <code>[:3]</code> تعيد العناصر من البداية إلى الرقم 3 (بدونه)، <code>[3:]</code> تعيد من الرقم 3 إلى النهاية، <code>[::2]</code> تأخذ عنصراً وتتخطى الذي يليه (خطوة 2)، و <code>[::-1]</code> تعكس القائمة بالكامل. أما التخصيص للشريحة <code>nums[2:5] = [99, 100]</code> فيستبدل العناصر من 2 إلى 4 (دون 5) بقيم جديدة، ويمكن أن يغير طول القائمة إذا كان عدد العناصر الجديدة مختلفاً. حذف الشريحة يتم بتعيينها لقائمة فارغة <code>[]</code>، مما يزيل تلك العناصر من القائمة. التقطيع لا يسبب <code>IndexError</code> أبداً — إنه يعيد قائمة فارغة إذا كانت الحدود خارج النطاق.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># Slice objects — يمكنك تخزين الشرائح وإعادة استخدامها</span>
+first_three = <span class="bu">slice</span>(<span class="kw">None</span>, <span class="num">3</span>)
+<span class="bu">print</span>(nums[first_three])  <span class="cm"># [0, 1, 5]</span>
+
+<span class="cm"># bisect — إدراج في قائمة مرتبة بكفاءة O(log n)</span>
+<span class="kw">import</span> bisect
+
+scores = [<span class="num">30</span>, <span class="num">50</span>, <span class="num">70</span>, <span class="num">90</span>]
+<span class="bu">print</span>(bisect.bisect_left(scores, <span class="num">60</span>))   <span class="cm"># 2 — أين يُدرج 60</span>
+<span class="bu">print</span>(bisect.bisect_right(scores, <span class="num">70</span>))  <span class="cm"># 3 — أين يُدرج 70 (يمين المكرر)</span>
+
+bisect.insort(scores, <span class="num">55</span>)  <span class="cm"># يُدرج محافظاً على الترتيب</span>
+<span class="bu">print</span>(scores)  <span class="cm"># [30, 50, 55, 70, 90]</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الجزء الأول يوضح <code>slice()</code> الذي يخزّن شريحة قابلة لإعادة الاستخدام — هنا <code>slice(None, 3)</code> يعادل <code>[:3]</code> ويُعيد العناصر الثلاثة الأولى. الجزء الثاني يشرح مكتبة <code>bisect</code> للإدراج في القوائم المرتبة: <code>bisect_left</code> تُرجع الموقع الذي يجب إدراج العنصر فيه للحفاظ على الترتيب (على يسار المكررات)، و <code>bisect_right</code> تُرجع الموقع على يمين المكررات. <code>insort</code> تُدرج العنصر مباشرة في المكان الصحيح محافظة على الترتيب، وهذا أسرع بكثير من إضافة العنصر ثم استدعاء <code>sort()</code> بعد كل إضافة. كفاءة <code>bisect</code> هي O(log n) بفضل البحث الثنائي.</p>
+      </div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> التقطيع لا يطرح <span class="inline-code">IndexError</span> — يعيد القائمة الفارغة إذا كانت الحدود خارج النطاق. <span class="inline-code">bisect</span> أسرع بكثير من <span class="inline-code">list.sort()</span> لكل إدراج. استخدم <span class="inline-code">bisect.insort</span> للحفاظ على قائمة مرتبة مع إضافات متكررة.</div>
+
+      <h2 class="section-title">3.7 ملخص الفصل</h2>
+      <div class="summary-box">
+        <h3>📝 ملخص الفصل</h3>
+        <ul>
+          <li>القوائم (lists) هي مجموعات مرتبة من العناصر تُكتب بين قوسين معقوفين <span class="inline-code">[]</span></li>
+          <li>الوصول إلى العناصر يتم باستخدام الرقم الترتيبي، والترقيم يبدأ من <strong>0</strong></li>
+          <li>الترقيم السالب (<span class="inline-code">-1</span>) يسمح بالوصول إلى العناصر من نهاية القائمة</li>
+          <li>يمكن تعديل العناصر بإسناد قيمة جديدة إلى رقم ترتيبي</li>
+          <li>إضافة العناصر: <span class="inline-code">append()</span> (في النهاية)، <span class="inline-code">insert()</span> (في موقع محدد)</li>
+          <li>إزالة العناصر: <span class="inline-code">del</span> (حذف دائم)، <span class="inline-code">pop()</span> (إزالة مع إرجاع القيمة)، <span class="inline-code">remove()</span> (حسب القيمة)</li>
+          <li>تنظيم القوائم: <span class="inline-code">sort()</span> (ترتيب دائم)، <span class="inline-code">sorted()</span> (ترتيب مؤقت)، <span class="inline-code">reverse()</span> (عكس)</li>
+          <li>الدالة <span class="inline-code">len()</span> تعيد عدد عناصر القائمة</li>
+          <li>تجنب IndexError بالتأكد من وجود العنصر قبل الوصول إليه</li>
+        </ul>
+      </div>
+
+      <div class="note"><strong>نصيحة:</strong> القوائم هي أساس العديد من المفاهيم المتقدمة في بايثون. خذ وقتك في تجربة جميع الدوال التي تعلمتها في هذا الفصل. في الفصل القادم، سنتعلم كيفية التكرار على القوائم باستخدام الحلقات — وهذا سيفتح لك أبواباً جديدة تماماً!</div>
+
+    </div>
+
+    <div class="note"><strong>💡 نصيحة ذهبية:</strong> استخدم <span class="inline-code">enumerate()</span> عندما تحتاج إلى الفهرس مع العنصر أثناء التكرار: <span class="inline-code">for i, item in enumerate(list):</span>. ولإنشاء قوائم بسرعة، تعلّم List Comprehension: <span class="inline-code">[x**2 for x in range(10)]</span> — أسرع وأقصر من الحلقة العادية.</div>
+
+    <div class="warning"><strong>⚠️ خطأ شائع:</strong> تعديل القائمة أثناء التكرار عليها يسبب نتائج غير متوقعة. بدلاً من <span class="inline-code">for item in list: list.remove(item)</span>، استخدم نسخة: <span class="inline-code">for item in list[:]:</span> أو أنشئ قائمة جديدة.</div>
+
+    <div class="exercise"><strong>🏋️ تمرين:</strong> أنشئ قائمة بأرقام من 1 إلى 20. استخدم <span class="inline-code">min()</span>، <span class="inline-code">max()</span>، <span class="inline-code">sum()</span> لحساب إحصائياتها. ثم استخدم List Comprehension لإنشاء قائمة بمربعات الأعداد الزوجية فقط. أخيراً، رتب القائمة تنازلياً باستخدام <span class="inline-code">sorted(list, reverse=True)</span>.</div>
+
+    <div class="footer">
+      <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+      <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) { link.classList.add('active'); }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الفصل 4: التعامل مع القوائم - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .back-link:hover { text-decoration: underline; }
+  @media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">📘 الجزء الأول: الأساسيات</span>
+      <h1>4. التعامل مع القوائم</h1>
+      <p>التكرار عبر القوائم، الشرائح، tuples، وتنسيق الكود حسب PEP 8</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        في الفصل السابق، تعلمت كيفية إنشاء القوائم وكيفية الوصول إلى عناصرها الفردية. في هذا الفصل، ستتعلم كيفية التكرار عبر قائمة باستخدام حلقات <span class="inline-code">for</span> — وهي واحدة من أكثر الطرق قوة لأتمتة المهام المتكررة. ستتعلم أيضاً كيفية التعامل مع أجزاء محددة من القائمة (الشرائح) وكيفية استخدام tuples. في نهاية هذا الفصل، ستتعرف على إرشادات تنسيق كود بايثون (PEP 8) لتكتب كوداً نظيفاً ومهنياً.
+      </p>
+
+      <h2 class="section-title">التكرار عبر قائمة باستخدام for</h2>
+
+      <p>
+        في العديد من المواقف، ستحتاج إلى تنفيذ نفس العملية على كل عنصر من عناصر القائمة. على سبيل المثال، قد يكون لديك قائمة بأسماء المستخدمين وتريد عرض ترحيب لكل واحد منهم. يمكنك استخدام حلقة <span class="inline-code">for</span> للقيام بذلك بكفاءة:
+      </p>
+
+      <div class="code-block">
+<span class="kw">for</span> name <span class="kw">in</span> names:
+    <span class="bu">print</span>(name)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يُعرِّف حلقة <code>for</code> تتكرر على كل عنصر في القائمة <code>names</code>. في كل دورة، يتم تخزين العنصر الحالي في المتغير <code>name</code> ثم طباعته باستخدام <code>print()</code>. المخرجات ستكون جميع أسماء القائمة كلٌّ في سطر منفصل، بترتيب ظهورها في القائمة. الحلقة تنتهي تلقائياً بعد آخر عنصر.</p>
+      </div>
+
+      <p>
+        تأخذ حلقة <span class="inline-code">for</span> كل عنصر من القائمة بدوره، وتخزنه في المتغير المؤقت (في المثال أعلاه <span class="inline-code">name</span>)، ثم تنفذ الكود الموجود داخل الحلقة. بعد تنفيذ الكود لآخر عنصر، تستمر البرنامج في السطر التالي بعد الحلقة.
+      </p>
+
+      <h3 class="subsection-title">نظرة أقرب إلى التكرار</h3>
+
+      <p>
+        دعنا ننظر إلى مثال عملي لقائمة من الأسماء:
+      </p>
+
+      <div class="code-block">
+names = [<span class="str">'ahmed'</span>, <span class="str">'sara'</span>, <span class="str">'khaled'</span>, <span class="str">'nora'</span>]
+<span class="kw">for</span> name <span class="kw">in</span> names:
+    <span class="bu">print</span>(name)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>أولاً ننشئ قائمة <code>names</code> تحتوي على أربعة أسماء عربية. السطر التالي يستخدم حلقة <code>for</code> تمرّ على كل عنصر في القائمة وتخزنه في المتغير <code>name</code>. في كل دورة، تطبع <code>print()</code> قيمة الاسم الحالي. المخرجات ستكون: <code>ahmed</code>، <code>sara</code>، <code>khaled</code>، <code>nora</code> — كل اسم في سطر منفصل.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+ahmed
+sara
+khaled
+nora
+      </div>
+
+      <p>
+        بايثون تأخذ العنصر الأول <span class="inline-code">'ahmed'</span> من القائمة، تخزنه في المتغير <span class="inline-code">name</span>، ثم تطبع قيمته. ثم تنتقل إلى العنصر التالي وهكذا حتى نهاية القائمة.
+      </p>
+
+      <h3 class="subsection-title">تنفيذ مهام إضافية داخل الحلقة</h3>
+
+      <p>
+        يمكنك تنفيذ أي عدد من العمليات داخل حلقة <span class="inline-code">for</span>:
+      </p>
+
+      <div class="code-block">
+names = [<span class="str">'ahmed'</span>, <span class="str">'sara'</span>, <span class="str">'khaled'</span>]
+<span class="kw">for</span> name <span class="kw">in</span> names:
+    <span class="bu">print</span>(f<span class="str">"مرحباً {name.title()}!"</span>)
+    <span class="bu">print</span>(f<span class="str">"أهلاً بك في دورة بايثون، {name.title()}.\n"</span>)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هنا نستخدم f-strings (سلاسل نصية مُنسَّقة) مع دالة <code>title()</code> لجعل الحرف الأول من كل اسم كبيراً. داخل الحلقة، السطر الأول يطبع رسالة ترحيبية باسم المستخدم، والسطر الثاني يطبع رسالة إضافية متبوعة بسطر فارغ <code>\n</code> للفصل بين كل رسالة وأخرى. المخرجات ستكون ثلاث رسائل ترحيبية لكل اسم، كل مجموعة مفصولة بسطر فارغ.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+مرحباً Ahmed!
+أهلاً بك في دورة بايثون، Ahmed.
+
+مرحباً Sara!
+أهلاً بك في دورة بايثون، Sara.
+
+مرحباً Khaled!
+أهلاً بك في دورة بايثون، Khaled.
+      </div>
+
+      <p>
+        كل سطر داخل الحلقة يُسمى <strong>جسم الحلقة</strong>. أي سطر مُسنَّف (indented) بعد السطر الذي يبدأ بـ <span class="inline-code">for</span> يعتبر جزءاً من جسم الحلقة ويتم تنفيذه لكل عنصر.
+      </p>
+
+      <h3 class="subsection-title">تنفيذ شيء بعد انتهاء الحلقة</h3>
+
+      <p>
+        أي كود لا يحوي مسافة بادئة (indentation) بعد حلقة <span class="inline-code">for</span> يتم تنفيذه مرة واحدة فقط بعد انتهاء الحلقة:
+      </p>
+
+      <div class="code-block">
+names = [<span class="str">'ahmed'</span>, <span class="str">'sara'</span>, <span class="str">'khaled'</span>]
+<span class="kw">for</span> name <span class="kw">in</span> names:
+    <span class="bu">print</span>(f<span class="str">"مرحباً {name.title()}!"</span>)
+<span class="bu">print</span>(<span class="str">"تم الترحيب بالجميع!"</span>)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>نمرّر على ثلاث أسماء ونطبع رسالة ترحيبية لكل اسم داخل الحلقة. السطر الأخير <code>print("تم الترحيب بالجميع!")</code> ليس مُسنَّفاً — أي ليس لديه مسافة بادئة — لذلك فهو خارج الحلقة ويُتنفَّذ مرة واحدة فقط بعد انتهائها. المخرجات ستكون ثلاث رسائل ترحيبية متبوعة برسالة "تم الترحيب بالجميع!". هذا يوضح كيف تتحكم المسافة البادئة في انتماء الكود للحلقة.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+مرحباً Ahmed!
+مرحباً Sara!
+مرحباً Khaled!
+تم الترحيب بالجميع!
+      </div>
+
+      <p>
+        لاحظ أن السطر الأخير <span class="inline-code">print("تم الترحيب بالجميع!")</span> ليس مُسنَّفاً، لذلك يتم تنفيذه مرة واحدة فقط بعد انتهاء الحلقة.
+      </p>
+
+      <h2 class="section-title">تجنب أخطاء المسافة البادئة</h2>
+
+      <p>
+        تستخدم بايثون المسافة البادئة (indentation) لتحديد أي الأكواد تنتمي إلى الحلقة وأيها لا تنتمي. هذه من أهم الميزات في بايثون. هناك أربعة أنواع شائعة من أخطاء المسافة البادئة:
+      </p>
+
+      <h3 class="subsection-title">1. نسيان المسافة البادئة</h3>
+
+      <div class="code-block">
+names = [<span class="str">'ahmed'</span>, <span class="str">'sara'</span>]
+<span class="kw">for</span> name <span class="kw">in</span> names:
+<span class="bu">print</span>(name)  <span class="cm"># خطأ! يجب أن يكون هناك مسافة بادئة</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود مُتعمَّد يحتوي على خطأ: السطر <code>print(name)</code> يفتقر إلى المسافة البادئة (indentation) المطلوبة بعد سطر <code>for</code>. في بايثون، يجب أن يكون جسم الحلقة مُسنَّفاً (عادة 4 مسافات أو tab واحد). تشغيل هذا الكود سيؤدي إلى خطأ <code>IndentationError: expected an indented block</code>، مما يمنع تشغيل البرنامج بالكامل.</p>
+      </div>
+
+      <p>
+        ستحصل على خطأ <span class="inline-code">IndentationError: expected an indented block</span>. تأكد دائماً من وجود مسافة بادئة (4 مسافات) بعد سطر <span class="inline-code">for</span>.
+      </p>
+
+      <h3 class="subsection-title">2. نسيان مسافة بادئة لأسطر إضافية</h3>
+
+      <div class="code-block">
+names = [<span class="str">'ahmed'</span>, <span class="str">'sara'</span>]
+<span class="kw">for</span> name <span class="kw">in</span> names:
+    <span class="bu">print</span>(f<span class="str">"مرحباً {name.title()}!"</span>)
+<span class="bu">print</span>(f<span class="str">"اسمك: {name.upper()}"</span>) <span class="cm"># خارج الحلقة! سيطبع مرة واحدة فقط</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هنا السطر الأول داخل الحلقة (<code>print(f"مرحباً...")</code>) مُسنَّف بشكل صحيح، لكن السطر الثاني <code>print(f"اسمك:...")</code> ليس مُسنَّفاً، لذا فهو خارج الحلقة. الكود لن ينتج خطأ (لن يتوقف البرنامج)، لكن النتيجة ستكون غير متوقعة — سيُطبع السطر الأخير مرة واحدة فقط بعد انتهاء الحلقة بقيمة آخر اسم (<code>SARA</code>). هذا أحد الأخطاء المنطقية الأكثر شيوعاً عند تعلم بايثون.</p>
+      </div>
+
+      <p>
+        الكود قد يعمل بدون خطأ، لكن النتائج لن تكون ما توقعته. تأكد من أن جميع الأسطر التي تريد أن تكون داخل الحلقة لها نفس المسافة البادئة.
+      </p>
+
+      <h3 class="subsection-title">3. مسافة بادئة غير ضرورية</h3>
+
+      <div class="code-block">
+message = <span class="str">"Hello World"</span>
+    <span class="bu">print</span>(message) <span class="cm"># خطأ! مسافة بادئة غير ضرورية</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>المتغير <code>message</code> يُعرَّف بدون مسافة بادئة (وهو الصحيح)، لكن السطر التالي يبدأ بمسافة بادئة غير ضرورية قبل <code>print()</code>. في بايثون، لا يمكنك إضافة مسافة بادئة عشوائية — الكود الذي ليس داخل أي بنية تحكم (مثل <code>for</code> أو <code>if</code>) يجب ألا يكون مُسنَّفاً. تشغيل هذا الكود سيؤدي إلى خطأ <code>IndentationError: unexpected indent</code>.</p>
+      </div>
+
+      <p>
+        لا تضع مسافة بادئة للكود الذي لا يحتاجها. ستحصل على خطأ <span class="inline-code">IndentationError: unexpected indent</span>.
+      </p>
+
+      <h3 class="subsection-title">4. مسافة بادئة غير متناسقة بعد الحلقة</h3>
+
+      <div class="code-block">
+<span class="kw">for</span> name <span class="kw">in</span> names:
+    <span class="bu">print</span>(name)
+    <span class="bu">print</span>(<span class="str">"هذا داخل الحلقة"</span>)
+<span class="bu">print</span>(<span class="str">"هذا خارج الحلقة"</span>) <span class="cm"># ينفذ مرة واحدة</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا المثال يوضح الفرق بين الكود داخل الحلقة وخارجها. السطران الأول والثاني مُسنَّفان — كلاهما داخل جسم الحلقة ويتكرران لكل عنصر في القائمة <code>names</code>. السطر الثالث غير مُسنَّف — خارج الحلقة ويُنفَّذ مرة واحدة فقط بعد انتهائها. المخرجات ستطبع كل اسم مرة (من السطر الأول) ثم جملة "هذا داخل الحلقة" لكل اسم، وأخيراً جملة "هذا خارج الحلقة" مرة واحدة.</p>
+      </div>
+
+      <p>
+        تذكر أن السطر الأول غير المُسنَّف بعد الحلقة هو بداية الكود الذي ينفذ بعد انتهاء الحلقة.
+      </p>
+
+      <h2 class="section-title">إنشاء قوائم رقمية</h2>
+
+      <p>
+        في بايثون، يمكنك بسهولة إنشاء قوائم من الأرقام باستخدام دالة <span class="inline-code">range()</span>. هذه الدالة مفيدة جداً عندما تحتاج إلى إنشاء سلسلة من الأرقام.
+      </p>
+
+      <h3 class="subsection-title">استخدام range()</h3>
+
+      <div class="code-block">
+<span class="kw">for</span> value <span class="kw">in</span> <span class="bu">range</span>(<span class="num">1</span>, <span class="num">5</span>):
+    <span class="bu">print</span>(value)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>دالة <code>range(1, 5)</code> تُولِّد سلسلة من الأرقام تبدأ من 1 وتنتهي قبل 5 — أي الأرقام 1، 2، 3، 4. الحلقة <code>for</code> تأخذ كل رقم بدوره وتخزنه في المتغير <code>value</code> ثم تطبعه. المخرجات ستكون الأرقام 1 إلى 4 كلٌّ في سطر منفصل. تذكر: <code>range(start, stop)</code> تتوقف قبل <code>stop</code> مباشرةً — لا تتضمنه أبداً.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+1
+2
+3
+4
+      </div>
+
+      <p>
+        لاحظ أن <span class="inline-code">range(1, 5)</span> يطبع الأرقام من 1 إلى 4 فقط. دالة <span class="inline-code">range()</span> تتوقف قبل الوصول إلى الرقم الثاني. إذا أردت أرقاماً من 0 إلى 4، استخدم <span class="inline-code">range(5)</span> فقط.
+      </p>
+
+      <h3 class="subsection-title">تحويل range() إلى قائمة</h3>
+
+      <p>
+        يمكنك تحويل نتائج <span class="inline-code">range()</span> إلى قائمة باستخدام الدالة <span class="inline-code">list()</span>:
+      </p>
+
+      <div class="code-block">
+numbers = <span class="bu">list</span>(<span class="bu">range</span>(<span class="num">1</span>, <span class="num">6</span>))
+<span class="bu">print</span>(numbers)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الدالة <code>list()</code> تحوّل كائن <code>range</code> إلى قائمة فعلية يمكن التعامل معها. هنا <code>range(1, 6)</code> يولّد الأرقام 1، 2، 3، 4، 5، و <code>list()</code> تحوّلها إلى <code>[1, 2, 3, 4, 5]</code>. ثم نطبع القائمة الناتجة. هذه طريقة شائعة جداً لإنشاء قوائم رقمية بسرعة وسهولة في سطر واحد.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+[1, 2, 3, 4, 5]
+      </div>
+
+      <h3 class="subsection-title">تحديد الخطوة في range()</h3>
+
+      <p>
+        يمكنك تمرير وسيط ثالث لتحديد حجم الخطوة (step):
+      </p>
+
+      <div class="code-block">
+even_numbers = <span class="bu">list</span>(<span class="bu">range</span>(<span class="num">2</span>, <span class="num">11</span>, <span class="num">2</span>))
+<span class="bu">print</span>(even_numbers)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الوسيط الثالث في <code>range(2, 11, 2)</code> هو حجم الخطوة (step). يبدأ العد من 2 ويزيد بمقدار 2 في كل مرة حتى يصل إلى 11 (بدون تضمينه). النتيجة هي الأعداد الزوجية من 2 إلى 10: <code>[2, 4, 6, 8, 10]</code>. هذه طريقة أنيقة وفعالة لإنشاء تسلسلات رقمية بنمط معين دون الحاجة لحلقات معقدة.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+[2, 4, 6, 8, 10]
+      </div>
+
+      <h3 class="subsection-title">الإحصاءات البسيطة مع الأرقام</h3>
+
+      <p>
+        توفر بايثون دوالاً مدمجة للتعامل مع القوائم الرقمية:
+      </p>
+
+      <div class="code-block">
+numbers = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>]
+<span class="bu">print</span>(<span class="bu">min</span>(numbers))   <span class="cm"># 1 - أصغر رقم</span>
+<span class="bu">print</span>(<span class="bu">max</span>(numbers))   <span class="cm"># 5 - أكبر رقم</span>
+<span class="bu">print</span>(<span class="bu">sum</span>(numbers))   <span class="cm"># 15 - مجموع الأرقام</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>بايثون توفر دوالاً مدمجة للتعامل مع القوائم الرقمية دون حاجة لكتابة حلقات يدوية. <code>min()</code> تُرجع أصغر قيمة في القائمة (1)، <code>max()</code> تُرجع أكبر قيمة (5)، و <code>sum()</code> تحسب مجموع كل العناصر (1+2+3+4+5=15). هذه الدوال محسَّنة للأداء وتعمل على أي قائمة تحتوي على أرقام.</p>
+      </div>
+
+      <h3 class="subsection-title">قوائم الفهم (List Comprehensions)</h3>
+
+      <p>
+        <strong>قوائم الفهم</strong> هي طريقة مختصرة وأنيقة لإنشاء القوائم. تسمح لك بإنشاء قائمة جديدة بتطبيق عملية على كل عنصر من قائمة موجودة، كل ذلك في سطر واحد:
+      </p>
+
+      <div class="code-block">
+squares = [value**<span class="num">2</span> <span class="kw">for</span> value <span class="kw">in</span> <span class="bu">range</span>(<span class="num">1</span>, <span class="num">11</span>)]
+<span class="bu">print</span>(squares)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا مثال على <strong>قائمة الفهم (List Comprehension)</strong> — وهي طريقة مختصرة وأنيقة لإنشاء القوائم في بايثون. التعبير <code>value**2</code> يحسب مربع كل رقم، والحلقة <code>for value in range(1, 11)</code> تُمرّر الأرقام من 1 إلى 10. النتيجة هي قائمة بمربعات الأعداد: <code>[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]</code>. هذه الطريقة أسرع وأكثر قراءة من الحلقة التقليدية.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+      </div>
+
+      <p>
+        هذا يعادل كتابة حلقة <span class="inline-code">for</span> تقليدية:
+      </p>
+
+      <div class="code-block">
+squares = []
+<span class="kw">for</span> value <span class="kw">in</span> <span class="bu">range</span>(<span class="num">1</span>, <span class="num">11</span>):
+    squares.append(value**<span class="num">2</span>)
+<span class="bu">print</span>(squares)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا هو المكافئ التقليدي لقائمة الفهم (List Comprehension). نبدأ بقائمة فارغة <code>squares = []</code>، ثم نمرّ على الأرقام من 1 إلى 10 باستخدام حلقة <code>for</code>، ونضيف مربع كل رقم إلى القائمة باستخدام <code>append()</code>. النتيجة النهائية هي نفسها: <code>[1, 4, 9, ..., 100]</code>. قوائم الفهم تجمع كل هذه الخطوات في سطر واحد أنيق.</p>
+      </div>
+
+      <p>
+        قوائم الفهم تجعل الكود أكثر إيجازاً وقراءة. إليك مثال آخر:
+      </p>
+
+      <div class="code-block">
+cubes = [value**<span class="num">3</span> <span class="kw">for</span> value <span class="kw">in</span> <span class="bu">range</span>(<span class="num">1</span>, <span class="num">6</span>)]
+<span class="bu">print</span>(cubes)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>نستخدم قائمة الفهم لحساب مكعبات الأعداد من 1 إلى 5. التعبير <code>value**3</code> يرفع كل رقم للقوة الثالثة، والحلقة تمرّ على الأرقام من 1 إلى 5. النتيجة: <code>[1, 8, 27, 64, 125]</code>. لاحظ كيف أن قوائم الفهم تجعل الكود موجزاً ومعبراً في سطر واحد بدلاً من 3-4 أسطر في الحلقة التقليدية.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+[1, 8, 27, 64, 125]
+      </div>
+
+      <h2 class="section-title">التعامل مع جزء من القائمة (الشرائح - Slicing)</h2>
+
+      <p>
+        بدلاً من التعامل مع القائمة بأكملها، يمكنك التعامل مع جزء منها باستخدام <strong>الشرائح</strong>. تقوم بإنشاء شريحة بتحديد فهرس البداية والنهاية:
+      </p>
+
+      <div class="code-block">
+players = [<span class="str">'ahmed'</span>, <span class="str">'sara'</span>, <span class="str">'khaled'</span>, <span class="str">'nora'</span>, <span class="str">'yousef'</span>]
+<span class="bu">print</span>(players[<span class="num">0</span>:<span class="num">3</span>])
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الشرائح (Slicing) تسمح باستخراج جزء من القائمة. الصيغة <code>[start:end]</code>: هنا <code>players[0:3]</code> تبدأ من الفهرس 0 (أول عنصر) وتتوقف قبل الفهرس 3 — أي تشمل العناصر في المواقع 0، 1، 2 فقط. النتيجة: <code>['ahmed', 'sara', 'khaled']</code>. الشرائح لا تُعدّل القائمة الأصلية بل تُنشئ قائمة جديدة.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+['ahmed', 'sara', 'khaled']
+      </div>
+
+      <p>
+        إذا حذفت فهرس البداية، تبدأ الشريحة من أول القائمة:
+      </p>
+
+      <div class="code-block">
+<span class="bu">print</span>(players[:<span class="num">4</span>])
+<span class="cm"># ['ahmed', 'sara', 'khaled', 'nora']</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>عندما نحذف فهرس البداية <code>[:4]</code>، تبدأ الشريحة تلقائياً من أول القائمة (الفهرس 0). هذا يطبع العناصر الأربعة الأولى من القائمة. الشرح في التعليق <code>#</code> يوضح النتيجة المتوقعة. هذه صيغة مختصرة مفيدة جداً عندما تريد العناصر من البداية حتى نقطة معينة.</p>
+      </div>
+
+      <p>
+        وإذا حذفت فهرس النهاية، تمتد الشريحة إلى آخر القائمة:
+      </p>
+
+      <div class="code-block">
+<span class="bu">print</span>(players[<span class="num">2</span>:])
+<span class="cm"># ['khaled', 'nora', 'yousef']</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>بحذف فهرس النهاية <code>[2:]</code>، تمتد الشريحة من الفهرس 2 حتى آخر القائمة — أي جميع العناصر من <code>'khaled'</code> فصاعداً. النتيجة: <code>['khaled', 'nora', 'yousef']</code>. هذه الصيغة مفيدة عندما تريد "كل العناصر من نقطة معينة إلى النهاية" دون الحاجة لمعرفة طول القائمة.</p>
+      </div>
+
+      <p>
+        يمكنك أيضاً استخدام الفهارس السالبة للوصول إلى العناصر من نهاية القائمة:
+      </p>
+
+      <div class="code-block">
+<span class="bu">print</span>(players[-<span class="num">3</span>:])
+<span class="cm"># آخر 3 عناصر: ['khaled', 'nora', 'yousef']</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الفهارس السالبة تُعدّ من نهاية القائمة: <code>-1</code> هو آخر عنصر، <code>-3</code> هو الثالث من النهاية. <code>[-3:]</code> تعني "من العنصر الثالث من النهاية إلى النهاية" — أي آخر 3 عناصر. النتيجة: <code>['khaled', 'nora', 'yousef']</code>. هذه طريقة أنيقة للوصول إلى نهاية القائمة دون حساب طولها.</p>
+      </div>
+
+      <h3 class="subsection-title">التكرار عبر شريحة</h3>
+
+      <p>
+        يمكنك التكرار عبر شريحة من القائمة باستخدام حلقة <span class="inline-code">for</span>:
+      </p>
+
+      <div class="code-block">
+players = [<span class="str">'ahmed'</span>, <span class="str">'sara'</span>, <span class="str">'khaled'</span>, <span class="str">'nora'</span>, <span class="str">'yousef'</span>]
+<span class="bu">print</span>(<span class="str">"أفضل 3 لاعبين:"</span>)
+<span class="kw">for</span> player <span class="kw">in</span> players[:<span class="num">3</span>]:
+    <span class="bu">print</span>(player.title())
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هنا ندمج الشرائح مع حلقات <code>for</code>. <code>players[:3]</code> تُنشئ شريحة من أول 3 عناصر فقط (بدون تعديل القائمة الأصلية)، ثم نمرّ عليها ونطبع كل اسم بعد تطبيق <code>title()</code> لجعل الحرف الأول كبيراً. المخرجات ستكون "أفضل 3 لاعبين:" متبوعاً بأسماء أول 3 لاعبين بحروف كبيرة. هذه تقنية شائعة للتعامل مع جزء محدود فقط من البيانات.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+أفضل 3 لاعبين:
+Ahmed
+Sara
+Khaled
+      </div>
+
+      <h3 class="subsection-title">نسخ قائمة</h3>
+
+      <p>
+        لنسخ قائمة، يمكنك إنشاء شريحة من البداية إلى النهاية (حذف كلا الفهرسين):
+      </p>
+
+      <div class="code-block">
+my_foods = [<span class="str">'pizza'</span>, <span class="str">'falafel'</span>, <span class="str">'burger'</span>]
+friend_foods = my_foods[:]
+
+my_foods.append(<span class="str">'pasta'</span>)
+friend_foods.append(<span class="str">'sushi'</span>)
+
+<span class="bu">print</span>(<span class="str">"طعامي:"</span>, my_foods)
+<span class="bu">print</span>(<span class="str">"طعام صديقي:"</span>, friend_foods)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p><code>my_foods[:]</code> تُنشئ نسخة مستقلة (shallow copy) من القائمة الأصلية. ثم نضيف عناصر مختلفة لكل قائمة باستخدام <code>append()</code>: <code>'pasta'</code> للقائمة الأولى و <code>'sushi'</code> للثانية. النتيجة أن كل قائمة تحتوي على عناصرها الخاصة المستقلة. لاحظ أن استخدام <code>friend_foods = my_foods</code> (بدون <code>[:]</code>) كان سيجعل المتغيرين يشيران لنفس القائمة — وهذا خطأ شائع!</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+طعامي: ['pizza', 'falafel', 'burger', 'pasta']
+طعام صديقي: ['pizza', 'falafel', 'burger', 'sushi']
+      </div>
+
+      <div class="warning">
+        <strong>⚠️ تنبيه مهم:</strong> لا تستخدم <span class="inline-code">friend_foods = my_foods</span> لأن هذا سيجعل كلا المتغيرين يشيران إلى نفس القائمة، وأي تغيير في أحدهما سيؤثر على الآخر. استخدم دائماً <span class="inline-code">[:]</span> لإنشاء نسخة مستقلة.
+      </div>
+
+      <h2 class="section-title">Tuples (الصفوف الثابتة)</h2>
+
+      <p>
+        الـ <strong>tuple</strong> يشبه القائمة لكنه غير قابل للتعديل (immutable). تستخدم tuples لتخزين مجموعة من القيم التي لا يجب أن تتغير طوال عمر البرنامج. تُكتب tuples باستخدام الأقواس <span class="inline-code">()</span> بدلاً من الأقواس المربعة <span class="inline-code">[]</span>.
+      </p>
+
+      <h3 class="subsection-title">تعريف tuple</h3>
+
+      <div class="code-block">
+dimensions = (<span class="num">200</span>, <span class="num">50</span>)
+<span class="bu">print</span>(dimensions[<span class="num">0</span>])   <span class="cm"># 200</span>
+<span class="bu">print</span>(dimensions[<span class="num">1</span>])   <span class="cm"># 50</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>tuple يُعرَّف باستخدام الأقواس <code>()</code> بدلاً من الأقواس المربعة <code>[]</code> المستخدمة مع القوائم. هنا <code>dimensions = (200, 50)</code> يخزن بُعدين ثابتين (مثل أبعاد شاشة). الوصول إلى العناصر يتم بنفس طريقة القوائم باستخدام الفهرس <code>[0]</code> و <code>[1]</code>. المخرجات ستكون <code>200</code> و <code>50</code>. الفرق الجوهري: tuples غير قابلة للتعديل (immutable).</p>
+      </div>
+
+      <p>
+        إذا حاولت تغيير قيمة في tuple، ستحصل على خطأ:
+      </p>
+
+      <div class="code-block">
+dimensions = (<span class="num">200</span>, <span class="num">50</span>)
+dimensions[<span class="num">0</span>] = <span class="num">250</span>  <span class="cm"># TypeError! tuples غير قابلة للتعديل</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا الكود يحاول تغيير قيمة عنصر في tuple — وهو أمر غير مسموح به لأن tuples غير قابلة للتعديل (immutable) عن قصد. تشغيل هذا الكود سيؤدي إلى خطأ <code>TypeError: 'tuple' object does not support item assignment</code>. هذا الخطأ مُتعمَّد لتوضيح أن tuples تُستخدم للبيانات الثابتة التي لا يجب تغييرها أثناء تشغيل البرنامج.</p>
+      </div>
+
+      <h3 class="subsection-title">التكرار عبر tuple</h3>
+
+      <p>
+        مثل القوائم، يمكنك التكرار عبر tuple باستخدام حلقة <span class="inline-code">for</span>:
+      </p>
+
+      <div class="code-block">
+dimensions = (<span class="num">200</span>, <span class="num">50</span>)
+<span class="kw">for</span> dimension <span class="kw">in</span> dimensions:
+    <span class="bu">print</span>(dimension)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>مثل القوائم تماماً، يمكن التكرار عبر tuple باستخدام حلقة <code>for</code>. المتغير <code>dimension</code> يأخذ قيمة كل عنصر بدوره ويطبعه. المخرجات ستكون <code>200</code> و <code>50</code> في سطرين منفصلين. tuples تدعم جميع عميات التكرار التي تدعمها القوائم (مثل <code>for</code>، <code>in</code>، <code>len()</code>)، لكن لا يمكن تعديل محتواها.</p>
+      </div>
+
+      <h3 class="subsection-title">الكتابة فوق tuple</h3>
+
+      <p>
+        لا يمكنك تغيير عناصر tuple، لكن يمكنك إعادة تعيين المتغير بالكامل ليشير إلى tuple جديد:
+      </p>
+
+      <div class="code-block">
+dimensions = (<span class="num">200</span>, <span class="num">50</span>)
+<span class="bu">print</span>(<span class="str">"الأبعاد الأصلية:"</span>, dimensions)
+
+dimensions = (<span class="num">400</span>, <span class="num">100</span>)
+<span class="bu">print</span>(<span class="str">"الأبعاد المعدلة:"</span>, dimensions)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>لا يمكنك تغيير عناصر tuple نفسها، لكن يمكنك إعادة تعيين المتغير بالكامل ليشير إلى tuple جديد. هنا <code>dimensions</code> يشير أولاً إلى <code>(200, 50)</code> ويطبع "الأبعاد الأصلية"، ثم يُعاد تعيينه ليشير إلى <code>(400, 100)</code> ويطبع "الأبعاد المعدلة". هذا ليس تعديلاً للـ tuple الأصلي بل إنشاء tuple جديد تماماً وإعادة توجيه المتغير إليه.</p>
+      </div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+الأبعاد الأصلية: (200, 50)
+الأبعاد المعدلة: (400, 100)
+      </div>
+
+      <p>
+        تستخدم tuples عادةً لتخزين القيم الثابتة مثل أبعاد الشاشة، إعدادات الألوان، أو أي بيانات لا يجب أن تتغير أثناء تشغيل البرنامج.
+      </p>
+
+      <h2 class="section-title">تنسيق الكود (PEP 8)</h2>
+
+      <p>
+        <strong>PEP 8</strong> هو دليل أسلوب كتابة كود بايثون. مع أن بايثون تسمح لك بكتابة الكود بأي تنسيق، إلا أن اتباع PEP 8 يجعل كودك أكثر احترافية وأسهل للقراءة، خاصة عند العمل ضمن فريق. إليك أهم الإرشادات:
+      </p>
+
+      <h3 class="subsection-title">المسافة البادئة (Indentation)</h3>
+
+      <p>
+        استخدم 4 مسافات لكل مستوى indentation. لا تستخدم Tab، بل استخدم المسافات (spaces). معظم محررات النصوص تحول Tab تلقائياً إلى 4 مسافات.
+      </p>
+
+      <h3 class="subsection-title">طول السطر</h3>
+
+      <p>
+        يوصي PEP 8 بألا يتجاوز طول السطر 79 حرفاً. للأسطر الطويلة، يمكنك استخدام الأقواس أو الفاصلة الخلفية (<span class="inline-code">\</span>) لتقسيم السطر.
+      </p>
+
+      <h3 class="subsection-title">الأسطر الفارغة</h3>
+
+      <p>
+        استخدم سطراً فارغاً لفصل الأجزاء المنطقية من الكود. استخدم سطرين فارغين لفصل الدوال.
+      </p>
+
+      <h3 class="subsection-title">المسافات البيضاء</h3>
+
+      <p>
+        ضع مسافة واحدة قبل وبعد عوامل المقارنة والتعيين (مثل <span class="inline-code">=</span>, <span class="inline-code">==</span>, <span class="inline-code">+</span>). مثال:
+      </p>
+
+      <div class="code-block">
+x = <span class="num">5</span>       <span class="cm"># صحيح - حسب PEP 8</span>
+y=x+3        <span class="cm"># خطأ - يجب وجود مسافات</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>PEP 8 يوصي بمسافة واحدة قبل وبعد عوامل التعيين (<code>=</code>) والمقارنة (<code>==</code>) والعمليات الحسابية (<code>+</code>). السطر الأول <code>x = 5</code> يتبع PEP 8 — مقروء وواضح. السطر الثاني <code>y=x+3</code> مخالف لأنه يفتقر للمسافات حول <code>=</code> و <code>+</code>. رغم أن الكود سيعمل، إلا أن التنسيق الصحيح يحسن القراءة بشكل كبير ويسهل اكتشاف الأخطاء.</p>
+      </div>
+
+      <h3 class="subsection-title">أسماء المتغيرات والدوال</h3>
+
+      <p>
+        استخدم أسماء ذات معنى واضح. استخدم الحروف الصغيرة (lowercase) مع الشرطة السفلية للفصل بين الكلمات (<span class="inline-code">snake_case</span>) للمتغيرات والدوال.
+      </p>
+
+      <div class="code-block">
+user_name = <span class="str">'ahmed'</span>         <span class="cm"># صحيح</span>
+userLastName = <span class="str">'ali'</span>      <span class="cm"># مخالف لـ PEP 8 (يستخدم camelCase)</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>PEP 8 يوصي باستخدام <code>snake_case</code> لأسماء المتغيرات والدوال — أحرف صغيرة مع شرطة سفلية (<code>_</code>) للفصل بين الكلمات. <code>user_name</code> يتبع PEP 8. <code>userLastName</code> يستخدم <code>camelCase</code> وهو مخالف لإرشادات بايثون (رغم أنه شائع في لغات أخرى مثل JavaScript). الالتزام بهذه الاتفاقيات يسهل قراءة الكود وفهمه، خاصة في المشاريع الكبيرة.</p>
+      </div>
+
+      <div class="note">
+        <strong>💡 نصيحة:</strong> خذ الوقت لتنسيق كودك وفق PEP 8. سيساعدك ذلك على قراءة كودك بشكل أسرع ويسهل على الآخرين فهمه. معظم IDEs الحديثة لديها إضافات (مثل Pylint أو autopep8) تقوم بتنسيق الكود تلقائياً.
+      </div>
+
+      <h2 class="section-title">التمارين</h2>
+
+      <div class="exercise">
+        <strong>تمرين 4-1: بيتزا</strong><br>
+        أنشئ قائمة باسم <span class="inline-code">pizzas</span> تحتوي على ثلاثة أنواع من البيتزا المفضلة لديك. استخدم حلقة <span class="inline-code">for</span> لطباعة كل نوع. ثم أضف جملة خارج الحلقة تقول "أحب البيتزا حقاً!"
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4-2: حيوانات</strong><br>
+        أنشئ قائمة بأسماء ثلاثة حيوانات لها صفة مشتركة. استخدم حلقة <span class="inline-code">for</span> لطباعة اسم كل حيوان. ثم أضف جملة تصف الصفة المشتركة بينهم.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4-3: عد إلى 20</strong><br>
+        استخدم حلقة <span class="inline-code">for</span> لطباعة الأرقام من 1 إلى 20.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4-4: مليون</strong><br>
+        أنشئ قائمة بالأرقام من 1 إلى 1,000,000 ثم استخدم حلقة <span class="inline-code">for</span> لطباعتها.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4-5: إحصائيات المليون</strong><br>
+        أنشئ قائمة بالأرقام من 1 إلى 1,000,000. استخدم <span class="inline-code">min()</span> و <span class="inline-code">max()</span> للتأكد من أن القائمة تبدأ من 1 وتنتهي عند 1,000,000. ثم استخدم <span class="inline-code">sum()</span> لحساب المجموع.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4-6: الأعداد الفردية</strong><br>
+        استخدم <span class="inline-code">range()</span> مع الخطوة 2 لإنشاء قائمة بالأعداد الفردية من 1 إلى 20. ثم اطبعها بحلقة <span class="inline-code">for</span>.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4-7: مضاعفات الثلاثة</strong><br>
+        أنشئ قائمة بمضاعفات العدد 3 من 3 إلى 30. اطبعها بحلقة <span class="inline-code">for</span>.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4-8: مكعبات</strong><br>
+        أنشئ قائمة لمكعبات الأرقام من 1 إلى 10 باستخدام حلقة <span class="inline-code">for</span>.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4-9: مكعبات بقائمة الفهم</strong><br>
+        استخدم قائمة الفهم (list comprehension) لإنشاء قائمة مكعبات الأرقام من 1 إلى 10.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4-10: شرائح</strong><br>
+        أنشئ قائمة بالأرقام من 1 إلى 10. اطبع "الثلاثة الأولى:" ثم شريحة العناصر الثلاثة الأولى. اطبع "الثلاثة الوسطى:" ثم شريحة العناصر الثلاثة الوسطى. اطبع "الثلاثة الأخيرة:" ثم شريحة العناصر الثلاثة الأخيرة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4-11: بيتزا صديقك</strong><br>
+        انسخ قائمة البيتزا إلى قائمة جديدة باسم <span class="inline-code">friend_pizzas</span>. أضف نوع بيتزا جديد إلى القائمة الأصلية وآخر مختلف إلى قائمة الصديق. أظهر أن القائمتين مختلفتان.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4-12: حلقات متعددة مع tuples</strong><br>
+        أنشئ tuple يحتوي على ثلاثة أنواع من الأطعمة. استخدم حلقة <span class="inline-code">for</span> لطباعة كل نوع.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4-13: بوفيه</strong><br>
+        أنشئ tuple بخمسة أطعمة أساسية من مطعم بوفيه. استخدم حلقة <span class="inline-code">for</span> لطباعة جميع الأطعمة. ثم حاول تعديل أحد العناصر (لاحظ الخطأ). بعد ذلك، أعد تعريف الـ tuple بخمسة أطعمة جديدة واطبعها.
+      </div>
+
+      <h2 class="section-title">4.5 Generator Expressions - توليد القيم بكفاءة</h2>
+      <p>المُوَلِّدات (Generators) تنتج القيم واحداً تلو الآخر عند الطلب، بدلاً من إنشاء القائمة كاملة في الذاكرة. هذا يوفّر مئات الميجابايت عند التعامل مع البيانات الضخمة:</p>
+
+      <div class="code-block">
+<span class="cm"># List comprehension - يبني القائمة كلها في الذاكرة</span>
+squares_list = [x**<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="num">1_000_000</span>)]  <span class="cm"># ~28 MB</span>
+
+<span class="cm"># Generator expression - يولد القيم عند التكرار فقط</span>
+squares_gen = (x**<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="num">1_000_000</span>))    <span class="cm"># ~0 bytes ثابت!</span>
+
+<span class="cm"># الفرق: القوسين () بدلاً من []</span>
+<span class="bu">print</span>(<span class="bu">type</span>(squares_gen))  <span class="cm"># <class 'generator'></span>
+<span class="bu">print</span>(<span class="bu">sum</span>(x**<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="num">10</span>)))  <span class="cm"># استخدم مباشرة بدون أقواس إضافية</span>
+
+<span class="cm"># التكرار على generator</span>
+<span class="kw">for</span> val <span class="kw">in</span> (x*<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="num">3</span>)):
+    <span class="bu">print</span>(val)  <span class="cm"># 0, 2, 4</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذا مثال متقدم يقارن بين <strong>list comprehension</strong> (باستخدام <code>[]</code>) و <strong>generator expression</strong> (باستخدام <code>()</code>). الأول يبني القائمة كلها في الذاكرة وتستهلك ~28 MB، بينما الثاني يولّد القيم عند الطلب فقط ولا يستهلك ذاكرة تذكر. المولّدات مثالية للبيانات الضخمة حيث لا تحتاج كل القيم في آن واحد. السطر الأخير يوضح التكرار على مولّد لطباعة 0، 2، 4.</p>
+      </div>
+
+      <h3 class="subsection-title">دوال المولّدات - yield</h3>
+      <div class="code-block">
+<span class="kw">def</span> <span class="fn">read_large_file</span>(file_path):
+    <span class="cm"># لا يقرأ الملف كله في الذاكرة — يقرأ سطراً سطراً</span>
+    <span class="kw">with</span> <span class="bu">open</span>(file_path) <span class="kw">as</span> f:
+        <span class="kw">for</span> line <span class="kw">in</span> f:
+            <span class="kw">yield</span> line.strip()
+
+<span class="cm"># استخدم كما لو كانت iterator عادي</span>
+<span class="kw">for</span> line <span class="kw">in</span> <span class="fn">read_large_file</span>(<span class="str">'large_log.txt'</span>):
+    <span class="kw">if</span> <span class="str">'ERROR'</span> <span class="kw">in</span> line:
+        <span class="bu">print</span>(line)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>الدالة <code>read_large_file</code> هي دالة مُولِّد (Generator Function) تستخدم <code>yield</code> بدلاً من <code>return</code>. كلما وصل التنفيذ إلى <code>yield</code>، ترجع الدالة السطر الحالي وتتذكر موضعها. عند الطلب التالي، تستكمل من حيث توقفت. هذا يسمح بقراءة ملفات ضخمة سطراً سطراً دون تحميلها كلها في الذاكرة — كفاءة عالية جداً مع الملفات الكبيرة.</p>
+      </div>
+
+      <h3 class="subsection-title">itertools - أدوات تكرار محترفة</h3>
+      <div class="code-block">
+<span class="kw">import</span> itertools
+
+<span class="cm"># count - عد لا نهائي (مفيد مع enumerate)</span>
+<span class="kw">for</span> i, val <span class="kw">in</span> <span class="bu">zip</span>(itertools.count(start=<span class="num">1</span>), [<span class="str">'a'</span>, <span class="str">'b'</span>, <span class="str">'c'</span>]):
+    <span class="bu">print</span>(i, val)  <span class="cm"># 1 a, 2 b, 3 c</span>
+
+<span class="cm"># cycle - تكرار لا نهائي على تسلسل</span>
+colors = [<span class="str">'red'</span>, <span class="str">'green'</span>, <span class="str">'blue'</span>]
+<span class="kw">for</span> i, color <span class="kw">in</span> <span class="bu">zip</span>(<span class="bu">range</span>(<span class="num">7</span>), itertools.cycle(colors)):
+    <span class="bu">print</span>(i, color)  <span class="cm"># 0 red, 1 green, 2 blue, 3 red, ...</span>
+
+<span class="cm"># chain - دمج مكررات متعددة</span>
+combined = itertools.chain([<span class="num">1</span>, <span class="num">2</span>], [<span class="num">3</span>, <span class="num">4</span>], [<span class="num">5</span>])
+<span class="bu">print</span>(<span class="bu">list</span>(combined))  <span class="cm"># [1, 2, 3, 4, 5]</span>
+
+<span class="cm"># groupby - تجميع العناصر المتجاورة</span>
+data = [(<span class="str">'A'</span>, <span class="num">1</span>), (<span class="str">'A'</span>, <span class="num">2</span>), (<span class="str">'B'</span>, <span class="num">3</span>), (<span class="str">'B'</span>, <span class="num">4</span>)]
+<span class="kw">for</span> key, group <span class="kw">in</span> itertools.groupby(data, key=<span class="kw">lambda</span> x: x[<span class="num">0</span>]):
+    <span class="bu">print</span>(key, <span class="bu">list</span>(group))
+
+<span class="cm"># islice - تقطيع المكررات مثل القوائم</span>
+<span class="bu">print</span>(<span class="bu">list</span>(itertools.islice(<span class="bu">range</span>(<span class="num">100</span>), <span class="num">5</span>, <span class="num">10</span>)))  <span class="cm"># [5, 6, 7, 8, 9]</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>وحدة <code>itertools</code> توفر أدوات تكرار فعالة ومحسَّنة مكتوبة بلغة C. <code>count()</code> يُنشئ عدّاً لا نهائياً، <code>cycle()</code> يُكرّر تسلسلاً دورياً إلى ما لا نهاية، <code>chain()</code> يدمج مكرِّرات متعددة في تسلسل واحد، <code>groupby()</code> يجمع العناصر المتجاورة ذات المفتاح نفسه، و <code>islice()</code> يقطّع المكرِّرات مثل الشرائح. هذه الأدوات أساسية لكتابة كود تكرار احترافي عالي الأداء.</p>
+      </div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> المولّدات هي أساس التكرار الفعال في بايثون. استخدم <span class="inline-code">()</span> بدل <span class="inline-code">[]</span> عندما لا تحتاج القائمة كاملة. <span class="inline-code">itertools</span> يحتوي على دوال C-optimised للتكرار. <span class="inline-code">groupby</span> يحتاج البيانات مرتبة مسبقاً. <span class="inline-code">chain</span> أسرع من دمج القوائم يدوياً.</div>
+
+      <h3 class="subsection-title">itertools المتقدمة — توليفات وتباديل</h3>
+      <div class="code-block">
+<span class="kw">import</span> itertools
+
+<span class="cm"># product — حاصل الضرب الديكارتي (مثل حلقتين متداخلتين)</span>
+suits = [<span class="str">'♥'</span>, <span class="str">'♦'</span>, <span class="str">'♣'</span>, <span class="str">'♠'</span>]
+ranks = [<span class="str">'2'</span>, <span class="str">'3'</span>, <span class="str">'4'</span>, <span class="str">'5'</span>]
+cards = <span class="bu">list</span>(itertools.product(ranks, suits))
+<span class="bu">print</span>(<span class="bu">len</span>(cards))  <span class="cm"># 20 (4 * 5)</span>
+
+<span class="cm"># permutations — تباديل: ترتيب مهم (n! / (n-r)!)</span>
+<span class="bu">print</span>(<span class="bu">list</span>(itertools.permutations(<span class="str">'ABC'</span>, <span class="num">2</span>)))
+<span class="cm"># [('A','B'), ('A','C'), ('B','A'), ('B','C'), ('C','A'), ('C','B')]</span>
+
+<span class="cm"># combinations — توليفات: ترتيب غير مهم (n! / r!(n-r)!)</span>
+<span class="bu">print</span>(<span class="bu">list</span>(itertools.combinations(<span class="str">'ABC'</span>, <span class="num">2</span>)))
+<span class="cm"># [('A','B'), ('A','C'), ('B','C')]</span>
+
+<span class="cm"># combinations_with_replacement — مع إعادة</span>
+<span class="bu">print</span>(<span class="bu">list</span>(itertools.combinations_with_replacement(<span class="str">'ABC'</span>, <span class="num">2</span>)))
+<span class="cm"># [('A','A'), ('A','B'), ('A','C'), ('B','B'), ('B','C'), ('C','C')]</span>
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود بالتفصيل:</strong>
+        <p>هذه دوال توافقية من <code>itertools</code>: <code>product()</code> يحسب حاصل الضرب الديكارتي (كل التركيبات الممكنة بين مجموعتين)، <code>permutations()</code> يحسب التباديل حيث الترتيب مهم، <code>combinations()</code> يحسب التوليفات حيث الترتيب غير مهم، و <code>combinations_with_replacement()</code> يسمح بتكرار العناصر. هذه الدوال منفذة بلغة C، وهي أسرع بكثير من أي تنفيذ يدوي — مثالية لخوارزميات التحليل التوافقي واختبار الحالات.</p>
+      </div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> <span class="inline-code">product</span> أسرع من الحلقات المتداخلة. <span class="inline-code">permutations</span> و <span class="inline-code">combinations</span> أساسيان في الخوارزميات — مثالية لاختبار الحالات والتحليلات التوافقية. هذه الدوال منفذة بلغة C — أسرع بكثير من التنفيذ اليدوي.</div>
+
+      <h2 class="section-title">ملخص الفصل</h2>
+
+      <div class="summary-box">
+        <h3>📋 ملخص الفصل 4: التعامل مع القوائم</h3>
+        <ul>
+          <li>تعلمت استخدام حلقة <strong>for</strong> للتكرار عبر عناصر القائمة</li>
+          <li>أدركت أهمية المسافة البادئة (indentation) في تحديد جسم الحلقة</li>
+          <li>تعرفت على الأنواع الأربعة لأخطاء المسافة البادئة وكيفية تجنبها</li>
+          <li>تعلمت إنشاء قوائم رقمية باستخدام <strong>range()</strong></li>
+          <li>استخدمت دوال الإحصاء <strong>min()</strong>, <strong>max()</strong>, <strong>sum()</strong></li>
+          <li>تعرفت على <strong>list comprehensions</strong> لإنشاء القوائم بطريقة مختصرة</li>
+          <li>تعلمت التعامل مع <strong>الشرائح (slicing)</strong> لاستخراج أجزاء من القائمة</li>
+          <li>عرفت كيفية <strong>نسخ قائمة</strong> باستخدام <span class="inline-code">[:]</span></li>
+          <li>تعرفت على <strong>tuples</strong> وكيفية تعريفها والتكرار عبرها وإعادة تعريفها</li>
+          <li>اطلعت على إرشادات <strong>PEP 8</strong> لتنسيق كود بايثون بشكل احترافي</li>
+        </ul>
+      </div>
+
+    <div class="note"><strong>💡 نصيحة ذهبية:</strong> استخدم <span class="inline-code">enumerate()</span> للوصول إلى الفهرس أثناء التكرار: <span class="inline-code">for i, val in enumerate(list)</span>. استخدم <span class="inline-code">zip()</span> للتكرار على قائمتين معاً: <span class="inline-code">for a, b in zip(list1, list2)</span>. استخدم <span class="inline-code">reversed()</span> للتكرار عكسياً و <span class="inline-code">sorted()</span> للتكرار بترتيب مختلف.</div>
+
+    <div class="warning"><strong>⚠️ خطأ شائع:</strong> الخلط بين <span class="inline-code">[:]</span> (نسخ القائمة) و <span class="inline-code">=</span> (إنشاء مرجع). <span class="inline-code">list2 = list1</span> لا ينسخ — كلا المتغيرين يشيران لنفس القائمة. استخدم <span class="inline-code">list2 = list1[:]</span> أو <span class="inline-code">list2 = list1.copy()</span> للنسخ الحقيقي.</div>
+
+    <div class="exercise"><strong>🏋️ تمرين:</strong> أنشئ قائمة أرقام من 1 إلى 15. استخدم slicing لاستخراج: العناصر من الفهرس 3 إلى 8، أول 5 عناصر، آخر 3 عناصر، كل عنصر ثاني. ثم اطبع القائمة مقلوبة باستخدام <span class="inline-code">[::-1]</span>. جرب أيضاً <span class="inline-code">list(reversed(my_list))</span>.</div>
+
+    <div class="footer">
+      <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+      <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+    </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) { link.classList.add('active'); }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

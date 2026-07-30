@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الفصل 10: الملفات والاستثناءات - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link active">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <div class="part-badge">📘 الجزء الأول: الأساسيات</div>
+      <h1>الفصل 10: الملفات والاستثناءات</h1>
+      <p>Files and Exceptions</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>في هذا الفصل، ستتعلم كيفية التعامل مع الملفات — قراءة البيانات منها وكتابتها إلى ملفات جديدة. ستتعلم أيضاً كيفية معالجة الأخطاء باستخدام الاستثناءات (Exceptions) حتى لا يتوقف برنامجك بشكل مفاجئ عند حدوث خطأ. وأخيراً، ستتعلم كيفية حفظ البيانات باستخدام تنسيق JSON لمشاركتها بين جلسات البرنامج المختلفة.</p>
+
+      <!-- ========================================================== -->
+      <h2 class="section-title">قراءة من ملف</h2>
+      <p>عندما تريد تحليل كميات كبيرة من البيانات، تحتاج عادة إلى قراءتها من ملف. توفر بايثون طرقاً متعددة لقراءة محتويات الملفات النصية.</p>
+
+      <h3 class="subsection-title">قراءة الملف بأكمله</h3>
+      <p>لقراءة ملف، تحتاج أولاً إلى ملف نصي. لنفترض أن لدينا ملفاً باسم <span class="inline-code">pi_digits.txt</span> يحتوي على بعض أرقام باي. لقراءة محتواه، نستخدم الدالة <span class="inline-code">open()</span> التي تُرجع كائن ملف يمثل الملف المفتوح:</p>
+
+      <div class="code-block">
+<span class="cm"># file_reader.py</span>
+<span class="kw">with</span> open(<span class="str">'pi_digits.txt'</span>) <span class="kw">as</span> file_object:
+    contents = file_object.read()
+    print(contents)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>يشرح هذا المثال كيفية فتح ملف وقراءة محتواه بالكامل. الدالة <code>open()</code> تأخذ اسم الملف وتُعيد كائن ملف. جملة <code>with</code> تدير الملف تلقائياً وتغلقه عند الخروج من الكتلة حتى لو حدث خطأ — هذا أفضل من استدعاء <code>close()</code> يدوياً. الدالة <code>read()</code> تقرأ المحتوى كله وتُعيده كسلسلة نصية واحدة. لاحظ أن السلسلة قد تحتوي على سطر جديد إضافي <code>\n</code> في النهاية.</p></div>
+
+      <p>يُستخدم الأمر <span class="inline-code">with</span> لإدارة الملفات بشكل تلقائي — فهو يغلق الملف بمجرد الانتهاء من الكتلة حتى لو حدث خطأ. الدالة <span class="inline-code">read()</span> تقرأ المحتوى بالكامل وتعيده كسلسلة نصية. ستلاحظ أن المحتوى يظهر مع سطر فارغ إضافي في النهاية لأن <span class="inline-code">read()</span> تُرجع سطراً فارغاً عند نهاية الملف.</p>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+3.1415926535
+  8979323846
+  2643383279
+      </div>
+
+      <h3 class="subsection-title">مسارات الملفات</h3>
+      <p>عندما يكون الملف في نفس مجلد البرنامج، يكفي استخدام اسم الملف فقط. أما إذا كان الملف في مجلد مختلف، فستحتاج إلى تحديد المسار. هناك نوعان من المسارات:</p>
+
+      <ul>
+        <li><strong>المسار النسبي (Relative Path):</strong> مسار يعتمد على موقع البرنامج الحالي. مثلاً <span class="inline-code">'text_files/pi_digits.txt'</span> يعني مجلد فرعي اسمه text_files.</li>
+        <li><strong>المسار المطلق (Absolute Path):</strong> مسار كامل من جذر النظام. مثل <span class="inline-code">'/home/user/data/pi_digits.txt'</span> في لينكس أو <span class="inline-code">'C:\\Users\\user\\data\\pi_digits.txt'</span> في ويندوز.</li>
+      </ul>
+
+      <p>في لينكس وأنظمة macOS، تستخدم الأشرطة المائلة <span class="inline-code">/</span> لفصل المجلدات. أما في ويندوز فتستخدم الأشرطة المائلة العكسية <span class="inline-code">\</span>، لكن يمكنك استخدام <span class="inline-code">/</span> أيضاً في كود بايثون.</p>
+
+      <div class="code-block">
+<span class="cm"># استخدام المسار النسبي</span>
+<span class="kw">with</span> open(<span class="str">'text_files/pi_digits.txt'</span>) <span class="kw">as</span> file_object:
+    contents = file_object.read()
+
+<span class="cm"># استخدام المسار المطلق</span>
+file_path = <span class="str">'/home/user/data/pi_digits.txt'</span>
+<span class="kw">with</span> open(file_path) <span class="kw">as</span> file_object:
+    contents = file_object.read()
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>يوضح هذا المثال الفرق بين المسار النسبي والمسار المطلق. المسار النسبي <code>'text_files/pi_digits.txt'</code> يُحدد موقع الملف بالنسبة للمجلد الذي يعمل منه البرنامج. المسار المطلق يبدأ من جذر النظام (<code>/</code> في لينكس) ويكون مستقلاً عن موقع البرنامج. استخدام المسار النسبي أفضل لأنه يجعل الكود قابلاً للنقل بين أجهزة مختلفة دون تعديل.</p></div>
+
+      <div class="note">
+        <strong>ملاحظة:</strong> في ويندوز، المسار المطلق يبدو مثل <span class="inline-code">'C:\\Users\\user\\data\\pi_digits.txt'</span>. استخدم حرف <span class="inline-code">r</span> قبل النص لإنشاء سلسلة نصية خام: <span class="inline-code">r'C:\Users\user\data\pi_digits.txt'</span>.
+      </div>
+
+      <h3 class="subsection-title">قراءة الملف سطراً سطراً</h3>
+      <p>في بعض الأحيان تحتاج لقراءة الملف سطراً سطراً، خاصة إذا كان الملف كبيراً. يمكنك استخدام حلقة <span class="inline-code">for</span> مع كائن الملف:</p>
+
+      <div class="code-block">
+<span class="cm"># file_reader_loop.py</span>
+filename = <span class="str">'pi_digits.txt'</span>
+
+<span class="kw">with</span> open(filename) <span class="kw">as</span> file_object:
+    <span class="kw">for</span> line <span class="kw">in</span> file_object:
+        print(line)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>هنا نقرأ الملف سطراً سطراً باستخدام حلقة <code>for</code>. كائن الملف قابل للتكرار (iterable)، لذلك يمكننا المرور عليه سطراً بعد سطر. هذا مفيد جداً للملفات الكبيرة جداً — بدلاً من تحميل الملف بأكمله في الذاكرة، نقرأ سطراً واحداً في كل مرة. كل سطر يُطبع مع سطر فارغ إضافي لأن كلاً من الملف و <code>print()</code> يُضيفان حرف <code>\n</code>.</p></div>
+
+      <p>كل سطر يُطبع مع سطر فارغ إضافي لأن كل سطر في الملف يحتوي على حرف سطر جديد <span class="inline-code">\n</span> في نهايته، و <span class="inline-code">print()</span> تضيف واحداً آخر. لإزالة الفراغات الزائدة نستخدم <span class="inline-code">rstrip()</span>:</p>
+
+      <div class="code-block">
+<span class="kw">with</span> open(filename) <span class="kw">as</span> file_object:
+    <span class="kw">for</span> line <span class="kw">in</span> file_object:
+        print(line.rstrip())
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>الدالة <code>rstrip()</code> تزيل المسافات البيضاء (بما فيها <code>\n</code>) من الطرف الأيمن للسلسلة. هنا نستخدمها لإزالة حرف السطر الجديد الذي يأتي مع كل سطر من الملف، حتى لا نطبع سطوراً فارغة إضافية بين الأسطر. <code>rstrip()</code> لا تعدّل السلسلة الأصلية بل تُعيد نسخة جديدة منقّحة.</p></div>
+
+      <h3 class="subsection-title">إنشاء قائمة من الأسطر</h3>
+      <p>عند استخدام <span class="inline-code">with</span>، يكون كائن الملف متاحاً فقط داخل الكتلة. لكن يمكنك تخزين الأسطر في قائمة داخل الكتلة والاستمرار في العمل عليها بعدها:</p>
+
+      <div class="code-block">
+<span class="cm"># pi_string.py</span>
+filename = <span class="str">'pi_digits.txt'</span>
+
+<span class="kw">with</span> open(filename) <span class="kw">as</span> file_object:
+    lines = file_object.readlines()
+
+pi_string = <span class="str">''</span>
+<span class="kw">for</span> line <span class="kw">in</span> lines:
+    pi_string += line.strip()
+
+print(pi_string)
+print(len(pi_string))
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>الدالة <code>readlines()</code> تقرأ كل أسطر الملف وتُعيدها كقائمة — كل عنصر في القائمة يمثل سطراً واحداً. هذا يسمح لنا بالاحتفاظ بالأسطر بعد خروجنا من كتلة <code>with</code>. ثم نستخدم <code>strip()</code> (بدلاً من <code>rstrip()</code>) لإزالة المسافات البيضاء من كلا الجانبين، ونضم الأسطر في سلسلة واحدة. <code>len(pi_string)</code> تُظهر طول السلسلة النصية الناتجة.</p></div>
+
+      <p>الدالة <span class="inline-code">readlines()</span> تأخذ كل سطر من الملف وتخزنه في قائمة. خارج الكتلة، لا يزال بإمكاننا استخدام هذه القائمة. استخدمنا <span class="inline-code">strip()</span> بدلاً من <span class="inline-code">rstrip()</span> لإزالة المسافات على الجانبين.</p>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+3.141592653589793238462643383279
+32
+      </div>
+
+      <h3 class="subsection-title">العمل مع محتوى الملف</h3>
+      <p>بعد قراءة الملف في الذاكرة، يمكنك التعامل مع البيانات بأي طريقة تريدها. مثلاً، يمكن إعادة بناء رقم باي كسلسلة نصية واحدة ثم تحويلها إلى رقم عشري وعرضها بتنسيق معين:</p>
+
+      <div class="code-block">
+<span class="cm"># birthday_pi.py - التحقق من وجود تاريخ ميلاد في أرقام باي</span>
+filename = <span class="str">'pi_million_digits.txt'</span>
+
+<span class="kw">with</span> open(filename) <span class="kw">as</span> file_object:
+    lines = file_object.readlines()
+
+pi_string = <span class="str">''</span>
+<span class="kw">for</span> line <span class="kw">in</span> lines:
+    pi_string += line.strip()
+
+birthday = input(<span class="str">"أدخل تاريخ ميلادك بصيغة ddmmyy: "</span>)
+<span class="kw">if</span> birthday <span class="kw">in</span> pi_string:
+    print(<span class="str">"تاريخ ميلادك موجود في أول مليون رقم من باي!"</span>)
+<span class="kw">else</span>:
+    print(<span class="str">"تاريخ ميلادك غير موجود في أول مليون رقم من باي."</span>)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>هذا مثال عملي على تحليل ملف كبير. يُقرأ مليون رقم من أرقام باي من ملف نصي، ثم يُدمج في سلسلة واحدة باستخدام <code>strip()</code>. بعدها يُطلب من المستخدم إدخال تاريخ ميلاده، ويتم البحث عنه في السلسلة باستخدام العامل <code>in</code>. هذه تقنية مفيدة للبحث في نصوص كبيرة — يمكن تطبيقها على قواعد بيانات ضخمة أو ملفات سجلات.</p></div>
+
+      <p>يقرأ هذا الكود ملفاً يحتوي على أول مليون رقم من باي، ويبحث عن تاريخ ميلاد المستخدم ضمن هذه الأرقام. هذا مثال رائع على كيفية تحليل البيانات النصية المخزنة في ملف.</p>
+
+      <h3 class="subsection-title">الملفات الكبيرة</h3>
+      <p>تعمل بايثون بشكل جيد جداً مع الملفات الكبيرة. لا يوجد حد لكمية البيانات التي يمكنك تحليلها طالما أن ذاكرة جهازك كافية. يمكن قراءة ملايين الأسطر في قائمة ثم العمل عليها. الملف <span class="inline-code">pi_million_digits.txt</span> الذي قد يحتوي على ملايين الأرقام يمكن قراءته والتعامل معه بنفس الطرق السابقة.</p>
+
+      <!-- ========================================================== -->
+      <h2 class="section-title">الكتابة إلى ملف</h2>
+      <p>من أكثر المهام شيوعاً في البرمجة حفظ البيانات. تتيح لك بايثون الكتابة إلى الملفات النصية بسهولة.</p>
+
+      <h3 class="subsection-title">الكتابة إلى ملف فارغ</h3>
+      <p>للكتابة إلى ملف، استخدم <span class="inline-code">open()</span> مع الوسيط الثاني <span class="inline-code">'w'</span> (اختصار write):</p>
+
+      <div class="code-block">
+<span class="cm"># write_message.py</span>
+filename = <span class="str">'programming.txt'</span>
+
+<span class="kw">with</span> open(filename, <span class="str">'w'</span>) <span class="kw">as</span> file_object:
+    file_object.write(<span class="str">"I love programming.\n"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>هنا نكتب إلى ملف باستخدام وضع <code>'w'</code> (write). إذا كان الملف موجوداً مسبقاً، فسيتم مسح محتواه بالكامل قبل الكتابة. إذا لم يكن موجوداً، سيتم إنشاؤه. الدالة <code>write()</code> لا تُضيف حرف سطر جديد تلقائياً، لذلك يجب إضافة <code>\n</code> يدوياً في نهاية كل سطر. جملة <code>with</code> تضمن إغلاق الملف وحفظ التغييرات تلقائياً.</p></div>
+
+      <p>الوضع <span class="inline-code">'w'</span> يفتح الملف للكتابة. إذا كان الملف موجوداً، فسيتم مسح محتواه أولاً. إذا لم يكن موجوداً، سيتم إنشاؤه. لاحظ أننا أضفنا <span class="inline-code">\n</span> يدوياً لأن <span class="inline-code">write()</span> لا تضيف سطراً جديداً تلقائياً.</p>
+
+      <div class="warning">
+        <strong>تحذير:</strong> وضع <span class="inline-code">'w'</span> سيمسح الملف بالكامل إذا كان موجوداً! احذر عند استخدامه مع ملفات مهمة.
+      </div>
+
+      <h3 class="subsection-title">الكتابة بأسطر متعددة</h3>
+      <p>يمكنك استدعاء <span class="inline-code">write()</span> عدة مرات لكتابة أسطر متعددة. تذكر إضافة <span class="inline-code">\n</span> لكل سطر:</p>
+
+      <div class="code-block">
+filename = <span class="str">'programming.txt'</span>
+
+<span class="kw">with</span> open(filename, <span class="str">'w'</span>) <span class="kw">as</span> file_object:
+    file_object.write(<span class="str">"I love programming.\n"</span>)
+    file_object.write(<span class="str">"I love creating new games.\n"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>نستدعي <code>write()</code> مرتين متتاليتين داخل نفس كتلة <code>with</code> لكتابة سطرين في الملف. كل استدعاء يضيف سطراً واحداً، ولكن يجب تذكر إضافة <code>\n</code> في نهاية كل سطر. يمكن استدعاء <code>write()</code> عدة مرات حسب الحاجة، أو يمكنك بناء سلسلة نصية كبيرة ثم كتابتها دفعة واحدة. كلا الأسلوبين فعّالان.</p></div>
+
+      <p>سيؤدي هذا إلى إنشاء ملف بسطرين منفصلين. يمكنك أيضاً استخدام السلاسل النصية متعددة الأسطر أو ربط النصوص معاً قبل الكتابة.</p>
+
+      <h3 class="subsection-title">الإضافة إلى ملف (Appending)</h3>
+      <p>إذا أردت إضافة محتوى إلى ملف دون مسح محتواه الحالي، استخدم الوضع <span class="inline-code">'a'</span> (اختصار append). هذا يضيف النص في نهاية الملف:</p>
+
+      <div class="code-block">
+<span class="cm"># write_message.py (إضافة)</span>
+filename = <span class="str">'programming.txt'</span>
+
+<span class="kw">with</span> open(filename, <span class="str">'a'</span>) <span class="kw">as</span> file_object:
+    file_object.write(<span class="str">"I also love finding meaning in large datasets.\n"</span>)
+    file_object.write(<span class="str">"I love creating apps that can run in a browser.\n"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>الوضع <code>'a'</code> (append) يُضيف نصوصاً جديدة في نهاية الملف دون المساس بالمحتوى الموجود. هذا مثالي لسجلات التطبيقات (logs) أو أي حالة تريد فيها إضافة بيانات باستمرار إلى ملف. مثل <code>'w'</code>، إذا لم يكن الملف موجوداً سيتم إنشاؤه تلقائياً. مع <code>'a'</code>، لست بحاجة للقلق أبداً بشأن فقدان البيانات القديمة.</p></div>
+
+      <p>الوضع <span class="inline-code">'a'</span> لا يمسح الملف. أي محتوى جديد يُضاف في نهاية الملف الموجود. إذا لم يكن الملف موجوداً، سيتم إنشاؤه تماماً مثل الوضع <span class="inline-code">'w'</span>.</p>
+
+      <div class="note">
+        <strong>ملاحظة:</strong> هناك أيضاً الوضع <span class="inline-code">'r'</span> للقراءة (الوضع الافتراضي)، والوضع <span class="inline-code">'r+'</span> للقراءة والكتابة معاً. لكن الوضعين <span class="inline-code">'w'</span> و <span class="inline-code">'a'</span> هما الأكثر استخداماً للكتابة.
+      </div>
+
+      <!-- ========================================================== -->
+      <h2 class="section-title">الاستثناءات (Exceptions)</h2>
+      <p>الاستثناءات هي أخطاء تُكتشف أثناء تنفيذ البرنامج. بايثون تتعامل مع هذه الأخطاء باستخدام كائنات استثناء خاصة. إذا لم يتم التعامل مع الاستثناء، سيتوقف البرنامج ويظهر خطأ (Traceback). لكن يمكنك التحكم في كيفية تعامل البرنامج مع الأخطاء باستخدام كتل <span class="inline-code">try-except</span>.</p>
+
+      <h3 class="subsection-title">معالجة خطأ ZeroDivisionError</h3>
+      <p>لا يمكن قسمة أي رقم على صفر في الرياضيات، وبايثون ترفض ذلك أيضاً. حاول تشغيل هذا الكود:</p>
+
+      <div class="code-block">
+<span class="cm"># division_calculator.py</span>
+print(<span class="num">5</span> / <span class="num">0</span>)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>محاولة قسمة عدد على صفر تُسبب خطأ <code>ZeroDivisionError</code> في بايثون. هذا الكود البسيط يتعمد إثارة هذا الخطأ لتوضيح أنه عندما لا نتعامل مع الاستثناء، يتوقف البرنامج فجأة ويظهر Traceback أحمر اللون. هذا النوع من الأخطاء يحدث كثيراً عندما نعتمد على إدخال المستخدم — قد يُدخل المستخدم صفراً كرقم ثانٍ للقسمة.</p></div>
+
+      <p>ستحصل على خطأ <span class="inline-code">ZeroDivisionError</span> وسيتوقف البرنامج. هذا النوع من الأخطاء شائع جداً عندما تعمل مع إدخال المستخدم.</p>
+
+      <h3 class="subsection-title">كتلة try-except</h3>
+      <p>للتعامل مع الأخطاء المحتملة، ضع الكود الذي قد يسبب خطأ داخل كتلة <span class="inline-code">try</span>، ثم ضع ما يجب فعله عند حدوث الخطأ في كتلة <span class="inline-code">except</span>:</p>
+
+      <div class="code-block">
+<span class="cm"># division_calculator.py</span>
+<span class="kw">try</span>:
+    answer = <span class="num">5</span> / <span class="num">0</span>
+    print(answer)
+<span class="kw">except</span> ZeroDivisionError:
+    print(<span class="str">"لا يمكنك القسمة على صفر!"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>هذا هو الهيكل الأساسي لمعالجة الاستثناءات: <code>try</code> يحتوي على الكود الذي قد يرفع استثناءً، و <code>except</code> يحتوي على الكود الذي ينفذ عند حدوث الخطأ. عندما نحاول قسمة 5 على 0، ترى بايثون الخطأ وتنتقل فوراً إلى كتلة <code>except ZeroDivisionError</code> دون تنفيذ بقية كتلة <code>try</code>. هذا يمنع تعطل البرنامج ويسمح بعرض رسالة خطأ مفهومة للمستخدم.</p></div>
+
+      <p>الآن بدلاً من توقف البرنامج بشكل مفاجئ، يتم تنفيذ الكود داخل <span class="inline-code">except</span> وتظهر رسالة ودية. يستمر البرنامج في العمل بشكل طبيعي.</p>
+
+      <h3 class="subsection-title">منع تعطل البرنامج</h3>
+      <p>باستخدام <span class="inline-code">try-except</span>، يمكنك بناء برامج تتحمل الأخطاء. إليك مثال يحسب القسمة بناءً على إدخال المستخدم:</p>
+
+      <div class="code-block">
+<span class="cm"># division_calculator.py</span>
+print(<span class="str">"أعطني رقمين للقسمة."</span>)
+print(<span class="str">"اضغط 'q' للخروج."</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    first_number = input(<span class="str">"\nالرقم الأول: "</span>)
+    <span class="kw">if</span> first_number == <span class="str">'q'</span>:
+        <span class="kw">break</span>
+    second_number = input(<span class="str">"الرقم الثاني: "</span>)
+    <span class="kw">if</span> second_number == <span class="str">'q'</span>:
+        <span class="kw">break</span>
+    <span class="kw">try</span>:
+        answer = int(first_number) / int(second_number)
+    <span class="kw">except</span> ZeroDivisionError:
+        print(<span class="str">"لا يمكنك القسمة على صفر!"</span>)
+    <span class="kw">else</span>:
+        print(answer)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>يجمع هذا المثال بين <code>while</code> و <code>try/except/else</code> لبناء آلة حاسبة للقسمة تتحمل الأخطاء. الحلقة تستمر في طلب الأرقام حتى يدخل المستخدم 'q'. كود القسمة داخل <code>try</code>، ومعالجة خطأ القسمة على صفر في <code>except</code>. كتلة <code>else</code> تنفذ فقط إذا نجحت القسمة — هنا نعرض النتيجة. هذا يفصل بوضوح بين الكود الذي قد يخطئ والكود الذي يعتمد على نجاحه.</p></div>
+
+      <h3 class="subsection-title">كتلة else</h3>
+      <p>يمكن أن تتبع كتلة <span class="inline-code">try-except</span> كتلة <span class="inline-code">else</span>. يتم تنفيذ كتلة <span class="inline-code">else</span> فقط إذا لم يحدث استثناء. هذا يسمح بفصل الكود الذي قد يسبب خطأ عن الكود الذي يعتمد على نجاحه:</p>
+
+      <div class="code-block">
+<span class="cm"># مع else: تنفيذ فقط إذا نجح try</span>
+<span class="kw">try</span>:
+    answer = int(first_number) / int(second_number)
+<span class="kw">except</span> ZeroDivisionError:
+    print(<span class="str">"لا يمكنك القسمة على صفر!"</span>)
+<span class="kw">else</span>:
+    print(answer)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>كتلة <code>else</code> اختيارية وتتبع <code>except</code>. تُنفّذ فقط عندما لا يحدث أي استثناء في كتلة <code>try</code>. هذا مفيد جداً لفصل المنطق: نضع الكود الذي قد يسبب خطأ في <code>try</code>، والكود الذي يستخدم نتيجة ذلك الكود في <code>else</code>. المبدأ هو EAFP (Easier to Ask for Forgiveness than Permission) — حاول التنفيذ أولاً، وتعامل مع الأخطاء لاحقاً.</p></div>
+
+      <p>في هذا المثال، كود القسمة موجود في <span class="inline-code">try</span>، وكود عرض النتيجة في <span class="inline-code">else</span>. هذا أجمل من وضع <span class="inline-code">print(answer)</span> داخل <span class="inline-code">try</span> لأننا نعرض النتيجة فقط عندما تنجح القسمة.</p>
+
+      <h3 class="subsection-title">معالجة خطأ FileNotFoundError</h3>
+      <p>أحد الأخطاء الشائعة هو محاولة قراءة ملف غير موجود. تتعامل بايثون مع هذا باستثناء <span class="inline-code">FileNotFoundError</span>:</p>
+
+      <div class="code-block">
+<span class="cm"># alice.py</span>
+filename = <span class="str">'alice.txt'</span>
+
+<span class="kw">try</span>:
+    <span class="kw">with</span> open(filename, encoding=<span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+        contents = f.read()
+<span class="kw">except</span> FileNotFoundError:
+    print(<span class="str">f"عذراً، الملف {filename} غير موجود."</span>)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>هنا نتعامل مع خطأ <code>FileNotFoundError</code> عند محاولة فتح ملف غير موجود. نضع كود فتح الملف داخل <code>try</code> — إذا لم يكن الملف موجوداً، ترفع <code>open()</code> استثناء <code>FileNotFoundError</code> ويتم التقاطه في <code>except</code>. لاحظ استخدام <code>encoding='utf-8'</code> — هذا ضروري لقراءة النصوص التي تحتوي على حروف غير لاتينية (مثل العربية). UTF-8 هو الترميز الأكثر انتشاراً على الويب.</p></div>
+
+      <p>لاحظ أننا استخدمنا <span class="inline-code">encoding='utf-8'</span> — هذا ضروري عندما يحتوي الملف على نصوص غير إنجليزية (مثل العربية) أو رموز خاصة. UTF-8 هو الترميز الأكثر شيوعاً للنصوص.</p>
+
+      <h3 class="subsection-title">تحليل النصوص</h3>
+      <p>بعد قراءة الملف، يمكننا تحليل النص. مثلاً، يمكننا عد عدد الكلمات في كتاب:</p>
+
+      <div class="code-block">
+<span class="cm"># alice.py - عد الكلمات في كتاب أليس في بلاد العجائب</span>
+filename = <span class="str">'alice.txt'</span>
+
+<span class="kw">try</span>:
+    <span class="kw">with</span> open(filename, encoding=<span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+        contents = f.read()
+<span class="kw">except</span> FileNotFoundError:
+    print(<span class="str">f"عذراً، الملف {filename} غير موجود."</span>)
+<span class="kw">else</span>:
+    words = contents.split()
+    num_words = len(words)
+    print(<span class="str">f"الملف {filename} يحتوي على {num_words} كلمة."</span>)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>يجمع هذا المثال بين <code>try/except/else</code> وقراءة ملف وتحليله. <code>read()</code> تقرأ المحتوى الكامل، ثم في كتلة <code>else</code> نستخدم <code>split()</code> لتقسيم النص إلى قائمة كلمات — <code>split()</code> تفصل النص عند كل مسافة بيضاء (مسافات، أسطر جديدة، tabs). عدد الكلمات هو طول هذه القائمة باستخدام <code>len()</code>. هذا أسلوب بسيط لكنه فعّال لحساب الكلمات في أي نص.</p></div>
+
+      <p>الدالة <span class="inline-code">split()</span> تفصل النص إلى قائمة كلمات بناءً على المسافات. ثم نحسب عدد العناصر في القائمة باستخدام <span class="inline-code">len()</span>.</p>
+
+      <h3 class="subsection-title">التعامل مع ملفات متعددة</h3>
+      <p>يمكن وضع كود عد الكلمات في دالة لتطبيقه على عدة ملفات:</p>
+
+      <div class="code-block">
+<span class="cm"># word_count.py</span>
+<span class="kw">def</span> <span class="fn">count_words</span>(filename):
+    <span class="str">"""عد عدد الكلمات في ملف نصي."""</span>
+    <span class="kw">try</span>:
+        <span class="kw">with</span> open(filename, encoding=<span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+            contents = f.read()
+    <span class="kw">except</span> FileNotFoundError:
+        print(<span class="str">f"عذراً، الملف {filename} غير موجود."</span>)
+    <span class="kw">else</span>:
+        words = contents.split()
+        num_words = len(words)
+        print(<span class="str">f"الملف {filename} يحتوي على {num_words} كلمة."</span>)
+
+filenames = [<span class="str">'alice.txt'</span>, <span class="str">'siddhartha.txt'</span>, <span class="str">'moby_dick.txt'</span>, <span class="str">'little_women.txt'</span>]
+<span class="kw">for</span> filename <span class="kw">in</span> filenames:
+    count_words(filename)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>نضع منطق عد الكلمات في دالة <code>count_words()</code> ثم نستدعيها لكل ملف في القائمة. هذا يجعل الكود قابلاً لإعادة الاستخدام وأسهل للصيانة. الحلقة تمر على أربعة ملفات وتستدعي الدالة لكل واحد. إذا كان ملف مفقوداً، تظهر رسالة خطأ لكن الحلقة تكمل إلى الملف التالي دون توقف. هذا أفضل بكثير من السماح للبرنامج بالانهيار عند أول ملف غير موجود.</p></div>
+
+      <p>هذه الدالة تحاول قراءة كل ملف. إذا كان الملف غير موجود، تظهر رسالة خطأ ودية. إذا كان الملف موجوداً، يتم عرض عدد الكلمات. هذا أسلوب أنظف بكثير من السماح للبرنامج بالتوقف عند أول ملف مفقود.</p>
+
+      <h3 class="subsection-title">الفشل بهدوء (Failing Silently)</h3>
+      <p>في بعض الأحيان تريد أن يفشل البرنامج بهدوء دون إزعاج المستخدم برسائل خطأ. يمكنك استخدام <span class="inline-code">pass</span> داخل <span class="inline-code">except</span> لتجاهل الخطأ تماماً:</p>
+
+      <div class="code-block">
+<span class="kw">def</span> <span class="fn">count_words</span>(filename):
+    <span class="str">"""عد عدد الكلمات في ملف نصي - مع الفشل الصامت."""</span>
+    <span class="kw">try</span>:
+        <span class="kw">with</span> open(filename, encoding=<span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+            contents = f.read()
+    <span class="kw">except</span> FileNotFoundError:
+        <span class="kw">pass</span>
+    <span class="kw">else</span>:
+        words = contents.split()
+        num_words = len(words)
+        print(<span class="str">f"الملف {filename} يحتوي على {num_words} كلمة."</span>)
+
+filenames = [<span class="str">'alice.txt'</span>, <span class="str">'siddhartha.txt'</span>, <span class="str">'moby_dick.txt'</span>, <span class="str">'little_women.txt'</span>]
+<span class="kw">for</span> filename <span class="kw">in</span> filenames:
+    count_words(filename)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>عبارة <code>pass</code> في كتلة <code>except</code> تجعل البرنامج يتجاهل الخطأ بصمت — لا رسالة خطأ، لا توقف، فقط يكمل إلى الملف التالي. هذا يُسمى "الفشل بهدوء" (failing silently). <code>pass</code> هي عبارة لا تفعل شيئاً، وتُستخدم كعنصر نائب عندما تحتاج بايثون إلى جملة لكنك لا تريد تنفيذ أي إجراء. استخدم هذا الأسلوب بحذر — تجاهل الأخطاء قد يُخفي مشاكل حقيقية.</p></div>
+
+      <p>عبارة <span class="inline-code">pass</span> لا تفعل شيئاً — إنها مجرد عنصر نائب. في هذا المثال، عندما لا يوجد ملف، لا يحدث شيء: لا رسالة خطأ، لا توقف. البرنامج يتجاوز الملف المفقود ويكمل إلى التالي. هذا مفيد عندما تريد معالجة أكبر عدد ممكن من الملفات دون إرباك المستخدم برسائل لأخطاء لا يمكنه حلها.</p>
+
+      <div class="note">
+        <strong>ملاحظة:</strong> استخدام <span class="inline-code">pass</span> يخفي الأخطاء تماماً. استخدمه بعناية — من الأفضل عادة إبلاغ المستخدم بالخطأ على الأقل أثناء مرحلة التطوير.
+      </div>
+
+      <!-- ========================================================== -->
+      <h2 class="section-title">تخزين البيانات باستخدام JSON</h2>
+      <p>تنسيق JSON (JavaScript Object Notation) هو تنسيق شائع لمشاركة البيانات بين البرامج والمواقع. بايثون توفر مكتبة <span class="inline-code">json</span> لحفظ واسترجاع البيانات بتنسيق JSON.</p>
+
+      <h3 class="subsection-title">json.dump() و json.load()</h3>
+      <p>الدالة <span class="inline-code">json.dump()</span> تخزن البيانات في ملف، والدالة <span class="inline-code">json.load()</span> تقرأ البيانات من ملف:</p>
+
+      <div class="code-block">
+<span class="cm"># number_writer.py</span>
+<span class="kw">import</span> json
+
+numbers = [<span class="num">2</span>, <span class="num">3</span>, <span class="num">5</span>, <span class="num">7</span>, <span class="num">11</span>, <span class="num">13</span>]
+
+filename = <span class="str">'numbers.json'</span>
+<span class="kw">with</span> open(filename, <span class="str">'w'</span>) <span class="kw">as</span> f:
+    json.dump(numbers, f)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>الدالة <code>json.dump()</code> تأخذ كائنين: البيانات المراد تخزينها وكائن الملف. هنا نخزّن قائمة أعداد صحيحة في ملف <code>numbers.json</code>. نستخدم وضع <code>'w'</code> للكتابة. JSON تحوّل القائمة تلقائياً إلى تمثيل نصي منسّق — ستبدو كالتالي <code>[2, 3, 5, 7, 11, 13]</code>. من مميزات JSON أنه يحافظ على أنواع البيانات: إذا خزنت قائمة تستعيد قائمة، وإذا خزنت قاموساً تستعيد قاموساً.</p></div>
+
+      <p>هذا يخزن القائمة في ملف بصيغة JSON. الآن لقراءة البيانات:</p>
+
+      <div class="code-block">
+<span class="cm"># number_reader.py</span>
+<span class="kw">import</span> json
+
+filename = <span class="str">'numbers.json'</span>
+<span class="kw">with</span> open(filename) <span class="kw">as</span> f:
+    numbers = json.load(f)
+
+print(numbers)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>الدالة <code>json.load()</code> تفعل العكس — تقرأ ملف JSON وتحوّله إلى كائن بايثون. هنا نقرأ القائمة من الملف ونخزّنها في المتغير <code>numbers</code> ثم نطبعها. الناتج سيكون قائمة بايثون عادية: <code>[2, 3, 5, 7, 11, 13]</code>. يجب فتح الملف في وضع القراءة الافتراضي (بدون <code>'w'</code> أو <code>'a'</code>). JSON أداة قوية لحفظ البيانات بين جلسات تشغيل البرنامج.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+[2, 3, 5, 7, 11, 13]
+      </div>
+
+      <p>JSON تحافظ على نوع البيانات. إذا خزنت قائمة، ستحصل على قائمة. وإذا خزنت قاموساً، ستحصل على قاموس عند القراءة. هذا يجعل JSON ممتازاً لمشاركة البيانات بين أجزاء مختلفة من برنامجك أو بين برامج مختلفة.</p>
+
+      <h3 class="subsection-title">حفظ وقراءة بيانات المستخدم</h3>
+      <p>مثال مفيد: حفظ اسم المستخدم في ملف JSON بحيث يتذكره البرنامج في المرة القادمة:</p>
+
+      <div class="code-block">
+<span class="cm"># remember_me.py</span>
+<span class="kw">import</span> json
+
+username = input(<span class="str">"ما اسمك؟ "</span>)
+
+filename = <span class="str">'username.json'</span>
+<span class="kw">with</span> open(filename, <span class="str">'w'</span>) <span class="kw">as</span> f:
+    json.dump(username, f)
+
+print(<span class="str">"سأتذكر اسمك عندما تعود!"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>هذا برنامج بسيط لحفظ اسم المستخدم في ملف JSON. نطلب الاسم باستخدام <code>input()</code>، ثم نخزّنه في ملف <code>username.json</code> باستخدام <code>json.dump()</code>. لاحظ أننا نخزّن سلسلة نصية وليس قائمة — JSON يتعامل مع أي نوع بيانات أساسي في بايثون (سلاسل، أرقام، قوائم، قواميس). في المرة القادمة التي يُشغّل فيها المستخدم البرنامج، يمكننا استرجاع اسمه بدلاً من سؤاله مرة أخرى.</p></div>
+
+      <p>والآن برنامج لقراءة الاسم المخزن:</p>
+
+      <div class="code-block">
+<span class="cm"># greet_user.py</span>
+<span class="kw">import</span> json
+
+filename = <span class="str">'username.json'</span>
+<span class="kw">with</span> open(filename) <span class="kw">as</span> f:
+    username = json.load(f)
+
+print(<span class="str">f"مرحباً بعودتك، {username}!"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>برنامج <code>greet_user.py</code> يقرأ اسم المستخدم من ملف JSON باستخدام <code>json.load()</code> ويحيّيه بعبارة ترحيبية. هذا يُظهر كيف يمكن للبرنامج أن يتذكر المعلومات بين جلسات التشغيل — مفهوم "الثبات" (persistence). إذا لم يكن الملف موجوداً (أول مرة يُشغّل فيها البرنامج)، سنحتاج إلى معالجة خطأ <code>FileNotFoundError</code> كما تعلمنا سابقاً.</p></div>
+
+      <h3 class="subsection-title">إعادة هيكلة الكود (Refactoring)</h3>
+      <p>عندما يصبح الكود أطول، من الجيد إعادة هيكلته (Refactoring) — أي تقسيمه إلى دوال صغيرة ذات مهام محددة. هذا يسهل فهم الكود وصيانته. لنحول برنامج remember_me إلى دوال:</p>
+
+      <div class="code-block">
+<span class="cm"># remember_me.py - بعد إعادة الهيكلة</span>
+<span class="kw">import</span> json
+
+<span class="kw">def</span> <span class="fn">get_stored_username</span>():
+    <span class="str">"""الحصول على اسم المستخدم المخزن إذا كان موجوداً."""</span>
+    filename = <span class="str">'username.json'</span>
+    <span class="kw">try</span>:
+        <span class="kw">with</span> open(filename) <span class="kw">as</span> f:
+            username = json.load(f)
+    <span class="kw">except</span> FileNotFoundError:
+        <span class="kw">return</span> <span class="kw">None</span>
+    <span class="kw">else</span>:
+        <span class="kw">return</span> username
+
+<span class="kw">def</span> <span class="fn">get_new_username</span>():
+    <span class="str">"""طلب اسم مستخدم جديد وحفظه."""</span>
+    username = input(<span class="str">"ما اسمك؟ "</span>)
+    filename = <span class="str">'username.json'</span>
+    <span class="kw">with</span> open(filename, <span class="str">'w'</span>) <span class="kw">as</span> f:
+        json.dump(username, f)
+    <span class="kw">return</span> username
+
+<span class="kw">def</span> <span class="fn">greet_user</span>():
+    <span class="str">"""تحية المستخدم باستخدام اسمه."""</span>
+    username = get_stored_username()
+    <span class="kw">if</span> username:
+        print(<span class="str">f"مرحباً بعودتك، {username}!"</span>)
+    <span class="kw">else</span>:
+        username = get_new_username()
+        print(<span class="str">"سأتذكر اسمك عندما تعود!"</span>)
+
+greet_user()
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>هذا مثال على إعادة الهيكلة (Refactoring). قسّمنا البرنامج إلى ثلاث دوال، لكل منها مسؤولية واحدة: <code>get_stored_username()</code> تحاول استرجاع الاسم المخزن وتُعيد <code>None</code> إذا لم يكن موجوداً (باستخدام <code>try/except FileNotFoundError</code>)، <code>get_new_username()</code> تطلب اسماً جديداً وتخزّنه باستخدام <code>json.dump()</code>، و <code>greet_user()</code> تنسّق سير العمل. هذا النمط — فصل المسؤوليات — يجعل الكود أسهل للقراءة والاختبار والتعديل.</p></div>
+
+      <p>هذا الكود أكثر تنظيماً. كل دالة لها مهمة واحدة واضحة. <span class="inline-code">get_stored_username()</span> تحاول استرجاع الاسم المخزن، <span class="inline-code">get_new_username()</span> تطلب وتخزّن اسماً جديداً، و <span class="inline-code">greet_user()</span> تنسق سير العمل كاملاً. هذا النمط يسمى "فصل المسؤوليات" (Separation of Concerns) وهو من أسس كتابة الكود النظيف.</p>
+
+      <!-- ========================================================== -->
+      <h2 class="section-title">تمارين الفصل العاشر</h2>
+
+      <div class="exercise">
+        <strong>تمرين 10-1: تعلم بايثون</strong>
+        <p>افتح ملفاً نصياً جديداً في المحرر، واكتب بضع أسطر تلخص ما تعلمته عن بايثون حتى الآن. أطلق على الملف اسم <span class="inline-code">learning_python.txt</span>، ثم اكتب برنامجاً يقرأ الملف ويطبع محتواه ثلاث مرات:</p>
+        <ol>
+          <li>بقراءة الملف بأكمله.</li>
+          <li>بالتكرار عبر كائن الملف باستخدام حلقة.</li>
+          <li>بتخزين الأسطر في قائمة ثم العمل عليها خارج كتلة <span class="inline-code">with</span>.</li>
+        </ol>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 10-2: تعلم C</strong>
+        <p>استخدم الدالة <span class="inline-code">replace()</span> لاستبدال كل ظهور لكلمة "Python" بكلمة "C" في الملف <span class="inline-code">learning_python.txt</span>. اطبع النص المعدل على الشاشة.</p>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 10-3: ضيف</strong>
+        <p>اكتب برنامجاً يطلب من المستخدم إدخال اسمه، ثم يخزنه في ملف باسم <span class="inline-code">guest.txt</span>.</p>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 10-4: قائمة الضيوف</strong>
+        <p>اكتب حلقة <span class="inline-code">while</span> تطلب من المستخدم إدخال اسمه. عندما يدخل اسمه، اطبع رسالة ترحيب وأضف الاسم إلى ملف باسم <span class="inline-code">guest_book.txt</span>. تأكد من أن كل اسم يظهر في سطر منفصل.</p>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 10-5: استطلاع عن البرمجة</strong>
+        <p>اكتب حلقة <span class="inline-code">while</span> تسأل المستخدم عن سبب حبه للبرمغة. أضف كل سبب إلى ملف <span class="inline-code">programming_poll.txt</span> مع رسالة إضافية تشير إلى اكتمال التسجيل.</p>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 10-6: الجمع</strong>
+        <p>اطلب من المستخدم إدخال رقمين، ثم اجمعهما واطبع الناتج. إذا أدخل المستخدم نصاً بدلاً من رقم، تعامل مع الخطأ <span class="inline-code">ValueError</span> واطبع رسالة خطأ.</p>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 10-7: آلة جمع</strong>
+        <p>ضع التمرين السابق في حلقة <span class="inline-code">while</span> حتى يدخل المستخدم 'q' للخروج. تعامل مع <span class="inline-code">ValueError</span> واطلب من المستخدم المحاولة مرة أخرى.</p>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 10-8: القطط والكلاب</strong>
+        <p>أنشئ ملفين: <span class="inline-code">cats.txt</span> و <span class="inline-code">dogs.txt</span>. اكتب أسماء قططك في الأول وكلابك في الثاني. اقرأ كلا الملفين واطبع محتوياتهما. لفّ الكود في كتلة <span class="inline-code">try-except</span> لالتقاط خطأ <span class="inline-code">FileNotFoundError</span> وعرض رسالة إذا كان أحد الملفين مفقوداً.</p>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 10-9: القطط والكلاب بهدوء</strong>
+        <p>عدّل التمرين السابق بحيث يفشل البرنامج بهدوء (<span class="inline-code">pass</span>) إذا كان الملف غير موجود.</p>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 10-10: كلمات شائعة</strong>
+        <p>استخدم مشروع غوتنبرغ (Project Gutenberg) لتحميل كتاب نصي. اقرأ الملف وعد عدد مرات ظهور كلمة "the" (مع تجاهل حالة الأحرف). استخدم <span class="inline-code">count()</span> و <span class="inline-code">lower()</span>.</p>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 10-11: الرقم المفضل</strong>
+        <p>اكتب برنامجين:</p>
+        <ol>
+          <li><span class="inline-code">favorite_number_writer.py</span> — يطلب من المستخدم رقمه المفضل ويخزنه في JSON.</li>
+          <li><span class="inline-code">favorite_number_reader.py</span> — يقرأ الرقم من JSON ويقول "أعرف رقمك المفضل!"</li>
+        </ol>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 10-12: تذكر الرقم المفضل</strong>
+        <p>اجمع بين البرنامجين السابقين في برنامج واحد. إذا كان الرقم مخزناً بالفعل، اقرأه واعرضه. وإلا، اطلب الرقم واحفظه وأظهره.</p>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 10-13: تحقق من المستخدم</strong>
+        <p>عدّل برنامج <span class="inline-code">remember_me.py</span> بحيث يسأل "هل أنت [الاسم المخزن]؟" قبل الترحيب. إذا كانت الإجابة "لا"، اطلب اسماً جديداً واحفظه.</p>
+      </div>
+
+      <h2 class="section-title">pathlib - الطريقة العصرية للتعامل مع الملفات</h2>
+      <p>منذ Python 3.4، وحدة <span class="inline-code">pathlib</span> تقدّم طريقة كائنية للتعامل مع مسارات الملفات — أفضل بكثير من <span class="inline-code">os.path.join()</span> ودمج السلاسل النصية:</p>
+
+      <div class="code-block">
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="cm"># إنشاء مسار — يعمل على كل الأنظمة</span>
+home = Path(<span class="str">'~'</span>).expanduser()
+data_dir = home / <span class="str">'data'</span> / <span class="str">'logs'</span>  <span class="cm"># استخدم / بدلاً من +</span>
+
+<span class="cm"># قراءة وكتابة — بدون open()!</span>
+path = Path(<span class="str">'hello.txt'</span>)
+path.write_text(<span class="str">'Hello World'</span>)         <span class="cm"># يكتب</span>
+<span class="bu">print</span>(path.read_text())                   <span class="cm"># يقرأ</span>
+
+<span class="cm"># دوال مساعدة</span>
+<span class="bu">print</span>(path.exists())                       <span class="cm"># هل الملف موجود؟</span>
+<span class="bu">print</span>(path.suffix)                        <span class="cm"># .txt</span>
+<span class="bu">print</span>(path.stem)                          <span class="cm"># hello</span>
+<span class="bu">print</span>(path.parent)                        <span class="cm"># المسار الأب</span>
+
+<span class="cm"># التكرار على ملفات معينة</span>
+<span class="kw">for</span> py_file <span class="kw">in</span> Path(<span class="str">'.'</span>).glob(<span class="str">'**/*.py'</span>):  <span class="cm"># ** = كل المجلدات الفرعية</span>
+    <span class="bu">print</span>(py_file)
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>وحدة <code>pathlib</code> هي الطريقة الحديثة (منذ Python 3.4) للتعامل مع مسارات الملفات. بدلاً من دمج السلاسل النصية، نستخدم العامل <code>/</code> لبناء المسارات — هذا يعمل على جميع أنظمة التشغيل تلقائياً. <code>Path.read_text()</code> و <code>Path.write_text()</code> يُلغيان الحاجة لاستخدام <code>open()</code> للعمليات البسيطة. <code>Path.glob('**/*.py')</code> يبحث عن جميع ملفات بايثون في المجلد الحالي وكل المجلدات الفرعية.</p></div>
+
+      <div class="code-block">
+<span class="cm"># pathlib مع with open — متوافق</span>
+path = Path(<span class="str">'data.txt'</span>)
+<span class="kw">with</span> <span class="bu">open</span>(path) <span class="kw">as</span> f:      <span class="cm"># Path يقبل أينما يقرأ open()</span>
+    content = f.read()
+
+<span class="cm"># إنشاء مجلدات</span>
+new_dir = Path(<span class="str">'output/images'</span>)
+new_dir.mkdir(parents=<span class="kw">True</span>, exist_ok=<span class="kw">True</span>)  <span class="cm"># مثل mkdir -p</span>
+
+<span class="cm"># معلومات الملف</span>
+stats = path.stat()
+<span class="bu">print</span>(stats.st_size)      <span class="cm"># حجم الملف بالبايت</span>
+<span class="bu">print</span>(stats.st_mtime)     <span class="cm"># آخر تعديل (timestamp)</span>
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود</strong><p>كائنات <code>Path</code> متوافقة تماماً مع <code>open()</code> — يمكنك تمرير <code>Path</code> أينما تتوقع <code>open()</code> مساراً نصياً. <code>mkdir(parents=True, exist_ok=True)</code> ينشئ مجلدات متداخلة دفعة واحدة مثل <code>mkdir -p</code> في لينكس. <code>path.stat()</code> يُعيد معلومات مفصلة عن الملف، مثل الحجم (<code>st_size</code>) ووقت آخر تعديل (<code>st_mtime</code>). <code>pathlib</code> يجعل الكود أكثر نظافة وأقل عرضة للأخطاء المتعلقة بمسارات الملفات.</p></div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> استخدم <span class="inline-code">pathlib</span> بدلاً من <span class="inline-code">os.path</span> في أي كود جديد. <span class="inline-code">Path.glob('**/*.py')</span> يبحث في كل المجلدات الفرعية. <span class="inline-code">Path.read_text()</span> و <span class="inline-code">Path.write_bytes()</span> يوفران عليك كتابة <span class="inline-code">with open()</span> للعمليات البسيطة.</div>
+
+      <!-- ========================================================== -->
+      <h2 class="section-title">ملخص الفصل</h2>
+
+      <div class="summary-box">
+        <h3>📋 ما تعلمناه في هذا الفصل</h3>
+        <ul>
+          <li>كيفية فتح الملفات النصية وقراءة محتواها كاملاً أو سطراً سطراً.</li>
+          <li>استخدام المسارات النسبية والمطلقة لتحديد موقع الملفات.</li>
+          <li>كيفية الكتابة إلى ملف جديد أو إضافة محتوى إلى ملف موجود.</li>
+          <li>معالجة الأخطاء باستخدام <span class="inline-code">try-except-else</span> لمنع تعطل البرنامج.</li>
+          <li>التعامل مع أخطاء <span class="inline-code">ZeroDivisionError</span> و <span class="inline-code">FileNotFoundError</span> و <span class="inline-code">ValueError</span>.</li>
+          <li>استخدام <span class="inline-code">pass</span> للفشل بهدوء عند الحاجة.</li>
+          <li>تخزين البيانات باستخدام <span class="inline-code">json.dump()</span> و <span class="inline-code">json.load()</span>.</li>
+          <li>بناء تطبيقات عملية تحفظ حالة المستخدم بين جلسات التشغيل.</li>
+          <li>إعادة هيكلة الكود إلى دوال صغيرة ذات مسؤوليات محددة.</li>
+        </ul>
+      </div>
+
+    <div class="note"><strong>💡 نصيحة ذهبية:</strong> استخدم <span class="inline-code">with</span> لإدارة جميع الموارد (ملفات، اتصالات قاعدة بيانات، locks) — يضمن إغلاقها حتى مع الأخطاء. اتبع مبدأ EAFP (Easier to Ask for Forgiveness than Permission): حاول التنفيذ وتعامل مع الأخطاء لاحقاً: <span class="inline-code">try: ... except: ...</span>. هذا أسرع وأكثر وضوحاً من التحقق المسبق (LBYL).</div>
+
+    <div class="warning"><strong>⚠️ خطأ شائع:</strong> استخدام <span class="inline-code">except:</span> بدون تحديد نوع الخطأ — هذا يخفي كل الأخطاء بما فيها <span class="inline-code">KeyboardInterrupt</span> و <span class="inline-code">SystemExit</span>. اكتب <span class="inline-code">except Exception:</span> على الأقل، أو الأفضل تحديد نوع الخطأ المحدد: <span class="inline-code">except FileNotFoundError:</span>. أيضاً، نسيان إغلاق الملف عند عدم استخدام <span class="inline-code">with</span> يسبب تسرباً في الموارد.</div>
+
+    <div class="exercise"><strong>🏋️ تمرين:</strong> اكتب برنامج "مفكرة" بسيط: استخدم JSON لتخزين الملاحظات. كل ملاحظة لها عنوان ومحتوى وتاريخ (<span class="inline-code">datetime.now()</span>). أضف دوال لإضافة ملاحظة جديدة، عرض كل الملاحظات، حذف ملاحظة. استخدم <span class="inline-code">json.dump()</span> للحفظ و <span class="inline-code">json.load()</span> للقراءة. تعامل مع حالة عدم وجود الملف باستخدام <span class="inline-code">try/except FileNotFoundError</span>.</div>
+
+    <div class="footer">
+        <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+        <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+    }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

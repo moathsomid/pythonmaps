@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الفصل 5: جمل if - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .back-link:hover { text-decoration: underline; }
+  @media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">📘 الجزء الأول: الأساسيات</span>
+      <h1>5. جمل if</h1>
+      <p>الاختبارات الشرطية، if-elif-else، القيم المنطقية، والتعامل مع القوائم</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        في هذا الفصل، ستتعلم كيفية كتابة جمل شرطية تسمح لبرنامجك باتخاذ قرارات بناءً على قيم معينة. باستخدام جمل <span class="inline-code">if</span>، يمكنك التحقق من حالة معينة وتنفيذ كود محدد إذا تحققت تلك الحالة. ستتعلم أيضاً كيفية اختبار شروط متعددة، التعامل مع القيم المنطقية (Boolean)، واستخدام جمل <span class="inline-code">if</span> مع القوائم لإنشاء برامج تفاعلية وقوية.
+      </p>
+
+      <h2 class="section-title">مثال بسيط</h2>
+
+      <p>
+        لنفترض أن لدينا قائمة بأسماء السيارات ونريد طباعة أسماء السيارات التي تبدأ بحرف 'b' فقط:
+      </p>
+
+      <div class="code-block">
+cars = [<span class="str">'bmw'</span>, <span class="str">'audi'</span>, <span class="str">'toyota'</span>, <span class="str">'subaru'</span>]
+<span class="kw">for</span> car <span class="kw">in</span> cars:
+    <span class="kw">if</span> car == <span class="str">'bmw'</span>:
+        <span class="bu">print</span>(car.upper())
+    <span class="kw">else</span>:
+        <span class="bu">print</span>(car.title())
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> يبدأ الكود بتعريف قائمة بأسماء سيارات. في حلقة <code>for</code>، يتم تمرير كل اسم سيارة واختباره: إذا كان الاسم <code>'bmw'</code> يُطبع بالأحرف الكبيرة باستخدام <code>upper()</code>، وإلا يُطبع بحرف كبير أول فقط باستخدام <code>title()</code>. المخرجات ستكون <code>BMW</code> و <code>Audi</code> و <code>Toyota</code> و <code>Subaru</code>.</div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+BMW
+Audi
+Toyota
+Subaru
+      </div>
+
+      <p>
+        في هذا المثال، تتحقق جملة <span class="inline-code">if</span> من قيمة كل سيارة. إذا كانت <span class="inline-code">car == 'bmw'</span>، فإنها تطبع الاسم بالأحرف الكبيرة. وإلا، تطبعه بحرف كبير أول.
+      </p>
+
+      <h2 class="section-title">الاختبارات الشرطية (Conditional Tests)</h2>
+
+      <p>
+        في قلب كل جملة <span class="inline-code">if</span> يوجد <strong>تعبير شرطي</strong> (conditional test) يتم تقييمه إلى <span class="inline-code">True</span> أو <span class="inline-code">False</span>. إذا كان التعبير <span class="inline-code">True</span>، يتم تنفيذ الكود الموجود داخل جملة <span class="inline-code">if</span>. إذا كان <span class="inline-code">False</span>، يتم تجاهله.
+      </p>
+
+      <h3 class="subsection-title">اختبار المساواة (Equality)</h3>
+
+      <p>
+        تستخدم علامة <span class="inline-code">==</span> للتحقق من المساواة:
+      </p>
+
+      <div class="code-block">
+car = <span class="str">'bmw'</span>
+<span class="bu">print</span>(car == <span class="str">'bmw'</span>)    <span class="cm"># True</span>
+<span class="bu">print</span>(car == <span class="str">'audi'</span>)   <span class="cm"># False</span>
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> يوضّح هذا الكود كيفية استخدام عامل المساواة <code>==</code> لمقارنة القيم. المتغير <code>car</code> يُسند إليه النص <code>'bmw'</code>، ثم يُقارن مع <code>'bmw'</code> فيعيد <code>True</code>، ويُقارن مع <code>'audi'</code> فيعيد <code>False</code> لأن القيمتين مختلفتان. المخرجات ستكون <code>True</code> ثم <code>False</code> في سطرين منفصلين.</div>
+
+      <p>
+        بايثون حساسة لحالة الأحرف عند التحقق من المساواة. <span class="inline-code">'Bmw'</span> لا تساوي <span class="inline-code">'bmw'</span>. إذا كنت لا تريد أن تفرق بين الأحرف الكبيرة والصغيرة، استخدم الدالة <span class="inline-code">lower()</span>:
+      </p>
+
+      <div class="code-block">
+car = <span class="str">'Bmw'</span>
+<span class="bu">print</span>(car.lower() == <span class="str">'bmw'</span>)   <span class="cm"># True</span>
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> يوضح هذا المثال أن بايثون حساسة لحالة الأحرف عند المقارنة، لذلك تُستخدم الدالة <code>lower()</code> لتحويل النص إلى أحرف صغيرة قبل المقارنة. المتغير <code>car</code> يحمل القيمة <code>'Bmw'</code>، وعند تطبيق <code>lower()</code> يصبح <code>'bmw'</code> وهو ما يساوي النص المُقارَن. المخرج سيكون <code>True</code>.</div>
+
+      <h3 class="subsection-title">اختبار عدم المساواة (Inequality)</h3>
+
+      <p>
+        تستخدم علامة <span class="inline-code">!=</span> للتحقق من عدم المساواة:
+      </p>
+
+      <div class="code-block">
+requested_topping = <span class="str">'mushrooms'</span>
+<span class="kw">if</span> requested_topping != <span class="str">'anchovies'</span>:
+    <span class="bu">print</span>(<span class="str">"Hold the anchovies!"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> هنا يُستخدم عامل عدم المساواة <code>!=</code> للتحقق من أن القيمة المطلوبة لا تساوي <code>'anchovies'</code>. إذا كان الشرط صحيحاً (أي أن الأنشوجة غير مطلوبة)، تُطبَع رسالة تأكيد. بما أن المتغير يحمل <code>'mushrooms'</code> وهي مختلفة عن <code>'anchovies'</code>، سيتم تنفيذ الطباعة. المخرج سيكون: <code>Hold the anchovies!</code></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+Hold the anchovies!
+      </div>
+
+      <h3 class="subsection-title">المقارنات الرقمية</h3>
+
+      <p>
+        يمكنك مقارنة الأرقام باستخدام <span class="inline-code">==</span>, <span class="inline-code">!=</span>, <span class="inline-code"><</span>, <span class="inline-code"><=</span>, <span class="inline-code">></span>, <span class="inline-code">>=</span>:
+      </p>
+
+      <div class="code-block">
+age = <span class="num">18</span>
+<span class="bu">print</span>(age == <span class="num">18</span>)     <span class="cm"># True</span>
+<span class="bu">print</span>(age != <span class="num">18</span>)     <span class="cm"># False</span>
+<span class="bu">print</span>(age < <span class="num">21</span>)      <span class="cm"># True</span>
+<span class="bu">print</span>(age <= <span class="num">18</span>)    <span class="cm"># True</span>
+<span class="bu">print</span>(age > <span class="num">21</span>)      <span class="cm"># False</span>
+<span class="bu">print</span>(age >= <span class="num">18</span>)    <span class="cm"># True</span>
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> يشرح هذا الكود جميع عوامل المقارنة الرقمية في بايثون: المساواة <code>==</code>، عدم المساواة <code>!=</code>، أصغر من <code><</code>، أصغر أو يساوي <code><=</code>، أكبر من <code>></code>، أكبر أو يساوي <code>>=</code>. المتغير <code>age</code> يساوي 18، لذلك كل اختبار يُعيد إما <code>True</code> أو <code>False</code> حسب العلاقة الرياضية. المخرجات ستكون: <code>True - False - True - True - False - True</code> على التوالي.</div>
+
+      <h3 class="subsection-title">اختبار شروط متعددة باستخدام and و or</h3>
+
+      <p>
+        يمكنك اختبار شرطين أو أكثر في نفس الوقت باستخدام <span class="inline-code">and</span> (يعيد <span class="inline-code">True</span> فقط إذا تحقق الشرطان معاً) <span class="inline-code">or</span> (يعيد <span class="inline-code">True</span> إذا تحقق شرط واحد على الأقل):
+      </p>
+
+      <div class="code-block">
+age_0 = <span class="num">22</span>
+age_1 = <span class="num">18</span>
+<span class="bu">print</span>(age_0 >= <span class="num">21</span> <span class="kw">and</span> age_1 >= <span class="num">21</span>)   <span class="cm"># False</span>
+<span class="bu">print</span>(age_0 >= <span class="num">21</span> <span class="kw">or</span> age_1 >= <span class="num">21</span>)    <span class="cm"># True</span>
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> يوضح هذا الكود كيفية دمج شرطين باستخدام <code>and</code> و <code>or</code>. مع <code>and</code> يجب أن يتحقق كلا الشرطين ليعيد <code>True</code> — هنا <code>age_1</code> أقل من 21 لذا النتيجة <code>False</code>. مع <code>or</code> يكفي تحقق شرط واحد — <code>age_0 >= 21</code> صحيح لذا النتيجة <code>True</code>. المخرجات ستكون: <code>False</code> ثم <code>True</code>.</div>
+
+      <h3 class="subsection-title">التحقق من وجود قيمة في قائمة (in)</h3>
+
+      <p>
+        استخدم <span class="inline-code">in</span> للتحقق مما إذا كانت قيمة معينة موجودة في قائمة:
+      </p>
+
+      <div class="code-block">
+requested_toppings = [<span class="str">'mushrooms'</span>, <span class="str">'onions'</span>, <span class="str">'pineapple'</span>]
+<span class="bu">print</span>(<span class="str">'mushrooms'</span> <span class="kw">in</span> requested_toppings)   <span class="cm"># True</span>
+<span class="bu">print</span>(<span class="str">'pepperoni'</span> <span class="kw">in</span> requested_toppings)   <span class="cm"># False</span>
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> يستخدم هذا الكود العامل <code>in</code> للتحقق من وجود قيمة داخل قائمة. القائمة تحتوي على ثلاثة عناصر، والتحقق الأول من وجود <code>'mushrooms'</code> يُعيد <code>True</code> لأنه موجود، والتحقق الثاني من وجود <code>'pepperoni'</code> يُعيد <code>False</code> لأنه غير موجود. المخرجات ستكون: <code>True</code> ثم <code>False</code>.</div>
+
+      <h3 class="subsection-title">التحقق من عدم وجود قيمة في قائمة (not in)</h3>
+
+      <p>
+        استخدم <span class="inline-code">not in</span> للتحقق من أن قيمة معينة غير موجودة في قائمة:
+      </p>
+
+      <div class="code-block">
+banned_users = [<span class="str">'ahmed'</span>, <span class="str">'sara'</span>]
+user = <span class="str">'khaled'</span>
+<span class="kw">if</span> user <span class="kw">not in</span> banned_users:
+    <span class="bu">print</span>(f<span class="str">"{user.title()} يمكنه المشاركة!"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> هذا المثال يستخدم العامل <code>not in</code> للتأكد من أن المستخدم الحالي ليس ضمن قائمة المستخدمين المحظورين. المتغير <code>user = 'khaled'</code> غير موجود في قائمة <code>banned_users</code>، لذلك يتحقق الشرط وتُطبَع رسالة ترحيب مع تنسيق الاسم باستخدام <code>f-string</code> و <code>title()</code>. المخرج سيكون: <code>Khaled يمكنه المشاركة!</code></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+Khaled يمكنه المشاركة!
+      </div>
+
+      <h2 class="section-title">التعبيرات المنطقية (Boolean Expressions)</h2>
+
+      <p>
+        <strong>القيمة المنطقية</strong> (Boolean) هي قيمة إما <span class="inline-code">True</span> أو <span class="inline-code">False</span>. تُستخدم عادةً لتسجيل حالة شيء ما في البرنامج:
+      </p>
+
+      <div class="code-block">
+game_active = <span class="kw">True</span>
+can_edit = <span class="kw">False</span>
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> يوضح هذا الكود ماهية القيم المنطقية (Boolean) التي تأخذ إحدى قيمتين فقط: <code>True</code> أو <code>False</code>. المتغير <code>game_active</code> يشير إلى أن اللعبة نشطة، والمتغير <code>can_edit</code> يشير إلى أن التحرير غير مسموح. هذه القيم تجعل الشروط أكثر وضوحاً وكفاءة من استخدام نصوص مثل <code>'active'</code> أو <code>'inactive'</code>.</div>
+
+      <p>
+        القيم المنطقية تجعل الكود أكثر وضوحاً. بدلاً من تخزين <span class="inline-code">'active'</span> أو <span class="inline-code">'inactive'</span> كنص، استخدم <span class="inline-code">True</span> أو <span class="inline-code">False</span> لتكون أكثر دقة وسهولة في الاختبار.
+      </p>
+
+      <h2 class="section-title">جمل if</h2>
+
+      <p>
+        هناك عدة أنواع من جمل <span class="inline-code">if</span> في بايثون، ولكل منها استخداماتها المناسبة.
+      </p>
+
+      <h3 class="subsection-title">جملة if بسيطة</h3>
+
+      <p>
+        أبسط شكل لجملة <span class="inline-code">if</span> هو اختبار شرط وتنفيذ كود إذا تحقق:
+      </p>
+
+      <div class="code-block">
+age = <span class="num">19</span>
+<span class="kw">if</span> age >= <span class="num">18</span>:
+    <span class="bu">print</span>(<span class="str">"أنت في سن legal للتصويت!"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> أبسط شكل لجملة <code>if</code>: يتم اختبار شرط واحد فقط، وإذا تحقق يُنفَّذ الكود الذي يليه. المتغير <code>age = 19</code> وهو أكبر من أو يساوي 18، لذلك يتحقق الشرط وتُطبَع الرسالة. إذا كان العمر أقل من 18، لما ظهر أي مخرج على الإطلاق.</div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+أنت في سن legal للتصويت!
+      </div>
+
+      <h3 class="subsection-title">جملة if-else</h3>
+
+      <p>
+        استخدم <span class="inline-code">if-else</span> لتنفيذ كود عندما يتحقق الشرط، وكود آخر عندما لا يتحقق:
+      </p>
+
+      <div class="code-block">
+age = <span class="num">17</span>
+<span class="kw">if</span> age >= <span class="num">18</span>:
+    <span class="bu">print</span>(<span class="str">"يمكنك التصويت!"</span>)
+<span class="kw">else</span>:
+    <span class="bu">print</span>(<span class="str">"عذراً، أنت أصغر من سن التصويت."</span>)
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> جملة <code>if-else</code> توفر مسارين: إذا تحقق الشرط يُنفَّذ كود <code>if</code>، وإلا يُنفَّذ كود <code>else</code>. هنا العمر 17 وهو أقل من 18، لذلك لا يتحقق الشرط الأول ويُنتقل مباشرة إلى <code>else</code>. المخرج سيكون: <code>عذراً، أنت أصغر من سن التصويت.</code></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+عذراً، أنت أصغر من سن التصويت.
+      </div>
+
+      <h3 class="subsection-title">سلسلة if-elif-else</h3>
+
+      <p>
+        عندما تحتاج إلى اختبار أكثر من شرطين، استخدم سلسلة <span class="inline-code">if-elif-else</span>. تختبر بايثون كل شرط بدورها، وعندما تجد شرطاً يتحقق، تنفذ الكود المرتبط به وتتخطى الباقي:
+      </p>
+
+      <div class="code-block">
+age = <span class="num">12</span>
+<span class="kw">if</span> age < <span class="num">4</span>:
+    <span class="bu">print</span>(<span class="str">"الدخول مجاني!"</span>)
+<span class="kw">elif</span> age < <span class="num">18</span>:
+    <span class="bu">print</span>(<span class="str">"سعر التذكرة 25 ريالاً."</span>)
+<span class="kw">else</span>:
+    <span class="bu">print</span>(<span class="str">"سعر التذكرة 40 ريالاً."</span>)
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> سلسلة <code>if-elif-else</code> تختبر شروطاً متعددة بالترتيب وتتوقف عند أول شرط يتحقق. العمر 12 لا يحقق الشرط الأول (أقل من 4)، لكنه يحقق الشرط الثاني (أقل من 18)، لذلك تُطبَع رسالة سعر التذكرة 25 ريالاً وتتخطى باقي الشروط. المخرج سيكون: <code>سعر التذكرة 25 ريالاً.</code></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+سعر التذكرة 25 ريالاً.
+      </div>
+
+      <h3 class="subsection-title">استخدام عدة كتل elif</h3>
+
+      <p>
+        يمكنك استخدام أي عدد تريده من كتل <span class="inline-code">elif</span>:
+      </p>
+
+      <div class="code-block">
+age = <span class="num">65</span>
+<span class="kw">if</span> age < <span class="num">4</span>:
+    <span class="bu">print</span>(<span class="str">"الدخول مجاني!"</span>)
+<span class="kw">elif</span> age < <span class="num">18</span>:
+    <span class="bu">print</span>(<span class="str">"سعر التذكرة 25 ريالاً."</span>)
+<span class="kw">elif</span> age < <span class="num">65</span>:
+    <span class="bu">print</span>(<span class="str">"سعر التذكرة 40 ريالاً."</span>)
+<span class="kw">else</span>:
+    <span class="bu">print</span>(<span class="str">"سعر التذكرة 20 ريالاً (خصم كبار السن)."</span>)
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> هنا نستخدم كتلتين من <code>elif</code> لتوفير المزيد من الخيارات. العمر 65 لا يحقق أي شرط من الشروط السابقة (ليس أقل من 4 أو 18 أو 65)، فينتقل إلى <code>else</code> الذي يُطبِّق خصماً لكبار السن. المخرج سيكون: <code>سعر التذكرة 20 ريالاً (خصم كبار السن).</code></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+سعر التذكرة 20 ريالاً (خصم كبار السن).
+      </div>
+
+      <h3 class="subsection-title">حذف else</h3>
+
+      <p>
+        بايثون لا تتطلب وجود كتلة <span class="inline-code">else</span> في نهاية سلسلة <span class="inline-code">if-elif</span>. أحياناً يكون من الأفضل استخدام <span class="inline-code">elif</span> إضافي بدلاً من <span class="inline-code">else</span> لتكون أكثر وضوحاً في التعامل مع الحالات المحددة:
+      </p>
+
+      <div class="code-block">
+age = <span class="num">65</span>
+<span class="kw">if</span> age < <span class="num">4</span>:
+    price = <span class="num">0</span>
+<span class="kw">elif</span> age < <span class="num">18</span>:
+    price = <span class="num">25</span>
+<span class="kw">elif</span> age < <span class="num">65</span>:
+    price = <span class="num">40</span>
+<span class="kw">elif</span> age >= <span class="num">65</span>:
+    price = <span class="num">20</span>
+<span class="bu">print</span>(f<span class="str">"سعر تذكرتك هو {price} ريالاً."</span>)
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> هذا المثال يوضح أنه يمكن حذف <code>else</code> واستخدام <code>elif</code> إضافي بدلاً منه لجعل النية أكثر وضوحاً. بدلاً من <code>else</code>، تم استخدام <code>elif age >= 65</code> لبيان أن هذا الشرط مخصص لكبار السن بشكل صريح. المخرج سيكون: <code>سعر تذكرتك هو 20 ريالاً.</code></div>
+
+      <p>
+        استخدام <span class="inline-code">elif age >= 65</span> بدلاً من <span class="inline-code">else</span> يجعل الكود أكثر وضوحاً ويظهر نيتك بشكل صريح.
+      </p>
+
+      <h2 class="section-title">اختبار شروط متعددة</h2>
+
+      <p>
+        جمل <span class="inline-code">if-elif-else</span> تختبر شرطاً واحداً فقط في كل مرة وتتوقف عند أول شرط يتحقق. لكن في بعض الأحيان قد تحتاج لاختبار جميع الشروط الممكنة (كل منها على حدة)، بغض النظر عما إذا كانت الشروط الأخرى قد تحققت. في هذه الحالة، استخدم عدة جمل <span class="inline-code">if</span> مستقلة:
+      </p>
+
+      <div class="code-block">
+requested_toppings = [<span class="str">'mushrooms'</span>, <span class="str">'extra cheese'</span>]
+
+<span class="kw">if</span> <span class="str">'mushrooms'</span> <span class="kw">in</span> requested_toppings:
+    <span class="bu">print</span>(<span class="str">"Adding mushrooms."</span>)
+<span class="kw">if</span> <span class="str">'pepperoni'</span> <span class="kw">in</span> requested_toppings:
+    <span class="bu">print</span>(<span class="str">"Adding pepperoni."</span>)
+<span class="kw">if</span> <span class="str">'extra cheese'</span> <span class="kw">in</span> requested_toppings:
+    <span class="bu">print</span>(<span class="str">"Adding extra cheese."</span>)
+
+<span class="bu">print</span>(<span class="str">"\nYour pizza is ready!"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> استخدام جمل <code>if</code> مستقلة يضمن اختبار كل شرط بغض النظر عن الشروط الأخرى. القائمة تحتوي على <code>mushrooms</code> و <code>extra cheese</code> فقط، لذلك تُنفَّذ أول وآخر جملة <code>if</code> فقط، بينما تتخطى جملة <code>pepperoni</code> لأن الشرط لم يتحقق. المخرجات ستكون: <code>Adding mushrooms.</code> و <code>Adding extra cheese.</code> و <code>Your pizza is ready!</code></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+Adding mushrooms.
+Adding extra cheese.
+
+Your pizza is ready!
+      </div>
+
+      <p>
+        إذا استخدمنا <span class="inline-code">if-elif</span> بدلاً من ثلاث جمل <span class="inline-code">if</span> منفصلة، لما تمت إضافة الجبن الإضافي لأن بايثون ستتوقف عند أول شرط يتحقق.
+      </p>
+
+      <div class="note">
+        <strong>💡 ملاحظة مهمة:</strong> استخدم سلسلة <span class="inline-code">if-elif-else</span> عندما تحتاج إلى شرط واحد فقط للتنفيذ. استخدم عدة جمل <span class="inline-code">if</span> مستقلة عندما تريد اختبار جميع الشروط بغض النظر عن بعضها البعض.
+      </div>
+
+      <h2 class="section-title">استخدام if مع القوائم</h2>
+
+      <p>
+        يوفر دمج جمل <span class="inline-code">if</span> مع القوائم مرونة كبيرة في البرمجة. إليك بعض السيناريوهات الشائعة.
+      </p>
+
+      <h3 class="subsection-title">التحقق من عناصر خاصة</h3>
+
+      <p>
+        يمكنك التعامل مع عناصر محددة في القائمة بشكل خاص:
+      </p>
+
+      <div class="code-block">
+requested_toppings = [<span class="str">'mushrooms'</span>, <span class="str">'green peppers'</span>, <span class="str">'extra cheese'</span>]
+
+<span class="kw">for</span> requested_topping <span class="kw">in</span> requested_toppings:
+    <span class="kw">if</span> requested_topping == <span class="str">'green peppers'</span>:
+        <span class="bu">print</span>(<span class="str">"Sorry, we are out of green peppers right now."</span>)
+    <span class="kw">else</span>:
+        <span class="bu">print</span>(f<span class="str">"Adding {requested_topping}."</span>)
+
+<span class="bu">print</span>(<span class="str">"\nFinished making your pizza!"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> هذا المثال يدمج حلقة <code>for</code> مع <code>if-else</code> للتعامل مع عناصر القائمة بشكل مختلف. في كل دورة من الحلقة، يُختبر العنصر: إذا كان <code>'green peppers'</code> (غير متوفر) تُطبَع رسالة اعتذار، وإلا تُطبَع رسالة إضافة. المخرجات ستظهر ثلاث رسائل ثم رسالة الانتهاء.</div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+Adding mushrooms.
+Sorry, we are out of green peppers right now.
+Adding extra cheese.
+
+Finished making your pizza!
+      </div>
+
+      <h3 class="subsection-title">التحقق من أن القائمة ليست فارغة</h3>
+
+      <p>
+        عند استخدام اسم قائمة في شرط <span class="inline-code">if</span>، تعيد بايثون <span class="inline-code">True</span> إذا كانت القائمة تحتوي على عنصر واحد على الأقل، و <span class="inline-code">False</span> إذا كانت فارغة:
+      </p>
+
+      <div class="code-block">
+requested_toppings = []
+
+<span class="kw">if</span> requested_toppings:
+    <span class="kw">for</span> requested_topping <span class="kw">in</span> requested_toppings:
+        <span class="bu">print</span>(f<span class="str">"Adding {requested_topping}."</span>)
+    <span class="bu">print</span>(<span class="str">"\nFinished making your pizza!"</span>)
+<span class="kw">else</span>:
+    <span class="bu">print</span>(<span class="str">"Are you sure you want a plain pizza?"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> استخدام اسم القائمة مباشرة في شرط <code>if</code> هو أسلوب بايثوني للتحقق من أنها ليست فارغة. القائمة فارغة (<code>[]</code>)، لذلك يُعامِلُها الشرط كـ <code>False</code> ويُنتقل إلى <code>else</code>. هذا أفضل من استخدام <code>len()</code> لأنه أكثر إيجازاً ووضوحاً. المخرج سيكون: <code>Are you sure you want a plain pizza?</code></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+Are you sure you want a plain pizza?
+      </div>
+
+      <h3 class="subsection-title">مقارنة قوائم متعددة</h3>
+
+      <p>
+        يمكنك استخدام القوائم وجمل <span class="inline-code">if</span> للتحقق من توفر عناصر في قائمة أخرى:
+      </p>
+
+      <div class="code-block">
+available_toppings = [<span class="str">'mushrooms'</span>, <span class="str">'olives'</span>, <span class="str">'green peppers'</span>,
+                      <span class="str">'pepperoni'</span>, <span class="str">'pineapple'</span>, <span class="str">'extra cheese'</span>]
+
+requested_toppings = [<span class="str">'mushrooms'</span>, <span class="str">'french fries'</span>, <span class="str">'extra cheese'</span>]
+
+<span class="kw">for</span> requested_topping <span class="kw">in</span> requested_toppings:
+    <span class="kw">if</span> requested_topping <span class="kw">in</span> available_toppings:
+        <span class="bu">print</span>(f<span class="str">"Adding {requested_topping}."</span>)
+    <span class="kw">else</span>:
+        <span class="bu">print</span>(f<span class="str">"Sorry, we don't have {requested_topping}."</span>)
+
+<span class="bu">print</span>(<span class="str">"\nFinished making your pizza!"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> هذا المثال يقارن بين قائمتين: الإضافات المتاحة والإضافات المطلوبة. الحلقة تتحقق من كل عنصر مطلوب: إذا كان موجوداً في قائمة المتاح يُضاف إلى البيتزا، وإلا تظهر رسالة اعتذار. بما أن <code>'french fries'</code> غير متوفرة، ستظهر رسالة اعتذار عنها. المخرجات ستظهر رسالتَي إضافة ورسالة اعتذار واحدة.</div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+Adding mushrooms.
+Sorry, we don't have french fries.
+Adding extra cheese.
+
+Finished making your pizza!
+      </div>
+
+      <p>
+        هذا النوع من الكود قوي جداً — يسمح لبرنامجك بالتحقق من البيانات المتاحة قبل اتخاذ إجراء، مما يمنع الأخطاء ويحسن تجربة المستخدم.
+      </p>
+
+      <h2 class="section-title">التمارين</h2>
+
+      <div class="exercise">
+        <strong>تمرين 5-1: الاختبارات الشرطية</strong><br>
+        اكتب سلسلة من الاختبارات الشرطية. أنشئ متغيراً واختبر قيمته باستخدام == و != و < و > و <= و >=. اطبع عبارة تصف كل اختبار ونتيجته.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 5-2: المزيد من الاختبارات الشرطية</strong><br>
+        اختبر المساواة وعدم المساواة مع السلاسل النصية. اختبر باستخدام lower(). اختبر using and و or. اختبر باستخدام in و not in.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 5-3: ألوان الفضائيين #1</strong><br>
+        أنشئ متغيراً باسم <span class="inline-code">alien_color</span> واجعل قيمته <span class="inline-code">'green'</span>. اكتب جملة if تتحقق إذا كان لون الفضائي أخضر واطبع "اللاعب ربح 5 نقاط". اكتب نسخة أخرى تفشل (لا يوجد مخرجات).
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 5-4: ألوان الفضائيين #2</strong><br>
+        اختر لوناً للفضائي. اكتب جملة if-else: إذا كان أخضر اطبع "ربحت 5 نقاط لإصابتك الفضائي". وإلا اطبع "ربحت 10 نقاط".
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 5-5: ألوان الفضائيين #3</strong><br>
+        حوّل تمرين 5-4 إلى سلسلة if-elif-else بثلاثة ألوان: أخضر (5 نقاط)، أصفر (10 نقاط)، أحمر (15 نقطة).
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 5-6: مراحل العمر</strong><br>
+        اكتب سلسلة if-elif-else لتحديد مرحلة العمر: رضيع (أقل من 2)، طفل (أقل من 13)، مراهق (أقل من 20)، بالغ (أقل من 65)، كبير سن (65 أو أكثر).
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 5-7: الفاكهة المفضلة</strong><br>
+        أنشئ قائمة <span class="inline-code">favorite_fruits</span>. اكتب 5 جمل if تتحقق إذا كانت فاكهة معينة موجودة في القائمة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 5-8: الترحيب بالمستخدمين</strong><br>
+        أنشئ قائمة بأسماء المستخدمين (بما فيها 'admin'). اكتب حلقة ترحب بكل مستخدم، واطبع رسالة خاصة للإدمن.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 5-9: لا مستخدمين</strong><br>
+        أضف اختباراً في تمرين 5-8 ليتأكد أن قائمة المستخدمين ليست فارغة. إذا كانت فارغة، اطبع "نحتاج إلى بعض المستخدمين!"
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 5-10: التحقق من أسماء المستخدمين</strong><br>
+        أنشئ قائمة <span class="inline-code">current_users</span> وقائمة <span class="inline-code">new_users</span>. تحقق من أن كل اسم جديد غير مستخدم بالفعل (تجاهل حالة الأحرف).
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 5-11: الأرقام الترتيبية</strong><br>
+        أنشئ قائمة بالأرقام من 1 إلى 9. استخدم حلقة لطباعة الأرقام الترتيبية (1st, 2nd, 3rd, ..., 9th).
+      </div>
+
+      <h2 class="section-title">5.5 pattern matching - match/case (Python 3.10+)</h2>
+      <p>منذ Python 3.10، بايثون تدعم <strong>مطابقة الأنماط الهيكلية (Structural Pattern Matching)</strong>، مشابهة لـ <span class="inline-code">switch/case</span> في اللغات الأخرى لكن أقوى بكثير:</p>
+
+      <div class="code-block">
+<span class="cm"># مطابقة بسيطة مثل switch</span>
+<span class="kw">def</span> <span class="fn">describe_status</span>(code):
+    <span class="kw">match</span> code:
+        <span class="kw">case</span> <span class="num">200</span>:
+            <span class="kw">return</span> <span class="str">'OK'</span>
+        <span class="kw">case</span> <span class="num">404</span>:
+            <span class="kw">return</span> <span class="str">'Not Found'</span>
+        <span class="kw">case</span> <span class="num">500</span>:
+            <span class="kw">return</span> <span class="str">'Server Error'</span>
+        <span class="kw">case</span> _:  <span class="cm"># wildcard (افتراضي)</span>
+            <span class="kw">return</span> <span class="str">'Unknown'</span>
+
+<span class="bu">print</span>(<span class="fn">describe_status</span>(<span class="num">404</span>))  <span class="cm"># Not Found</span>
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> هذا المثال يُقدِّم <code>match/case</code> وهو نمط مطابقة الأنماط الهيكلية المتاح من Python 3.10+. الدالة <code>describe_status</code> تستقبل رمز حالة وتُطابقه مع أنماط مختلفة: إذا كان 200 تُعيد <code>'OK'</code>، إذا كان 404 تُعيد <code>'Not Found'</code>، وإلا تستخدم wildcard (<code>_</code>) كحالة افتراضية. المخرج سيكون: <code>Not Found</code>.</div>
+
+      <div class="code-block">
+<span class="cm"># مطابقة مع تفكيك (destructuring)</span>
+<span class="kw">def</span> <span class="fn">process_point</span>(point):
+    <span class="kw">match</span> point:
+        <span class="kw">case</span> (<span class="num">0</span>, <span class="num">0</span>):
+            <span class="kw">return</span> <span class="str">'Origin'</span>
+        <span class="kw">case</span> (<span class="num">0</span>, y):
+            <span class="kw">return</span> <span class="str">f'On Y axis at {y}'</span>
+        <span class="kw">case</span> (x, <span class="num">0</span>):
+            <span class="kw">return</span> <span class="str">f'On X axis at {x}'</span>
+        <span class="kw">case</span> (x, y):
+            <span class="kw">return</span> <span class="str">f'Point({x}, {y})'</span>
+        <span class="kw">case</span> _:
+            <span class="kw">return</span> <span class="str">'Not a point'</span>
+
+<span class="bu">print</span>(<span class="fn">process_point</span>((<span class="num">0</span>, <span class="num">5</span>)))  <span class="cm"># On Y axis at 5</span>
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> هذا المثال يوضح قدرة <code>match/case</code> على تفكيك القيم المركبة (tuple destructuring). النقطة <code>(0, 5)</code> تُطابِق الحالة الثانية <code>(0, y)</code> حيث <code>x = 0</code> و <code>y = 5</code>، مما يعني أنها تقع على المحور Y. المخرج سيكون: <code>On Y axis at 5</code>.</div>
+
+      <div class="code-block">
+<span class="cm"># مطابقة مع شروط إضافية (guards)</span>
+<span class="kw">def</span> <span class="fn">classify</span>(value):
+    <span class="kw">match</span> value:
+        <span class="kw">case</span> x <span class="kw">if</span> x < <span class="num">0</span>:
+            <span class="kw">return</span> <span class="str">'Negative'</span>
+        <span class="kw">case</span> x <span class="kw">if</span> x == <span class="num">0</span>:
+            <span class="kw">return</span> <span class="str">'Zero'</span>
+        <span class="kw">case</span> x <span class="kw">if</span> x > <span class="num">0</span>:
+            <span class="kw">return</span> <span class="str">'Positive'</span>
+
+<span class="cm"># مطابقة مع قواميس</span>
+<span class="kw">def</span> <span class="fn">handle_command</span>(cmd):
+    <span class="kw">match</span> cmd:
+        <span class="kw">case</span> {<span class="str">'action'</span>: <span class="str">'move'</span>, <span class="str">'x'</span>: x, <span class="str">'y'</span>: y}:
+            <span class="kw">return</span> <span class="str">f'Moving to ({x}, {y})'</span>
+        <span class="kw">case</span> {<span class="str">'action'</span>: <span class="str">'stop'</span>}:
+            <span class="kw">return</span> <span class="str">'Stopping'</span>
+        <span class="kw">case</span> _:
+            <span class="kw">return</span> <span class="str">'Unknown command'</span>
+
+<span class="bu">print</span>(<span class="fn">handle_command</span>({<span class="str">'action'</span>: <span class="str">'move'</span>, <span class="str">'x'</span>: <span class="num">10</span>, <span class="str">'y'</span>: <span class="num">20</span>}))
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> هذا المثال يعرِض ميزتين متقدمتين في <code>match/case</code>: الشروط الإضافية (guards) باستخدام <code>if</code> داخل <code>case</code> لتصنيف الأرقام، ومطابقة القواميس (dict matching) حيث تُستخرَج المفاتيح والقيم. الدالة <code>handle_command</code> تستقبل قاموس أوامر وتستخرج الإحداثيات إذا كان الأمر <code>move</code>. المخرج سيكون: <code>Moving to (10, 20)</code>.</div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> <span class="inline-code">match/case</span> ليس مجرد switch — هو <strong>مطابقة أنماط هيكلية</strong> يمكنها تفكيك القيم، مطابقة الشكل، وتطبيق شروط. مثالي لمعالجة ASTs، نظام الأوامر، وتحليل JSON. استخدم <span class="inline-code">case _:</span> كحالة افتراضية دائماً.</div>
+
+      <h2 class="section-title">Enum - ثوابت آمنة وقابلة للقراءة</h2>
+      <p>وحدة <span class="inline-code">enum</span> توفّر <strong>ثوابت مسماة</strong> آمنة — بديل أفضل للمتغيرات العامة (global constants) أو القيم السحرية (magic numbers):</p>
+
+      <div class="code-block">
+<span class="kw">from</span> enum <span class="kw">import</span> Enum, auto
+
+<span class="kw">class</span> <span class="fn">Color</span>(Enum):
+    RED = <span class="str">'red'</span>
+    GREEN = <span class="str">'green'</span>
+    BLUE = <span class="str">'blue'</span>
+
+<span class="kw">class</span> <span class="fn">Status</span>(Enum):
+    PENDING = auto()  <span class="cm"># قيم تلقائية 1, 2, 3...</span>
+    ACTIVE = auto()
+    DONE = auto()
+
+<span class="cm"># استخدام — مقارنة بالاسم وليس القيمة</span>
+<span class="kw">def</span> <span class="fn">handle</span>(color):
+    <span class="kw">match</span> color:       <span class="cm"># enum يتكامل مع match/case!</span>
+        <span class="kw">case</span> Color.RED:
+            <span class="kw">return</span> <span class="str">'Stop'</span>
+        <span class="kw">case</span> Color.GREEN:
+            <span class="kw">return</span> <span class="str">'Go'</span>
+        <span class="kw">case</span> _:
+            <span class="kw">return</span> <span class="str">'Unknown'</span>
+
+<span class="bu">print</span>(<span class="fn">handle</span>(Color.RED))      <span class="cm"># Stop</span>
+<span class="bu">print</span>(Status.ACTIVE.name)    <span class="cm"># ACTIVE</span>
+<span class="bu">print</span>(Status.ACTIVE.value)   <span class="cm"># 2</span>
+      </div>
+
+      <div class="explanation-box"><strong>📖 شرح الكود:</strong> هذا المثال يشرح وحدة <code>Enum</code> لإنشاء ثوابت مسماة آمنة وقابلة للقراءة. <code>Color</code> يُعرِّف ثلاثة ألوان بقيم نصية، بينما <code>Status</code> يستخدم <code>auto()</code> لتوليد قيم رقمية تلقائياً. يتكامل <code>Enum</code> مع <code>match/case</code> بشكل مثالي لمقارنة الثوابت بطريقة آمنة من الأخطاء الإملائية. المخرجات ستكون: <code>Stop - ACTIVE - 2</code>.</div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> استخدم <span class="inline-code">Enum</span> بدلاً من السلاسل النصية أو الأرقام للثوابت — يمنع الأخطاء الإملائية ويدعم <span class="inline-code">match/case</span>. <span class="inline-code">auto()</span> يعيّن قيماً تلقائية. <span class="inline-code">@unique</span> يمنع تكرار القيم.</div>
+
+      <h2 class="section-title">ملخص الفصل</h2>
+
+      <div class="summary-box">
+        <h3>📋 ملخص الفصل 5: جمل if</h3>
+        <ul>
+          <li>تعلمت كيفية كتابة <strong>اختبارات شرطية</strong> باستخدام ==, !=, <, >, <=, >=</li>
+          <li>تعرفت على اختبار شروط متعددة باستخدام <strong>and</strong> و <strong>or</strong></li>
+          <li>تعلمت التحقق من وجود قيمة في قائمة باستخدام <strong>in</strong> و <strong>not in</strong></li>
+          <li>تعرفت على <strong>القيم المنطقية (Boolean)</strong> <span class="inline-code">True</span> و <span class="inline-code">False</span></li>
+          <li>أتقنت استخدام جمل <strong>if البسيطة</strong>، <strong>if-else</strong>، و <strong>if-elif-else</strong></li>
+          <li>عرفت متى تستخدم <strong>عدة elif</strong> ومتى تحذف <strong>else</strong></li>
+          <li>تعلمت الفرق بين <strong>if-elif-else</strong> وجمل <strong>if المتعددة</strong></li>
+          <li>تعاملت مع <strong>القوائم</strong> داخل جمل if: عناصر خاصة، قوائم فارغة، ومقارنة قوائم</li>
+          <li>طورت كوداً يتفاعل مع البيانات بشكل ذكي ويتجنب الأخطاء</li>
+        </ul>
+      </div>
+
+    <div class="note"><strong>💡 نصيحة ذهبية:</strong> استفد من Falsy values في بايثون: <span class="inline-code">0</span>، <span class="inline-code">''</span>، <span class="inline-code">[]</span>، <span class="inline-code">{}</span>، <span class="inline-code">None</span> كلها تعامل كـ <span class="inline-code">False</span>. اكتب <span class="inline-code">if not items:</span> بدلاً من <span class="inline-code">if len(items) == 0:</span>. استخدم <span class="inline-code">x if condition else y</span> (Ternary) للشروط البسيطة في سطر واحد.</div>
+
+    <div class="warning"><strong>⚠️ خطأ شائع:</strong> استخدام <span class="inline-code">==</span> لمقارنة القيم مع <span class="inline-code">None</span>. استخدم <span class="inline-code">is None</span> و <span class="inline-code">is not None</span> بدلاً من ذلك. وكذلك <span class="inline-code">if x:</span> للتحقق من truthy/falsy بدلاً من <span class="inline-code">if x == True:</span>.</div>
+
+    <div class="exercise"><strong>🏋️ تمرين:</strong> اكتب برنامج تقدير درجات: اطلب من المستخدم رقم بين 0 و 100، ثم اطبع التقدير: 90+ = A، 80+ = B، 70+ = C، 60+ = D، أقل = F. استخدم <span class="inline-code">if-elif-else</span>. تأكد من التعامل مع القيم خارج النطاق.</div>
+
+    <div class="footer">
+      <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+      <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+    </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) { link.classList.add('active'); }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المشروع 2: تصور البيانات - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .project-card {
+    background: var(--card-bg);
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 20px 25px;
+    margin: 15px 0;
+    box-shadow: var(--shadow);
+  }
+  .project-card h3 { color: var(--primary); margin-bottom: 8px; font-size: 17px; }
+  .project-card p { font-size: 14px; color: var(--text-light); margin: 0; }
+  .chapter-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    padding: 3px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-left: 10px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">🚀 المشروع 2</span>
+      <h1>تصور البيانات</h1>
+      <p>إنشاء رسوم بيانية تفاعلية، تحميل البيانات من الإنترنت، والعمل مع واجهات برمجة التطبيقات — الفصول 15 - 16 - 17</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>في عالم اليوم، البيانات في كل مكان. القدرة على فهمها وتصورها هي مهارة أساسية لأي مبرمج. في هذا المشروع، ستتعلم كيفية إنشاء رسوم بيانية جميلة باستخدام مكتبات مثل <strong>Matplotlib</strong> و <strong>Plotly</strong> (Pygal في النسخة الأصلية)، وكيفية تحميل البيانات من ملفات CSV و JSON، وكيفية جلب البيانات الحية من واجهات برمجة التطبيقات (APIs) مثل GitHub API.</p>
+
+      <p>هذا المشروع سيفتح لك عالماً جديداً من الإمكانيات — من تحليل بيانات الطقس إلى متابعة أخبار التقنية، كل ذلك باستخدام بايثون.</p>
+
+      <h2 class="section-title">نظرة عامة على الفصول</h2>
+
+      <div class="project-card">
+        <h3>الفصل 15: توليد البيانات <span class="chapter-badge">الفصل 15</span></h3>
+        <p>تعلم أساسيات تصور البيانات باستخدام Matplotlib و Plotly. ستنشئ رسوماً بيانية خطية، مخططات مبعثرة (scatter plots)، ومحاكاة المشي العشوائي (random walk).</p>
+      </div>
+
+      <div class="project-card">
+        <h3>الفصل 16: تحميل البيانات <span class="chapter-badge">الفصل 16</span></h3>
+        <p>بعد أن تمكنت من إنشاء بياناتك، حان الوقت لتحميل بيانات حقيقية من ملفات CSV و JSON. ستتعلم قراءة بيانات الطقس وتحليلها، ومعالجة بيانات JSON من مواقع حقيقية.</p>
+      </div>
+
+      <div class="project-card">
+        <h3>الفصل 17: العمل مع APIs <span class="chapter-badge">الفصل 17</span></h3>
+        <p>أفضل مصدر للبيانات هو الإنترنت! ستتعلم استخدام واجهات برمجة التطبيقات (APIs) لجلب بيانات حية من GitHub ومنصات أخرى، ومعالجتها وعرضها في رسوم بيانية تفاعلية.</p>
+      </div>
+
+      <h2 class="section-title">الفصل 15: توليد البيانات</h2>
+
+      <h3 class="subsection-title">15.1 تثبيت Matplotlib و Plotly</h3>
+      <p>قبل أن نبدأ في إنشاء الرسوم البيانية، نحتاج إلى تثبيت المكتبات المناسبة:</p>
+      <div class="code-block">
+<span class="cm"># تثبيت Matplotlib</span>
+python3 -m pip install --upgrade matplotlib
+
+<span class="cm"># تثبيت Plotly</span>
+python3 -m pip install --upgrade plotly
+
+<span class="cm"># تثبيت Pygal (إذا أردت استخدامه بديلاً)</span>
+python3 -m pip install --upgrade pygal
+      </div>
+
+      <h3 class="subsection-title">15.2 رسم مخطط خطي بسيط باستخدام pyplot</h3>
+      <p><span class="inline-code">matplotlib.pyplot</span> هي وحدة رسوم بيانية شهيرة. لعمل أبسط رسم، نحتاج إلى قائمة من الأرقام للمحورين X و Y:</p>
+      <div class="code-block">
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+squares = [1, 4, 9, 16, 25]
+input_values = [1, 2, 3, 4, 5]
+
+plt.style.use(<span class="str">'seaborn'</span>)
+fig, ax = plt.subplots()
+ax.plot(input_values, squares, linewidth=3)
+
+<span class="cm"># تسمية المحاور والعنوان</span>
+ax.set_title(<span class="str">"Square Numbers"</span>, fontsize=24)
+ax.set_xlabel(<span class="str">"Value"</span>, fontsize=14)
+ax.set_ylabel(<span class="str">"Square of Value"</span>, fontsize=14)
+ax.tick_params(axis=<span class="str">'both'</span>, labelsize=14)
+
+plt.show()
+      </div>
+      <p><span class="inline-code">plt.style.use('seaborn')</span> يطبق نمطاً جميلاً على الرسم. <span class="inline-code">fig, ax = plt.subplots()</span> ينشئ الشكل (figure) والمحاور (axes). بعد ذلك، نضيف البيانات ونخصص المخطط قبل عرضه بـ <span class="inline-code">plt.show()</span>.</p>
+
+      <h3 class="subsection-title">15.3 المخططات المبعثرة (Scatter Plots)</h3>
+      <p>المخططات المبعثرة مفيدة لرؤية العلاقات بين مجموعتين من البيانات. نستخدم <span class="inline-code">ax.scatter()</span>:</p>
+      <div class="code-block">
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+x_values = <span class="bu">range</span>(1, 1001)
+y_values = [x**2 <span class="kw">for</span> x <span class="kw">in</span> x_values]
+
+plt.style.use(<span class="str">'seaborn'</span>)
+fig, ax = plt.subplots()
+ax.scatter(x_values, y_values, c=y_values, cmap=plt.cm.Blues, s=10)
+
+ax.set_title(<span class="str">"Square Numbers"</span>, fontsize=24)
+ax.set_xlabel(<span class="str">"Value"</span>, fontsize=14)
+ax.set_ylabel(<span class="str">"Square of Value"</span>, fontsize=14)
+ax.axis([0, 1100, 0, 1100000])
+
+plt.show()
+      </div>
+      <p>لاحظ كيف استخدمنا <span class="inline-code">c=y_values, cmap=plt.cm.Blues</span> لتلوين النقاط حسب قيمها — هذا يضيف بُعداً جمالياً ومعلوماتياً إضافياً للمخطط.</p>
+
+      <h3 class="subsection-title">15.4 المشي العشوائي (Random Walk)</h3>
+      <p>المشي العشوائي يحاكي مساراً عشوائياً — مثلاً حركة جزيء في سائل أو تقلبات سوق الأسهم. ننشئ كلاس <span class="inline-code">RandomWalk</span> يولد نقاطاً عشوائية:</p>
+      <div class="code-block">
+<span class="kw">from</span> random <span class="kw">import</span> choice
+
+<span class="kw">class</span> <span class="fn">RandomWalk</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, num_points=5000):
+        <span class="kw">self</span>.num_points = num_points
+        <span class="kw">self</span>.x_values = [0]
+        <span class="kw">self</span>.y_values = [0]
+
+    <span class="kw">def</span> <span class="fn">fill_walk</span>(<span class="kw">self</span>):
+        <span class="kw">while</span> <span class="bu">len</span>(<span class="kw">self</span>.x_values) &lt; <span class="kw">self</span>.num_points:
+            x_direction = choice([1, -1])
+            x_distance = choice([0, 1, 2, 3, 4])
+            x_step = x_direction * x_distance
+
+            y_direction = choice([1, -1])
+            y_distance = choice([0, 1, 2, 3, 4])
+            y_step = y_direction * y_distance
+
+            <span class="kw">if</span> x_step == 0 <span class="kw">and</span> y_step == 0:
+                <span class="kw">continue</span>
+
+            x = <span class="kw">self</span>.x_values[-1] + x_step
+            y = <span class="kw">self</span>.y_values[-1] + y_step
+            <span class="kw">self</span>.x_values.append(x)
+            <span class="kw">self</span>.y_values.append(y)
+      </div>
+      <p>ثم نرسم المسار الناتج باستخدام <span class="inline-code">ax.scatter()</span> مع تدرج لوني يظهر تقدم المسار:</p>
+      <div class="code-block">
+rw = RandomWalk()
+rw.fill_walk()
+plt.style.use(<span class="str">'classic'</span>)
+fig, ax = plt.subplots()
+point_numbers = <span class="bu">range</span>(rw.num_points)
+ax.scatter(rw.x_values, rw.y_values, c=point_numbers,
+    cmap=plt.cm.Blues, edgecolors=<span class="str">'none'</span>, s=15)
+ax.scatter(0, 0, c=<span class="str">'green'</span>, edgecolors=<span class="str">'none'</span>, s=100)
+ax.scatter(rw.x_values[-1], rw.y_values[-1], c=<span class="str">'red'</span>,
+    edgecolors=<span class="str">'none'</span>, s=100)
+ax.get_xaxis().set_visible(<span class="kw">False</span>)
+ax.get_yaxis().set_visible(<span class="kw">False</span>)
+plt.show()
+      </div>
+
+      <h3 class="subsection-title">15.5 استخدام Plotly للرسوم التفاعلية</h3>
+      <p>بينما Matplotlib ممتاز للرسوم الثابتة، <strong>Plotly</strong> يتيح رسوماً تفاعلية يمكن للمستخدم zoom و hover عليها. هنا مثال باستخدام مكعبات الأعداد:</p>
+      <div class="code-block">
+<span class="kw">from</span> plotly.graph_objs <span class="kw">import</span> Bar, Layout
+<span class="kw">from</span> plotly <span class="kw">import</span> offline
+
+x_values = <span class="bu">list</span>(<span class="bu">range</span>(1, 11))
+y_values = [x**3 <span class="kw">for</span> x <span class="kw">in</span> x_values]
+
+data = [Bar(x=x_values, y=y_values)]
+x_axis_config = {<span class="str">'title'</span>: <span class="str">'Number'</span>}
+y_axis_config = {<span class="str">'title'</span>: <span class="str">'Cube'</span>}
+my_layout = Layout(title=<span class="str">'Cubes'</span>,
+    xaxis=x_axis_config, yaxis=y_axis_config)
+offline.plot({<span class="str">'data'</span>: data, <span class="str">'layout'</span>: my_layout},
+    filename=<span class="str">'cubes.html'</span>)
+      </div>
+      <p>الرسوم البيانية من Plotly تُحفظ كملفات HTML تفاعلية — يمكن فتحها في أي متصفح وتسمح بالتفاعل مع البيانات.</p>
+
+      <div class="note"><strong>ملاحظة:</strong> في النسخة الأصلية من الكتاب، استخدم المؤلف مكتبة Pygal بدلاً من Plotly. كلتا المكتبتين ممتازتان، لكن Plotly أحدث وأكثر شيوعاً حالياً. اختر ما يناسبك.</div>
+
+      <h2 class="section-title">الفصل 16: تحميل البيانات</h2>
+
+      <h3 class="subsection-title">16.1 تنسيق CSV</h3>
+      <p>ملفات CSV (Comma-Separated Values) هي تنسيق شائع لتخزين البيانات الجدولية. كل سطر يمثل صفاً، والقيم مفصولة بفواصل. مثلاً ملف بيانات الطقس:</p>
+      <div class="code-block">
+<span class="cm"># مثال من ملف weather_data.csv</span>
+STATION,NAME,DATE,PRCP,TAVG,TMAX,TMIN
+USC00458830,San Francisco,2023-01-01,0.01,12.8,15.6,10.0
+USC00458830,San Francisco,2023-01-02,0.00,13.3,16.7,9.4
+      </div>
+
+      <h3 class="subsection-title">16.2 قراءة ملفات CSV باستخدام csv module</h3>
+      <p>نستخدم وحدة <span class="inline-code">csv</span> المدمجة في بايثون لقراءة هذه الملفات:</p>
+      <div class="code-block">
+<span class="kw">import</span> csv
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+path = Path(<span class="str">'weather_data/san_francisco_2023.csv'</span>)
+lines = path.read_text().splitlines()
+
+reader = csv.reader(lines)
+header_row = <span class="bu">next</span>(reader)
+
+<span class="cm"># طباعة أسماء الأعمدة مع فهارسها</span>
+<span class="kw">for</span> index, column_header <span class="kw">in</span> <span class="bu">enumerate</span>(header_row):
+    <span class="bu">print</span>(index, column_header)
+
+<span class="cm"># استخراج درجات الحرارة العظمى</span>
+highs = []
+<span class="kw">for</span> row <span class="kw">in</span> reader:
+    high = <span class="bu">int</span>(row[6])  <span class="cm"># عمود TMAX</span>
+    highs.append(high)
+      </div>
+
+      <h3 class="subsection-title">16.3 رسم بيانات الطقس</h3>
+      <p>بعد استخراج البيانات، نرسمها باستخدام Matplotlib:</p>
+      <div class="code-block">
+plt.style.use(<span class="str">'seaborn'</span>)
+fig, ax = plt.subplots()
+ax.plot(highs, color=<span class="str">'red'</span>, linewidth=1)
+
+<span class="cm"># تنسيق المحور x لعرض التواريخ</span>
+ax.set_title(<span class="str">"Daily High Temperatures, San Francisco 2023"</span>,
+    fontsize=24)
+ax.set_xlabel(<span class="str">''</span>, fontsize=16)
+ax.set_ylabel(<span class="str">"Temperature (F)"</span>, fontsize=16)
+ax.tick_params(axis=<span class="str">'both'</span>, which=<span class="str">'major'</span>, labelsize=16)
+
+plt.show()
+      </div>
+
+      <h3 class="subsection-title">16.4 تنسيق JSON</h3>
+      <p>JSON (JavaScript Object Notation) هو تنسيق شائع آخر لتبادل البيانات، خاصة في تطبيقات الويب. مثلاً بيانات إعمار سكان المدن:</p>
+      <div class="code-block">
+[
+  {
+    <span class="str">"Country"</span>: <span class="str">"World"</span>,
+    <span class="str">"Population"</span>: 7890000000,
+    <span class="str">"Cities"</span>: [
+      {
+        <span class="str">"City"</span>: <span class="str">"Tokyo"</span>,
+        <span class="str">"Population"</span>: 37393128
+      },
+      {
+        <span class="str">"City"</span>: <span class="str">"Delhi"</span>,
+        <span class="str">"Population"</span>: 31181376
+      }
+    ]
+  }
+]
+      </div>
+
+      <h3 class="subsection-title">16.5 معالجة بيانات JSON</h3>
+      <p>نستخدم وحدة <span class="inline-code">json</span> المدمجة:</p>
+      <div class="code-block">
+<span class="kw">import</span> json
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+path = Path(<span class="str">'population_data.json'</span>)
+contents = path.read_text()
+population_data = json.loads(contents)
+
+<span class="cm"># طباعة أسماء المدن</span>
+<span class="kw">for</span> country_data <span class="kw">in</span> population_data:
+    <span class="bu">print</span>(country_data[<span class="str">'Country'</span>])
+    <span class="kw">for</span> city_data <span class="kw">in</span> country_data[<span class="str">'Cities'</span>]:
+        <span class="bu">print</span>(f<span class="str">"  {city_data['City']}: {city_data['Population']}"</span>)
+      </div>
+
+      <h2 class="section-title">الفصل 17: العمل مع APIs</h2>
+
+      <h3 class="subsection-title">17.1 ما هي واجهة برمجة التطبيقات (API)؟</h3>
+      <p><strong>API</strong> (Application Programming Interface) هي واجهة تسمح لبرنامجين بالتواصل مع بعضهما البعض. في سياق الويب، تسمح APIs للمطورين بجلب البيانات من مواقع أخرى. مثلاً <strong>GitHub API</strong> يتيح لك جلب معلومات عن المستودعات والمستخدمين والمساهمات.</p>
+
+      <h3 class="subsection-title">17.2 إجراء طلب API باستخدام requests</h3>
+      <p>نستخدم مكتبة <span class="inline-code">requests</span> لإجراء طلبات HTTP:</p>
+      <div class="code-block">
+<span class="kw">import</span> requests
+
+url = <span class="str">'https://api.github.com/search/repositories?q=language:python&sort=stars'</span>
+headers = {<span class="str">'Accept'</span>: <span class="str">'application/vnd.github.v3+json'</span>}
+r = requests.get(url, headers=headers)
+<span class="bu">print</span>(f<span class="str">"Status code: {r.status_code}"</span>)
+
+<span class="cm"># تحويل الرد إلى JSON</span>
+response_dict = r.json()
+<span class="bu">print</span>(f<span class="str">"Total repositories: {response_dict['total_count']}"</span>)
+
+<span class="cm"># استعراض تفاصيل المستودعات</span>
+repo_dicts = response_dict[<span class="str">'items'</span>]
+<span class="bu">print</span>(f<span class="str">"Repositories returned: {len(repo_dicts)}"</span>)
+
+<span class="kw">for</span> repo_dict <span class="kw">in</span> repo_dicts[:5]:
+    <span class="bu">print</span>(<span class="str">"\nName:"</span>, repo_dict[<span class="str">'name'</span>])
+    <span class="bu">print</span>(<span class="str">"Owner:"</span>, repo_dict[<span class="str">'owner'</span>][<span class="str">'login'</span>])
+    <span class="bu">print</span>(<span class="str">"Stars:"</span>, repo_dict[<span class="str">'stargazers_count'</span>])
+    <span class="bu">print</span>(<span class="str">"Description:"</span>, repo_dict[<span class="str">'description'</span>])
+      </div>
+      <p>نستخدم <span class="inline-code">requests.get()</span> لإرسال طلب GET إلى URL المحدد. الخيار <span class="inline-code">headers</span> يخبر GitHub API بأننا نريد الرد بتنسيق JSON. الكود <span class="inline-code">r.status_code</span> يخبرنا ما إذا كان الطلب ناجحاً (200 يعني نجاح).</p>
+
+      <div class="note"><strong>ملاحظة:</strong> تأكد من تثبيت مكتبة requests باستخدام <span class="inline-code">python3 -m pip install requests</span> قبل استخدامها.</div>
+
+      <h3 class="subsection-title">17.3 معالجة نتائج API</h3>
+      <p>بعد جلب البيانات، نستخرج المعلومات التي تهمنا. في مثالنا، نأخذ أسماء المستودعات وعدد النجوم والوصف. لكن يمكننا استخراج أي حقل متاح في JSON.</p>
+      <p>إليك كيفية استخراج الروابط (URLs) أيضاً:</p>
+      <div class="code-block">
+<span class="kw">for</span> repo_dict <span class="kw">in</span> repo_dicts[:5]:
+    <span class="bu">print</span>(<span class="str">"URL:"</span>, repo_dict[<span class="str">'html_url'</span>])
+    <span class="bu">print</span>(<span class="str">"Created:"</span>, repo_dict[<span class="str">'created_at'</span>])
+    <span class="bu">print</span>(<span class="str">"Updated:"</span>, repo_dict[<span class="str">'updated_at'</span>])
+    <span class="bu">print</span>(<span class="str">"Language:"</span>, repo_dict[<span class="str">'language'</span>])
+      </div>
+
+      <h3 class="subsection-title">17.4 تصور نتائج API</h3>
+      <p>الآن نأخذ معلومات النجوم ونعرضها في مخطط شريطي باستخدام Plotly:</p>
+      <div class="code-block">
+<span class="kw">from</span> plotly.graph_objs <span class="kw">import</span> Bar, Layout
+<span class="kw">from</span> plotly <span class="kw">import</span> offline
+
+repo_names, stars = [], []
+<span class="kw">for</span> repo_dict <span class="kw">in</span> repo_dicts[:30]:
+    repo_names.append(repo_dict[<span class="str">'name'</span>])
+    stars.append(repo_dict[<span class="str">'stargazers_count'</span>])
+
+data = [Bar(x=repo_names, y=stars)]
+x_axis_config = {<span class="str">'title'</span>: <span class="str">'Repository'</span>, <span class="str">'tickangle'</span>: -45}
+y_axis_config = {<span class="str">'title'</span>: <span class="str">'Stars'</span>}
+my_layout = Layout(title=<span class="str">'Most-Starred Python Repos on GitHub'</span>,
+    xaxis=x_axis_config, yaxis=y_axis_config)
+offline.plot({<span class="str">'data'</span>: data, <span class="str">'layout'</span>: my_layout},
+    filename=<span class="str">'python_repos.html'</span>)
+      </div>
+
+      <h3 class="subsection-title">17.5 واجهات API أخرى</h3>
+      <p>هناك آلاف APIs المجانية التي يمكنك استخدامها:</p>
+      <ul>
+        <li><a href="https://api.github.com" target="_blank" rel="noopener">GitHub API</a> — معلومات عن المستودعات والمستخدمين</li>
+        <li><a href="https://newsapi.org" target="_blank" rel="noopener">News API</a> — أخبار من مصادر مختلفة</li>
+        <li><a href="https://openweathermap.org/api" target="_blank" rel="noopener">OpenWeatherMap</a> — بيانات الطقس الحالية</li>
+        <li><a href="https://developer.twitter.com/en/docs" target="_blank" rel="noopener">Twitter API</a> — التغريدات والاتجاهات</li>
+        <li><a href="https://developer.nytimes.com" target="_blank" rel="noopener">NYT API</a> — مقالات نيويورك تايمز</li>
+      </ul>
+
+      <h2 class="section-title">التمارين</h2>
+
+      <div class="exercise"><strong>تمرين 15-1: مكعبات</strong><br>
+      ارسم مخططاً يظهر مكعبات الأعداد من 1 إلى 10 باستخدام Matplotlib.</div>
+
+      <div class="exercise"><strong>تمرين 15-3: المشي الجزيئي</strong><br>
+      عدّل كلاس RandomWalk بحيث تزداد الخطوات العشوائية طولاً مع تقدم المسار (محاكاة الجزيء المتسارع).</div>
+
+      <div class="exercise"><strong>تمرين 15-10: تمرير البيانات لـ Plotly</strong><br>
+      استخدم Plotly لإنشاء رسم بياني من البيانات التي قمت بتوليدها. جرب تمرير كلا المكتبتين.</div>
+
+      <div class="exercise"><strong>تمرين 16-1: بيانات الطقس لمدينتك</strong><br>
+      ابحث عن بيانات الطقس لمدينتك عبر موقع NOAA.gov وقم بتحليلها ورسمها كما في الفصل.</div>
+
+      <div class="exercise"><strong>تمرين 16-7: بيانات السكان العالمية</strong><br>
+      استخدم ملف JSON للسكان لإنشاء خريطة حرارية توضح توزيع السكان حول العالم.</div>
+
+      <div class="exercise"><strong>تمرين 17-1: لغات أخرى</strong><br>
+      عدّل طلب API ليجلب مستودعات JavaScript أو C++ الأكثر نجوم بدلاً من Python.</div>
+
+      <div class="exercise"><strong>تمرين 17-4: تصور مستودعات JavaScript</strong><br>
+      استخدم Plotly أو Pygal لإنشاء مخطط شريطي لأكثر مستودعات JavaScript شهرة على GitHub.</div>
+
+      <h2 class="section-title">المفاهيم الرئيسية</h2>
+      <div class="summary-box">
+        <h3>📝 المفاهيم التي تعلمتها في هذا المشروع</h3>
+        <ul>
+          <li><strong>Matplotlib:</strong> مكتبة رسوم بيانية ثابتة قوية ومرنة</li>
+          <li><strong>Plotly / Pygal:</strong> مكتبات رسوم بيانية تفاعلية قابلة للتصدير إلى HTML</li>
+          <li><strong>المخطط المبعثر (Scatter Plot):</strong> عرض العلاقات بين متغيرين باستخدام نقاط</li>
+          <li><strong>المشي العشوائي (Random Walk):</strong> محاكاة مسارات عشوائية لتقليد الظواهر الطبيعية</li>
+          <li><strong>تنسيق CSV:</strong> تنسيق نصي للبيانات الجدولية — قراءته وتحليله مع بايثون</li>
+          <li><strong>تنسيق JSON:</strong> تنسيق لتبادل البيانات — معالجته وتحويله إلى قواميس بايثون</li>
+          <li><strong>API (واجهة برمجة التطبيقات):</strong> جلب بيانات حية من الإنترنت باستخدام طلبات HTTP</li>
+          <li><strong>مكتبة requests:</strong> إجراء طلبات HTTP بسهولة في بايثون</li>
+        </ul>
+      </div>
+
+      <div class="note"><strong>نصيحة ختامية:</strong> تصور البيانات هو مهارة مطلوبة بشدة في سوق العمل. جرب باستمرار تطبيق ما تعلمته على بيانات حقيقية تجدها على الإنترنت. كلما تدربت أكثر، كلما أصبحت الرسوم البيانية التي تنشئها أكثر إتقاناً وإفادة.</div>
+
+      <div style="text-align:center;margin:40px 0;">
+        <a href="../index.html" style="display:inline-block;background:var(--secondary);color:#fff;padding:12px 30px;border-radius:8px;text-decoration:none;font-size:16px;">العودة إلى الرئيسية</a>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+      <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) { link.classList.add('active'); }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

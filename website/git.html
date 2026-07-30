@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git/GitHub - التحكم بالنسخ - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <div class="part-badge">⚙️ Core Engineering</div>
+      <h1>Git/GitHub - التحكم بالنسخ</h1>
+      <p>Version Control — إدارة تاريخ مشاريعك البرمجية بذكاء</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        Git هو أقوى وأشهر نظام للتحكم بالنسخ (Version Control System) في العالم.
+        يُستخدم لتتبع التغييرات في ملفات مشروعك، والعودة للإصدارات السابقة، والعمل مع فريق
+        دون أن تتعارض تعديلاتكم. GitHub هي منصة سحابية تستضيف مستودعات Git وتضيف أدوات
+        تعاون إضافية مثل Pull Requests و Issues. هذا الدليل مخصص لمطوري بايثون لتعلم
+        Git و GitHub من الصفر.
+      </p>
+
+      <!-- ========== 1 ========== -->
+      <h2 class="section-title">1. مقدمة عن Git و GitHub</h2>
+
+      <p>
+        <strong>التحكم بالنسخ (Version Control)</strong> هو نظام يُسجّل التغييرات التي تطرأ على
+        ملفاتك عبر الزمن. يسمح لك بالعودة لإصدارات سابقة، معرفة من أجرى تغييراً معيناً،
+        وتجربة أفكار جديدة في فروع منفصلة دون التأثير على الكود المستقر.
+      </p>
+
+      <p>
+        <strong>Git</strong> — نظام تحكم بالنسخ موزّع (Distributed VCS). كل مطور لديه
+        نسخة كاملة من تاريخ المشروع على جهازه، مما يسمح بالعمل دون اتصال بالإنترنت.
+        Git سريع جداً، ويستخدمه ملايين المطورين حول العالم.
+      </p>
+
+      <p>
+        <strong>GitHub</strong> — خدمة سحابية تستضيف مستودعات Git. تضيف GitHub أدوات
+        اجتماعية وتعاونية مثل: Pull Requests (طلبات الدمج)، Issues (تتبع المشاكل)،
+        Code Review (مراجعة الكود)، GitHub Actions (التكامل المستمر)، و GitHub Pages
+        (نشر المواقع). الفرق بين Git و GitHub: Git هو الأداة، GitHub هو المنصة.
+      </p>
+
+      <div class="note">
+        <strong>💡 لماذا Git لمطوري بايثون؟</strong>
+        كل مشروع بايثون — من سكربت بسيط إلى إطار ويب كبير — يحتاج إلى Git.
+        أنت تحتاجه لتجربة أفكار جديدة في branches، للعودة عن أخطاء، وللتعاون مع فريقك عبر
+        GitHub أو GitLab أو Bitbucket. أغلب وظائف بايثون تُنشر عبر GitHub.
+      </div>
+
+      <!-- ========== 2 ========== -->
+      <h2 class="section-title">2. تثبيت Git وتكوينه</h2>
+
+      <p>
+        لتثبيت Git على نظام Linux (مثل Ubuntu/Debian):
+      </p>
+
+      <div class="code-block"><span class="bu">sudo</span> apt update
+<span class="bu">sudo</span> apt install git -y
+<span class="bu">git</span> --version</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الأمر الأول يُحدّث قائمة الحزم المتاحة. الثاني يُثبّت Git مع العلم <code>-y</code> لتأكيد التثبيت تلقائياً. الثالث يتحقق من إصدار Git المثبّت — إذا رأيت رقماً مثل <code>git version 2.34.1</code>، فالتثبيت نجح.</p></div>
+
+      <p>
+        على Windows، حمّل المثبّت من <span class="inline-code">git-scm.com</span>. على macOS،
+        استخدم <span class="inline-code">brew install git</span>.
+      </p>
+
+      <p>
+        بعد التثبيت، يجب تكوين اسمك وبريدك الإلكتروني — هذه المعلومات تُرفق مع كل commit:
+      </p>
+
+      <div class="code-block"><span class="bu">git</span> config --global user.name <span class="str">"Your Name"</span>
+<span class="bu">git</span> config --global user.email <span class="str">"you@example.com"</span>
+<span class="bu">git</span> config --list</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الأمر الأول يضبط اسمك العالمي — كل commits ستُنسَب لهذا الاسم. الثاني يضبط بريدك الإلكتروني (يُفضّل أن يكون نفسه المسجّل في GitHub). الثالث يعرض جميع الإعدادات الحالية لتأكيد التهيئة الصحيحة. <code>--global</code> يعني أن هذه الإعدادات تطبق على كل مستودعات Git في جهازك.</p></div>
+
+      <!-- ========== 3 ========== -->
+      <h2 class="section-title">3. إنشاء مستودع (Repository)</h2>
+
+      <p>
+        المستودع (Repository أو "repo") هو مجلد يحتوي على مشروعك وكل تاريخ Git له.
+        لإنشاء مستودع جديد:
+      </p>
+
+      <div class="code-block"><span class="bu">mkdir</span> my-python-project
+<span class="bu">cd</span> my-python-project
+<span class="bu">git</span> init</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>mkdir</code> تنشئ مجلداً جديداً باسم <code>my-python-project</code>. <code>cd</code> تنتقل إليه. <code>git init</code> تنشئ مستودع Git جديد — تنشئ مجلداً مخفياً باسم <code>.git</code> يحتوي على كل بيانات Git. الآن هذا المجلد هو مستودع Git رسمي.</p></div>
+
+      <p>
+        بعد <span class="inline-code">git init</span>، ستجد مجلداً مخفياً باسم
+        <span class="inline-code">.git</span> (أظهره بالأمر <span class="inline-code">ls -la</span>).
+        هذا المجلد هوعمود Git الفقري — يحتوي على كل commits والفروع والتاريخ. لا
+        تُحرّره يدوياً أبداً!
+      </p>
+
+      <p>
+        لمعرفة حالة المستودع الحالية — أي الملفات التي تم تعديلها، والتي في منطقة
+        التجهيز (staging area)، وأيها غير متتبّع (untracked):
+      </p>
+
+      <div class="code-block"><span class="bu">git</span> status</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git status</code> هو أكثر أوامر Git استخداماً. يظهر لك الملفات التي عدّلتها ولم تُضفها بعد، الملفات في منطقة التجهيز (staged)، والملفات الجديدة التي لم يتتبّعها Git بعد (untracked). استخدمه دائماً قبل commit لتعرف بالضبط ما الذي ستُسجّله.</p></div>
+
+      <!-- ========== 4 ========== -->
+      <h2 class="section-title">4. دورة حياة الملفات (Status Lifecycle)</h2>
+
+      <p>
+        كل ملف في مستودع Git يمر بحالات محددة. فهم دورة الحياة هذه هو المفتاح لفهم Git:
+      </p>
+
+      <ul>
+        <li><strong>Untracked (غير متتبّع):</strong> Git لا يعلم بوجود هذا الملف بعد. أنشأته للتو ولم تُضفه.</li>
+        <li><strong>Staged (مُجهّز):</strong> أضفت الملف إلى منطقة التجهيز بانتظار commit.</li>
+        <li><strong>Committed (مُسجّل):</strong> تم حفظ الملف في تاريخ Git.</li>
+        <li><strong>Modified (مُعدّل):</strong> الملف مُسجّل مسبقاً لكن أجريت تغييرات جديدة لم تُجهّز بعد.</li>
+      </ul>
+
+      <p>
+        دورة الحياة الأساسية تعمل هكذا:
+        <strong>Working Directory (مجلد العمل)</strong> ← <strong>Staging Area (منطقة التجهيز)</strong> ← <strong>Repository (المستودع)</strong>.
+        المجلد حيث تعمل هو Working Directory. عندما تُضيف ملفاً بـ <span class="inline-code">git add</span>،
+        ينتقل إلى Staging Area. عندما تنفذ <span class="inline-code">git commit</span>،
+        يُسجّل في Repository.
+      </p>
+
+      <div class="code-block"><span class="cm"># إنشاء ملف بايثون جديد</span>
+<span class="bu">echo</span> <span class="str">'print("Hello, Git!")'</span> > main.py
+
+<span class="cm"># الملف الآن Untracked — Git لا يتتبعه بعد</span>
+<span class="bu">git</span> status
+
+<span class="cm"># إضافة الملف إلى منطقة التجهيز (Staging Area)</span>
+<span class="bu">git</span> add main.py
+
+<span class="cm"># الملف الآن Staged — جاهز للcommit</span>
+<span class="bu">git</span> status
+
+<span class="cm"># تسجيل الملف في المستودع</span>
+<span class="bu">git</span> commit -m <span class="str">"أضف ملف main.py الأولي"</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>أنشأنا ملف <code>main.py</code> يحتوي على أمر print. <code>git status</code> يُظهره كـ Untracked. <code>git add main.py</code> يُحرّكه إلى Staging Area — الآن Git يتتبّعه. <code>git commit -m "..."</code> يُسجّله رسمياً في تاريخ المستودع مع رسالة تصف التغيير. بعد commit، يصبح الملف نظيفاً (clean) حتى تُعدّله مرة أخرى.</p></div>
+
+      <!-- ========== 5 ========== -->
+      <h2 class="section-title">5. git add و git commit</h2>
+
+      <p>
+        <span class="inline-code">git add</span> ينقل الملفات من مجلد العمل إلى منطقة
+        التجهيز. يمكنك إضافة ملف واحد أو عدة ملفات أو كل الملفات:
+      </p>
+
+      <div class="code-block"><span class="cm"># إضافة ملف واحد</span>
+<span class="bu">git</span> add main.py
+
+<span class="cm"># إضافة مجلد كامل</span>
+<span class="bu">git</span> add utils/
+
+<span class="cm"># إضافة كل الملفات (الأكثر استخداماً)</span>
+<span class="bu">git</span> add .
+
+<span class="cm"># إضافة مع حذف ملفات من staging</span>
+<span class="bu">git</span> add -A</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git add main.py</code> يضيف ملفاً واحداً فقط. <code>git add utils/</code> يضيف كل الملفات داخل مجلد <code>utils</code>. <code>git add .</code> يضيف كل الملفات الجديدة والمعدّلة في المجلد الحالي (لكن لا يحذف الملفات المحذوفة من staging). <code>git add -A</code> يفعل كل شيء — إضافات وتعديلات وحذف.</p></div>
+
+      <p>
+        <span class="inline-code">git commit</span> يُسجّل لقطة (snapshot) لكل الملفات
+        في منطقة التجهيز. كل commit له معرّف فريد (SHA-1 hash) ورسالة تصف التغيير:
+      </p>
+
+      <div class="code-block"><span class="cm"># commit بسيط</span>
+<span class="bu">git</span> commit -m <span class="str">"إصلاح خطأ في حساب الضرائب"</span>
+
+<span class="cm"># commit مع وصف أطول (يفتح محرر نصوص)</span>
+<span class="bu">git</span> commit</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git commit -m "..."</code> هو اختصار — تكتب الرسالة مباشرة في الأمر. إذا كتبت <code>git commit</code> بدون <code>-m</code>، سيفتح Git محرر النصوص الافتراضي (مثل Nano أو Vim) لتكتب رسالة أطول. اكتب commit messages واضحة تبدأ بفعل أمر (Fix, Add, Update, Remove).</p></div>
+
+      <p>
+        لمشاهدة تاريخ commits:
+      </p>
+
+      <div class="code-block"><span class="cm"># عرض كل commits</span>
+<span class="bu">git</span> log
+
+<span class="cm"># عرض سطر واحد لكل commit</span>
+<span class="bu">git</span> log --oneline
+
+<span class="cm"># عرض شجرة الفروع</span>
+<span class="bu">git</span> log --oneline --graph --all</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git log</code> يعرض كل commits بالتفصيل — المؤلف، التاريخ، الرسالة، و SHA-1 hash. <code>--oneline</code> يختصر كل commit في سطر واحد (الـ hash المختصر + الرسالة). <code>--graph --all</code> يعرض شجرة الفروع بشكل رسومي باستخدام خطوط ASCII — مفيد جداً لفهم تاريخ المشروع.</p></div>
+
+      <div class="note">
+        <strong>💡 نصائح لكتابة Commit Messages جيدة:</strong>
+        اكتب الرسالة باللغة الإنجليزية (الأفضل للمشاريع العالمية) أو العربية. ابدأ بفعل: "Add", "Fix", "Update", "Remove", "Refactor". أول سطر أقل من 50 حرفاً. اترك سطراً فارغاً ثم اكتب شرحاً أطول إن لزم الأمر. مثال:
+        <span class="inline-code">"Add user authentication with JWT tokens"</span>.
+      </div>
+
+      <!-- ========== 6 ========== -->
+      <h2 class="section-title">6. الفروع (Branches)</h2>
+
+      <p>
+        الفروع (Branches) هي أقوى ميزة في Git. الفرع هو مؤشّر متحرّك إلى commit معيّن.
+        عندما تنشئ فرعاً جديداً، تنسخ تاريخ المشروع عند تلك النقطة وتعمل عليه بشكل
+        مستقل — دون التأثير على الفرع الرئيسي <span class="inline-code">main</span>.
+      </p>
+
+      <div class="code-block"><span class="cm"># عرض الفروع الموجودة</span>
+<span class="bu">git</span> branch
+
+<span class="cm"># إنشاء فرع جديد</span>
+<span class="bu">git</span> branch feature-login
+
+<span class="cm"># التبديل إلى فرع آخر</span>
+<span class="bu">git</span> checkout feature-login
+
+<span class="cm"># إنشاء وتبديل في أمر واحد (طريقة حديثة)</span>
+<span class="bu">git</span> checkout -b feature-api
+
+<span class="cm"># الطريقة الحديثة (Git 2.23+)</span>
+<span class="bu">git</span> switch -b feature-api</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git branch</code> يعرض الفروع — الفرع النشط (الحالي) عليه علامة <code>*</code>. <code>git branch feature-login</code> ينشئ فرعاً جديداً لكنك تبقى في الفرع الحالي. <code>git checkout feature-login</code> يُبدّلك إليه. <code>git checkout -b feature-api</code> ينشئ ويُبدّل فوراً. <code>git switch -b</code> هي الطريقة الأحدث (Git 2.23+) وتعمل بنفس المنطق.</p></div>
+
+      <p>
+        تخيّل <span class="inline-code">main</span> كالعمود الفقري للمشروع. عندما تريد
+        إضافة ميزة جديدة (login, API, إلخ)، أنشئ فرعاً من main، اعمل بهدوء، ثم ادمجه
+        مرة أخرى. هذا يحمي main من الكود المكسور.
+      </p>
+
+      <div class="code-block"><span class="cm"># إنشاء فرع وتعديل ملف</span>
+<span class="bu">git</span> switch -c feature-pagination
+<span class="bu">echo</span> <span class="str">'def paginate(): pass'</span> >> utils.py
+<span class="bu">git</span> add . && <span class="bu">git</span> commit -m <span class="str">"Add pagination utility"</span>
+
+<span class="cm"># العودة إلى main</span>
+<span class="bu">git</span> switch main
+
+<span class="cm"># حذف فرع (بعد الدمج)</span>
+<span class="bu">git</span> branch -d feature-pagination</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>أنشأنا فرعاً جديداً <code>feature-pagination</code> وانتقلنا إليه. أضفنا دالة بايثون إلى ملف <code>utils.py</code>، ثم أضفنا الملف إلى staging (<code>git add .</code>) وسجّلنا commit. <code>git switch main</code> يعيدنا للفرع الرئيسي — الملف سيعود لحالته قبل التعديل (الفرعان مستقلان). بعد الدمج، نحذف الفرع بـ <code>git branch -d</code>.</p></div>
+
+      <!-- ========== 7 ========== -->
+      <h2 class="section-title">7. الدمج (Merge)</h2>
+
+      <p>
+        الدمج (Merge) يجمع التغييرات من فرع إلى آخر. مثلاً، بعد الانتهاء من تطوير
+        ميزة في فرع منفصل، تدمجها إلى <span class="inline-code">main</span>:
+      </p>
+
+      <div class="code-block"><span class="cm"># تأكد أنك في الفرع الهدف (main)</span>
+<span class="bu">git</span> switch main
+
+<span class="cm"># ادمج فرع الميزة إلى main</span>
+<span class="bu">git</span> merge feature-pagination</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>أولاً، تأكد أنك في الفرع الذي تريد الدمج <strong>إليه</strong> — هنا <code>main</code>. ثم <code>git merge feature-pagination</code> يدمج commits من <code>feature-pagination</code> إلى <code>main</code>. إذا لم يكن هناك تعارضات، سترى رسالة "Fast-forward" أو "Merge made by the 'ort' strategy".</p></div>
+
+      <p>
+        هناك نوعان رئيسيان من الدمج:
+      </p>
+
+      <ul>
+        <li><strong>Fast-Forward Merge:</strong> يحدث عندما يكون الفرع الهدف (main) لم يتغير منذ إنشاء الفرع الجديد. Git ببساطة يُحرّك المؤشر إلى الأمام.</li>
+        <li><strong>3-Way Merge:</strong> يحدث عندما يكون الفرعان (main و feature) قد تطورا بشكل منفصل. ينشئ Git commit دمج جديد برأسَين (merge commit).</li>
+      </ul>
+
+      <p>
+        <strong>تعارضات الدمج (Merge Conflicts):</strong> عندما يعدّل الفرعان نفس السطر
+        في نفس الملف بشكل مختلف، لا يستطيع Git الدمج تلقائياً. يجب حل التعارض يدوياً:
+      </p>
+
+      <div class="code-block"><span class="cm"># Git سيخبرك بوجود تعارض</span>
+<span class="bu">git</span> merge feature-login
+<span class="cm"># CONFLICT (content): Merge conflict in main.py</span>
+
+<span class="cm"># افتح الملف وابحث عن علامات Git:</span>
+<span class="cm"># <<<<<<< HEAD</span>
+<span class="cm"># print("Hello from main")</span>
+<span class="cm"># =======</span>
+<span class="cm"># print("Hello from feature")</span>
+<span class="cm"># >>>>>>> feature-login</span>
+
+<span class="cm"># عدّل الملف — احتفظ بما تريد واحذف العلامات</span>
+<span class="cm"># ثم أضف و commit كالمعتاد:</span>
+<span class="bu">git</span> add .
+<span class="bu">git</span> commit -m <span class="str">"Resolve merge conflict in main.py"</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>عند حدوث تعارض، Git يُوقف الدمج ويُدرج علامات في الملف: <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> (نسخة الفرع الحالي)، <code>=======</code> (فاصل)، <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-login</code> (نسخة الفرع المدمَج). احتفظ بالكود الصحيح، احذف العلامات، ثم <code>git add</code> و <code>git commit</code> لإكمال الدمج.</p></div>
+
+      <!-- ========== 8 ========== -->
+      <h2 class="section-title">8. GitHub - العمل عن بعد</h2>
+
+      <p>
+        GitHub يضيف بُعداً جديداً: المستودع البعيد (Remote Repository). المستودع المحلي
+        على جهازك والمستودع البعيد على GitHub — يمكنك مزامنتهما:
+      </p>
+
+      <div class="code-block"><span class="cm"># إنشاء مستودع على GitHub أولاً، ثم ربطه محلياً</span>
+<span class="bu">git</span> remote add origin https://github.com/username/my-project.git
+
+<span class="cm"># دفع commits المحلية إلى GitHub</span>
+<span class="bu">git</span> push -u origin main
+
+<span class="cm"># في المرات التالية (بعد -u أول مرة):</span>
+<span class="bu">git</span> push</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git remote add origin ...</code> يُضيف المستودع البعيد باسم <code>origin</code> (التقليد). <code>git push -u origin main</code> يدفع commits المحلية إلى GitHub وينشئ رابط تتبّع بين الفرع المحلي <code>main</code> والفرع البعيد <code>origin/main</code>. العلم <code>-u</code> (upstream) يسمح لك باستخدام <code>git push</code> فقط في المستقبل.</p></div>
+
+      <p>
+        لنسخ مستودع من GitHub إلى جهازك (مثل مشروع مفتوح المصدر):
+      </p>
+
+      <div class="code-block"><span class="cm"># clone — نسخة كاملة من المستودع</span>
+<span class="bu">git</span> clone https://github.com/username/project.git
+
+<span class="cm"># git pull = git fetch + git merge (جلب التحديثات)</span>
+<span class="bu">git</span> pull</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git clone</code> يُنشئ نسخة محلية كاملة من أي مستودع على GitHub — مع كل الفروع والتاريخ. <code>git pull</code> يجلب (fetch) التغييرات الجديدة من GitHub ويدمجها (merge) مع فرعك المحلي في خطوة واحدة. استخدم <code>git pull</code> يومياً قبل بدء العمل للحصول على آخر التغييرات.</p></div>
+
+      <p>
+        <span class="inline-code">git pull</span> هو اختصار لخطوتين:
+        <span class="inline-code">git fetch</span> (يجلب التغييرات البعيدة بدون دمج)
+        و <span class="inline-code">git merge</span> (يدمجها مع فرعك المحلي).
+        <span class="inline-code">git fetch</span> آمن — يمكنك مراجعة التغييرات ثم
+        <span class="inline-code">git merge</span> يدوياً لاحقاً.
+      </p>
+
+      <!-- ========== 9 ========== -->
+      <h2 class="section-title">9. Pull Requests</h2>
+
+      <p>
+        Pull Request (PR) أو "طلب دمج" هو طريقة GitHub لاقتراح تغييرات على مشروع.
+        بدلاً من دفع الكود مباشرة إلى <span class="inline-code">main</span>، تنشئ
+        فرعاً، تدفعه إلى GitHub، وتفتح PR لمراجعته:
+      </p>
+
+      <div class="code-block"><span class="cm"># سير عمل PR الكامل:</span>
+
+<span class="cm"># 1. حدّث فرعك المحلي</span>
+<span class="bu">git</span> switch main
+<span class="bu">git</span> pull
+
+<span class="cm"># 2. أنشئ فرعاً للميزة الجديدة</span>
+<span class="bu">git</span> switch -c feature-dark-mode
+
+<span class="cm"># 3. اعمل على الكود</span>
+<span class="bu">echo</span> <span class="str">'DARK_MODE = True'</span> > config.py
+<span class="bu">git</span> add . && <span class="bu">git</span> commit -m <span class="str">"Add dark mode config"</span>
+
+<span class="cm"># 4. ادفع الفرع إلى GitHub</span>
+<span class="bu">git</span> push -u origin feature-dark-mode
+
+<span class="cm"># 5. اذهب إلى GitHub وافتح Pull Request</span>
+<span class="cm"># 6. يفحص الزملاء الكود ويتركون comments</span>
+<span class="cm"># 7. بعد الموافقة — اضغط "Merge PR" على GitHub</span>
+<span class="cm"># 8. احذف الفرع بعد الدمج:</span>
+<span class="bu">git</span> switch main
+<span class="bu">git</span> pull
+<span class="bu">git</span> branch -d feature-dark-mode</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هذا هو سير العمل الأساسي لأي مشروع تعاوني على GitHub. أنشئ فرعاً جديداً لكل مهمة، اكتب الكود واعمل commits، ادفع الفرع إلى GitHub، افتح PR، انتظر المراجعة، ثم ادمج. العلم <code>-u</code> يضبط upstream tracking. بعد الدمج، احذف الفرع محلياً لتجنب تراكم الفروع القديمة.</p></div>
+
+      <p>
+        <strong>Fork</strong> هو نسخة من مستودع شخص آخر تحت حسابك على GitHub.
+        تستخدم Fork للمساهمة في مشاريع مفتوحة المصدر: fork ← clone ← أنشئ فرعاً ←
+        عدّل ← ادفع ← افتح PR ← يدمج صاحب المشروع تغييرك.
+      </p>
+
+      <div class="note">
+        <strong>💡 نصائح PR:</strong>
+        اجعل PR واحداً صغيراً ومركّزاً (مهمة واحدة فقط). اكتب وصفاً واضحاً يشرح "ماذا" و "لماذا". أضف Screenshots إن أمكن. استجب لتعليقات المراجعين بأدب. استخدم
+        <span class="inline-code">git push --force</span> بحذر شديد بعد PR.
+      </div>
+
+      <!-- ========== 10 ========== -->
+      <h2 class="section-title">10. Rebase و Reset</h2>
+
+      <p>
+        <strong>git rebase</strong> هو بديل للدمج — يُعيد تطبيق commits من فرعك على قمة
+        فرع آخر، مما يُنتج تاريخاً خطياً نظيفاً. الفرق بين rebase و merge:
+      </p>
+
+      <div class="code-block"><span class="cm"># قبل rebase: feature مبني على commit قديم</span>
+<span class="cm"># main: A---B---C</span>
+<span class="cm"># feature:    D---E</span>
+
+<span class="cm"># rebase: يضع commits D و E فوق C</span>
+<span class="bu">git</span> switch feature
+<span class="bu">git</span> rebase main
+<span class="cm"># النتيجة: main: A---B---C</span>
+<span class="cm"># feature:          D'---E'</span>
+
+<span class="cm"># ثم fast-forward merge إلى main</span>
+<span class="bu">git</span> switch main
+<span class="bu">git</span> merge feature</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git rebase main</code> يأخذ commits الفريدة في فرع <code>feature</code> (D و E) ويُعيد تطبيقها فوق أحدث commit في <code>main</code> (C). النتيجة: تاريخ خطي نقي — وكأنك طورت الميزة كلها بعد C. يحذّر: لا تستخدم rebase على فروع يشارك فيها آخرون (public branches) لأنه يُعيد كتابة التاريخ.</p></div>
+
+      <p>
+        <strong>git reset</strong> يُحرّك مؤشر HEAD إلى commit سابق ويمكنه تعديل
+        منطقة التجهيز ومجلد العمل بثلاث طرق:
+      </p>
+
+      <div class="code-block"><span class="cm"># --soft: يحرّك HEAD فقط — staging و workdir كما هما</span>
+<span class="bu">git</span> reset --soft HEAD~1
+
+<span class="cm"># --mixed (الافتراضي): يحرّك HEAD ويُفرّغ staging — workdir كما هو</span>
+<span class="bu">git</span> reset --mixed HEAD~1
+
+<span class="cm"># --hard: يحرّك HEAD ويُفرّغ staging ويُعيد workdir — احذر! لا رجعة فيه</span>
+<span class="bu">git</span> reset --hard HEAD~1</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>--soft</code> تُرجع commit لكن تترك كل ملفاتك في Staging Area — كأنك أزلت commit فقط. <code>--mixed</code> (الافتراضي) تُرجع commit وتُخرج الملفات من staging (تبقى معدّلة في workdir). <code>--hard</code> تُرجع commit وتُعيد workdir لحالة ذلك commit — أي تغييرات غير مسجلة تُفقد للأبد! استخدم <code>--hard</code> بحذر شديد.</p></div>
+
+      <p>
+        <strong>git revert</strong> هو البديل الآمن للـ reset. بدلاً من محو التاريخ،
+        ينشئ commit جديداً يعاكس commit معيّن — آمن جداً للفروع العامة:
+      </p>
+
+      <div class="code-block"><span class="cm"># إلغاء commit معيّن بطريقة آمنة</span>
+<span class="bu">git</span> revert HEAD
+
+<span class="cm"># إلغاء commit معيّن بالـ hash</span>
+<span class="bu">git</span> revert a1b2c3d
+
+<span class="cm"># الفرق: reset يحذف التاريخ، revert يضيف commit جديد يعاكسه</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git revert HEAD</code> ينشئ commit جديداً يلغي تغييرات آخر commit — history لا يتغير، فقط يُضاف commit معاكس. هذا آمن للفروع المشتركة (public branches) لأنك لا تُعيد كتابة التاريخ. استخدم <code>revert</code> دائماً في الفرق، و <code>reset</code> فقط للفروع المحلية التي لم تشاركها.</p></div>
+
+      <!-- ========== 11 ========== -->
+      <h2 class="section-title">11. .gitignore و Best Practices</h2>
+
+      <p>
+        ملف <span class="inline-code">.gitignore</span> يخبر Git بتجاهل ملفات ومجلدات
+        معيّنة — لا تُضاف أبداً إلى المستودع. هذا ضروري لمشاريع بايثون:
+      </p>
+
+      <div class="code-block"><span class="cm"># .gitignore — Python project</span>
+<span class="cm"># Byte-compiled</span>
+__pycache__/
+*.py[cod]
+*.pyo
+
+<span class="cm"># Virtual environment</span>
+venv/
+env/
+.venv/
+
+<span class="cm"># IDE files</span>
+.vscode/
+.idea/
+
+<span class="cm"># Environment variables</span>
+.env
+.env.local
+
+<span class="cm"># Distribution / packaging</span>
+dist/
+build/
+*.egg-info/
+
+<span class="cm"># OS files</span>
+.DS_Store
+Thumbs.db
+
+<span class="cm"># Jupyter Notebook checkpoints</span>
+.ipynb_checkpoints/</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>كل سطر هو نمط تجاهل. <code>__pycache__/</code> يتجاهل المجلد الذي يحتوي على ملفات البايت كود المترجمة. <code>*.pyc</code> يتجاهل كل ملفات البايت كود. <code>venv/</code> يتجاهل البيئة الافتراضية — لا داعي لمشاركتها. <code>.env</code> يتجاهل المتغيرات السرية. <code>.vscode/</code> يتجاهل إعدادات المحرّر. أضف ملف <code>.gitignore</code> في أول commit لمشروعك.</p></div>
+
+      <p>
+        يمكنك أيضاً إنشاء <span class="inline-code">.gitignore</span> عالمي يطبق على
+        كل مستودعاتك:
+      </p>
+
+      <div class="code-block"><span class="bu">git</span> config --global core.excludesfile ~/.gitignore_global</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هذا الأمر يُخبر Git أن ملف <code>~/.gitignore_global</code> هو ملف تجاهل عالمي — أنشئه بنفس صيغة <code>.gitignore</code>. كل أنماطه ستطبق تلقائياً على كل مستودعات Git في جهازك. مثالي لأنماط نظام التشغيل (<code>.DS_Store</code>) أو المحرّر (<code>.vscode/</code>).</p></div>
+
+      <p>
+        <strong>إرشادات مهمة (Best Practices):</strong>
+      </p>
+
+      <ul>
+        <li><strong>تسمية الفروع:</strong> استخدم أسماء وصفية بالإنگليزية: <span class="inline-code">feature/login</span>, <span class="inline-code">bugfix/api-crash</span>, <span class="inline-code">hotfix/security-patch</span></li>
+        <li><strong>Commit Messages:</strong> ابدأ بفعل (Add, Fix, Update, Remove, Refactor). لا تتجاوز 50 حرفاً في السطر الأول. اشرح "لماذا" في السطور التالية.</li>
+        <li><strong>Commits صغيرة:</strong> commit واحد لكل تغيير منطقي. لا تنتظر حتى تتراكم 50 ملفاً.</li>
+        <li><strong>لا تcommit ملفات:</strong> تحتوي على secrets, tokens, كلمات المرور, أو <span class="inline-code">__pycache__/</span></li>
+        <li><strong>اختبر قبل الدمج:</strong> شغّل اختبارات بايثون (<span class="inline-code">pytest</span>) قبل فتح PR.</li>
+        <li><strong>استخدم Conventional Commits:</strong> <span class="inline-code">feat: add user login</span>, <span class="inline-code">fix: correct tax calculation</span>, <span class="inline-code">docs: update README</span></li>
+      </ul>
+
+      <div class="note">
+        <strong>💡 نمط Conventional Commits:</strong>
+        <span class="inline-code">feat: ...</span> (ميزة جديدة)
+        <span class="inline-code">fix: ...</span> (إصلاح خطأ)
+        <span class="inline-code">docs: ...</span> (توثيق)
+        <span class="inline-code">refactor: ...</span> (إعادة هيكلة بدون تغيير وظيفي)
+        <span class="inline-code">test: ...</span> (إضافة اختبارات)
+        <span class="inline-code">chore: ...</span> (مهام روتينية). هذا النمط يُستخدم مع Semantic Versioning وأدوات الـ Changelog.
+      </div>
+
+      <!-- ========== 12 ========== -->
+      <h2 class="section-title">12. التعامل مع الأخطاء (Troubleshooting)</h2>
+
+      <p>
+        حتى أفضل المطورين يقعون في أخطاء مع Git. إليك أدوات وحلول للمشاكل الشائعة:
+      </p>
+
+      <h3 class="subsection-title">git stash — تخزين التغييرات مؤقتاً</h3>
+
+      <p>
+        <span class="inline-code">git stash</span> يُخزّن تغييراتك غير الملتزمة (unstaged)
+        مؤقتاً ويُعيد مجلد العمل لحالة نظيفة. مفيد جداً عندما تحتاج للتبديل إلى فرع آخر
+        بسرعة:
+      </p>
+
+      <div class="code-block"><span class="cm"># حفظ التغييرات غير الملتزمة مؤقتاً</span>
+<span class="bu">git</span> stash
+
+<span class="cm"># تطبيق آخر stash وحذفه</span>
+<span class="bu">git</span> stash pop
+
+<span class="cm"># تطبيق آخر stash بدون حذفه</span>
+<span class="bu">git</span> stash apply
+
+<span class="cm"># عرض قائمة stashes</span>
+<span class="bu">git</span> stash list
+
+<span class="cm"># stash مع رسالة</span>
+<span class="bu">git</span> stash push -m <span class="str">"Work in progress on login feature"</span>
+
+<span class="cm"># stash untracked files أيضاً</span>
+<span class="bu">git</span> stash -u</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git stash</code> يحفظ تغييراتك (الملفات المعدّلة وغير الملتزمة) في كومة (stack) ويعيد workdir لحالة آخر commit. <code>git stash pop</code> يُطبّق آخر stash ويزيله من الكومة. <code>git stash apply</code> يُطبّقه دون حذف. <code>stash list</code> يعرض الـ stashes المحفوظة. استخدم stash للتبديل السريع بين المهام دون فقدان التغييرات.</p></div>
+
+      <h3 class="subsection-title">git diff — عرض التغييرات</h3>
+
+      <p>
+        <span class="inline-code">git diff</span> يُظهر الفروقات بين حالات الملفات:
+      </p>
+
+      <div class="code-block"><span class="cm"># الفرق بين workdir و staging (تغييرات غير مضافة)</span>
+<span class="bu">git</span> diff
+
+<span class="cm"># الفرق بين staging وآخر commit (ما سيُسجّل)</span>
+<span class="bu">git</span> diff --staged
+
+<span class="cm"># الفرق بين commit معين و workdir</span>
+<span class="bu">git</span> diff HEAD~2
+
+<span class="cm"># الفرق بين فرعين</span>
+<span class="bu">git</span> diff main..feature</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git diff</code> يُظهر الأسطر المضافة (بالأخضر) والمحذوفة (بالأحمر) بالمقارنة مع staging. <code>--staged</code> يُظهر ما في staging مقابل آخر commit — أي ما سيُسجّله الـ commit القادم. <code>diff main..feature</code> يُظهر كل الفروقات بين فرعين. هذا الأمر هو صديقك لفهم "ماذا تغيّر بالضبط؟"</p></div>
+
+      <h3 class="subsection-title">git log --all --graph — رؤية شاملة</h3>
+
+      <p>
+        هذا الأمر يعرض شجرة commits كاملة بكل الفروع:
+      </p>
+
+      <div class="code-block"><span class="bu">git</span> log --oneline --graph --all --decorate</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هذا هو الأمر الأقوى لاستكشاف تاريخ المشروع. <code>--oneline</code> يختصر كل commit بسطر. <code>--graph</code> يرسم شجرة الفروع بخطوط ASCII. <code>--all</code> يظهر كل الفروع (حتى المحذوفة التي لا تزال في reflog). <code>--decorate</code> يُظهر أسماء الفروع والعلامات. استخدمه لفم العلاقات بين الفروع والـ merge points.</p></div>
+
+      <h3 class="subsection-title">git reflog — سجل الحركات</h3>
+
+      <p>
+        <span class="inline-code">git reflog</span> يُسجّل كل حركة لـ HEAD — حتى commits
+        التي لم يعد لها فرع (dangling commits). منقذ للحياة إن أخطأت:
+      </p>
+
+      <div class="code-block"><span class="cm"># عرض سجل كل شيء فعلته</span>
+<span class="bu">git</span> reflog
+
+<span class="cm"># مثال: لو حذفت commit بالخطأ بـ git reset --hard</span>
+<span class="cm"># 1. شوف reflog لتعرف الـ hash</span>
+<span class="bu">git</span> reflog
+<span class="cm"># انتاج: a1b2c3d HEAD@{2}: commit: Add critical feature</span>
+
+<span class="cm"># 2. ارجع إليه</span>
+<span class="bu">git</span> reset --hard a1b2c3d</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git reflog</code> هو دفتر يوميات Git — يسجل كل حركة: commits, resets, checkouts, merges, rebases. <code>HEAD@{2}</code> يعني "ما كان عليه HEAD قبل حركتين". حتى لو خسرت commit بـ <code>reset --hard</code> أو <code>branch -d</code>، يمكنك استعادته من reflog إذا لم يمضِ وقت طويل (تنظف reflog بعد 90 يوماً).</p></div>
+
+      <h3 class="subsection-title">Detached HEAD — رأس منفصل</h3>
+
+      <p>
+        حالة Detached HEAD تحدث عندما تنتقل إلى commit معين بدلاً من فرع.
+        تبدو مخيفة لكنها غير خطيرة:
+      </p>
+
+      <div class="code-block"><span class="cm"># الدخول في حالة detached HEAD</span>
+<span class="bu">git</span> checkout a1b2c3d
+
+<span class="cm"># Git يحذّر: You are in 'detached HEAD' state</span>
+
+<span class="cm"># يمكنك التجربة — إنشاء commits</span>
+<span class="bu">git</span> commit -m <span class="str">"تجربة في detached HEAD"</span>
+
+<span class="cm"># للخروج — أنشئ فرعاً أو انتقل لفرع موجود</span>
+<span class="bu">git</span> switch -c new-branch-name
+<span class="cm"># أو ببساطة:</span>
+<span class="bu">git</span> switch main</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>Detached HEAD يعني أن HEAD يشير مباشرة إلى commit وليس إلى فرع. هذا طبيعي — ربما أردت رؤية commit قديم. إذا أنشأت commits في هذه الحالة وخرجت دون ربطها بفرع، Git سيُفقدها (تجميع القمامة). الحل: أنشئ فرعاً بـ <code>git switch -c new-branch</code> قبل الانتقال. reflog يمكنه استعادتها أيضاً.</p></div>
+
+      <h3 class="subsection-title">مشاكل وحلول سريعة</h3>
+
+      <div class="code-block"><span class="cm"># أردت commit لكن نسيت git add</span>
+<span class="bu">git</span> commit -a -m <span class="str">"Add and commit in one step"</span>
+<span class="cm"># -a = add --all (فقط للملفات المتتبّعة)</span>
+
+<span class="cm"># أردت تغيير رسالة آخر commit</span>
+<span class="bu">git</span> commit --amend -m <span class="str">"الرسالة الصحيحة"</span>
+
+<span class="cm"># أضفت ملفاً إلى commit عن طريق الخطأ</span>
+<span class="bu">git</span> reset HEAD^ -- file-to-remove.py
+<span class="bu">git</span> commit --amend
+
+<span class="cm"># نسيت إضافة ملف إلى commit</span>
+<span class="bu">git</span> add missed-file.py
+<span class="bu">git</span> commit --amend --no-edit
+
+<span class="cm"># أريد تجاهل ملف تم تتبّعه بالفعل</span>
+<span class="bu">git</span> rm --cached secrets.py
+<span class="cm"># ثم أضف secrets.py إلى .gitignore</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>git commit -a</code> يضيف ويسجّل في خطوة — لكن فقط للملفات التي Git يتتبّعها أصلاً. <code>--amend</code> يُعدّل آخر commit (لا تفعله إذا كان commit منشوراً على GitHub). <code>git reset HEAD^ -- file</code> يُخرج ملفاً من آخر commit. <code>git rm --cached</code> يمنع Git من تتبع ملف دون حذفه من القرص.</p></div>
+
+      <!-- ========== SUMMARY ========== -->
+      <div class="summary-box">
+        <h3>📝 ملخص Git/GitHub</h3>
+        <p>في هذا الدليل تعلمت:</p>
+        <ul>
+          <li>مفهوم التحكم بالنسخ (Version Control) وأهمية Git</li>
+          <li>تثبيت Git وتكوين اسم المستخدم والبريد الإلكتروني</li>
+          <li>إنشاء مستودع بـ <span class="inline-code">git init</span> وحالة الملفات (دورة الحياة)</li>
+          <li>إضافة الملفات بـ <span class="inline-code">git add</span> وتسجيلها بـ <span class="inline-code">git commit</span></li>
+          <li>إنشاء الفروع وإدارتها بـ <span class="inline-code">git branch</span> و <span class="inline-code">git switch</span></li>
+          <li>دمج الفروع بـ <span class="inline-code">git merge</span> وحل التعارضات</li>
+          <li>العمل مع GitHub: <span class="inline-code">git remote</span>, <span class="inline-code">git push</span>, <span class="inline-code">git pull</span>, <span class="inline-code">git clone</span></li>
+          <li>سير عمل Pull Requests و Fork</li>
+          <li>إعادة تنظيم التاريخ بـ <span class="inline-code">git rebase</span> و <span class="inline-code">git reset</span> و <span class="inline-code">git revert</span></li>
+          <li>تجاهل الملفات بـ <span class="inline-code">.gitignore</span> وأفضل الممارسات</li>
+          <li>أدوات استكشاف الأخطاء: <span class="inline-code">git stash</span>, <span class="inline-code">git diff</span>, <span class="inline-code">git reflog</span></li>
+        </ul>
+      </div>
+
+    <div class="note"><strong>💡 نصيحة ذهبية:</strong> لا تخف من Git — كل خطأ تقريباً يمكن إصلاحه. <span class="inline-code">git reflog</span> و <span class="inline-code">git reset</span> و <span class="inline-code">git revert</span> هم أصدقاؤك. commit مبكراً و commit كثيراً. كل commit يجب أن يكون وحدة منطقية واحدة. استخدم فروعاً لكل مهمة. راجع <span class="inline-code">git diff</span> قبل كل commit. و الأهم — مارس Git يومياً حتى يصبح عادة.</div>
+
+    <div class="warning"><strong>⚠️ أخطاء شائعة:</strong> 
+      <strong>1.</strong> استخدام <code>git push --force</code> على فروع مشتركة — هذا يُعيد كتابة التاريخ ويُفسد نسخ زملائك. استخدم <code>--force-with-lease</code> بدلاً منه. 
+      <strong>2.</strong> commit ملفات كبيرة (datasets, node_modules) — لن يستطيع أحد clone المستودع. أضفها إلى <code>.gitignore</code> و استخدم Git LFS للملفات الكبيرة. 
+      <strong>3.</strong> تجاهل <code>.gitignore</code> حتى فوات الأوان — من الصعب إزالة ملف بعد تتبّعه. أنشئ <code>.gitignore</code> في أول commit للمشروع. 
+      <strong>4.</strong> commit على <code>main</code> مباشرة — استخدم الفروع دائماً حتى للتغييرات الصغيرة.
+    </div>
+
+    <div class="exercise"><strong>🏋️ تمرين تطبيقي:</strong> قم بإنشاء مستودع Git جديد لمشروع بايثون. أنشئ ملف <code>main.py</code> يطبع <code>"Hello, Git!"</code>. أنشئ فرعاً باسم <code>feature/calculator</code> وأضف دالة جمع. ادمج الفرع مع <code>main</code>. ادفع المشروع إلى GitHub (أنشئ مستودعاً فارغاً أولاً). ثم افتح Pull Request لتغيير وهمي وادمجه. هذا التمرين يغطي 80% من استخدامات Git اليومية.</div>
+
+    <div class="footer">
+        <p>دورة بايثون المكثفة — دليل Git/GitHub لمطوري بايثون</p>
+        <p style="margin-top:5px;">جميع الأمثلة والأكواد مرخصة تحت MIT License</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+    }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

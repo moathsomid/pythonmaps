@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Advanced - الأنماط، typing، logging - دورة بايثون المكثفة</title>
+<style>
+:root {
+  --primary: #58a6ff; --primary-light: #79c0ff; --secondary: #00b4d8;
+  --accent: #ffd166; --bg: #0d1117; --sidebar-bg: #161b22;
+  --sidebar-text: #c9d1d9; --card-bg: #1c2128; --text: #e6edf3;
+  --text-light: #8b949e; --code-bg: #1e1e2e; --border: #30363d;
+  --shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.8;
+  display: flex; min-height: 100vh;
+}
+.sidebar {
+  width: 320px; background: var(--sidebar-bg); color: var(--sidebar-text);
+  position: fixed; top: 0; right: 0; height: 100vh; overflow-y: auto;
+  z-index: 1000; transition: transform 0.3s ease;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+}
+.sidebar-header {
+  padding: 25px 20px; background: linear-gradient(135deg, #1f3a5f, #0d1117);
+  text-align: center; border-bottom: 3px solid var(--accent);
+}
+.sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+.sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+.sidebar-nav { padding: 15px 0; }
+.sidebar-nav a {
+  display: block; padding: 10px 20px; color: var(--sidebar-text);
+  text-decoration: none; font-size: 14px;
+  border-right: 3px solid transparent; transition: all 0.2s;
+}
+.sidebar-nav a:hover {
+  background: rgba(255,255,255,0.08); border-right-color: var(--secondary); color: #fff;
+}
+.sidebar-nav .part-label {
+  padding: 12px 20px 6px; font-size: 12px; font-weight: 700;
+  color: var(--accent); text-transform: uppercase; letter-spacing: 1px;
+}
+.sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+.sidebar-nav .chapter-link.active {
+  background: rgba(255,255,255,0.12); border-right-color: var(--accent); color: #fff;
+}
+.sidebar-toggle {
+  display: block; position: fixed; top: 15px; right: 15px; z-index: 1100;
+  background: var(--primary); color: #fff; border: none; border-radius: 8px;
+  width: 45px; height: 45px; font-size: 22px; cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.main-content {
+  margin-right: 0; flex: 1; padding: 0; min-height: 100vh;
+  transition: margin-right 0.3s ease;
+}
+body.sidebar-active .main-content { margin-right: 320px; }
+.chapter-page { padding: 0; }
+.chapter-header {
+  background: linear-gradient(135deg, #0a1929, #1a3a5c);
+  color: #fff; padding: 40px 50px;
+}
+.chapter-header .part-badge {
+  display: inline-block; background: var(--accent); color: var(--sidebar-bg);
+  padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;
+  margin-bottom: 10px;
+}
+.chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+.chapter-header p { opacity: 0.85; font-size: 16px; }
+.chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+.section-title {
+  font-size: 24px; color: var(--primary); margin: 35px 0 15px;
+  padding-bottom: 8px; border-bottom: 3px solid var(--secondary);
+}
+.subsection-title {
+  font-size: 18px; color: var(--primary-light); margin: 25px 0 12px;
+}
+.chapter-content p { margin-bottom: 15px; font-size: 16px; }
+.chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+.chapter-content li { margin-bottom: 8px; font-size: 15px; }
+.code-block {
+  background: var(--code-bg); color: #cdd6f4; border-radius: 10px;
+  padding: 0; margin: 15px 0 20px;
+  font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+  font-size: 14px; line-height: 1.7; overflow-x: auto;
+  direction: ltr; text-align: left; position: relative;
+  white-space: pre-wrap; word-break: break-word;
+}
+.code-block .kw { color: #cba6f7; }
+.code-block .fn { color: #89b4fa; }
+.code-block .str { color: #a6e3a1; }
+.code-block .cm { color: #6c7086; }
+.code-block .num { color: #fab387; }
+.code-block .op { color: #89dceb; }
+.code-block .bu { color: #f38ba8; }
+.code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+.code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+.code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+.code-block ol li:hover { background: rgba(255,255,255,0.05); }
+.inline-code {
+  background: #2d333b; color: #e6edf3; padding: 2px 7px; border-radius: 4px;
+  font-family: 'Fira Code', monospace; font-size: 14px;
+  direction: ltr; unicode-bidi: embed;
+}
+.note {
+  background: #0c2d6b; border-right: 4px solid var(--primary);
+  padding: 15px 20px; border-radius: 8px; margin: 15px 0;
+}
+.note strong { color: var(--primary); }
+.warning {
+  background: #3d2e00; border-right: 4px solid #ff9800;
+  padding: 15px 20px; border-radius: 8px; margin: 15px 0;
+}
+.exercise {
+  background: #0a3d1a; border-right: 4px solid #22c55e;
+  padding: 15px 20px; border-radius: 8px; margin: 15px 0;
+}
+.exercise strong { color: #4ade80; }
+.summary-box {
+  background: linear-gradient(135deg, #0c2d6b, #0d1117);
+  border: 2px solid var(--primary-light); border-radius: 12px;
+  padding: 25px 30px; margin: 30px 0;
+}
+.summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+.summary-box ul { margin: 0; }
+.footer {
+  text-align: center; padding: 30px; color: var(--text-light);
+  font-size: 13px; border-top: 1px solid var(--border); margin-top: 40px;
+}
+.back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; }
+@media (max-width: 767px) {
+  .sidebar { transform: translateX(320px); width: 280px; }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-right: 0; }
+  .chapter-header { padding: 30px 25px; }
+  .chapter-header h1 { font-size: 24px; }
+  .chapter-content { padding: 25px; }
+}
+@media (min-width: 768px) {
+  .sidebar { transform: translateX(320px); pointer-events: none; }
+  body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+  body.sidebar-active .main-content { margin-right: 0; }
+  .sidebar-toggle { right: 15px; }
+  body.sidebar-active .sidebar-toggle { right: 335px; }
+}
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+.sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="python_advanced.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🐍 Python Advanced</a>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="postgresql.html" class="chapter-link">PostgreSQL متقدم</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <a href="docker.html" class="chapter-link">Docker - الحاويات</a>
+    <div class="part-label">🚀 Backend + AI</div>
+    <a href="fastapi.html" class="chapter-link">FastAPI - تطبيقات الويب</a>
+    <a href="redis.html" class="chapter-link">Redis - التخزين المؤقت</a>
+    <a href="ai_fundamentals.html" class="chapter-link">🤖 أساسيات الذكاء الاصطناعي</a>
+    <div class="part-label">🔷 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <a href="project_data_api.html" class="chapter-link">المشروع 4: Data API Platform</a>
+    <a href="project_ai_doc_chat.html" class="chapter-link">المشروع 5: AI Document Chat</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">⚙️ Core Engineering</span>
+      <h1>Python Advanced — الأنماط، typing، logging، architecture</h1>
+      <p>كتابة كود بايثون احترافي باستخدام type hints، أنماط البرمجة، وتوثيق الأخطاء</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        بعد إتقان أساسيات بايثون، حان الوقت للانتقال إلى المستوى الاحترافي. هذا الفصل يغطي
+        <strong>type hints</strong> (تحسين قراءة الكود واكتشاف الأخطاء مبكراً)،
+        <strong>أنماط العمارة البرمجية</strong> (مثل Repository, Service Layer)،
+        و <strong>logging</strong> (تسجيل الأحداث بدلاً من print).
+      </p>
+
+      <h2 class="section-title">1. Type Hints — كتابة كود آمن وقابل للصيانة</h2>
+
+      <p>
+        بايثون لغة ديناميكية، لكن يمكنك إضافة type hints لتحسين القراءة وتمكين أدوات الفحص:
+      </p>
+
+      <p>Type Hints تُحدد نوع المتغيرات التي تأخذها الدوال والقيم التي تُرجعها. هذا لا يغيّر سلوك بايثون في التشغيل، لكنه يساعدك (وفريقك) على فهم الكود، ويُمكّن أدوات الفحص مثل mypy من اكتشاف الأخطاء قبل التشغيل. تخيّلها كتوثيق قابل للفحص آلياً.</p>
+
+      <div class="code-block">
+<span class="kw">from</span> typing <span class="kw">import</span> List, Dict, Optional, Union, Callable, TypeVar
+
+<span class="cm"># Type hints أساسية</span>
+<span class="kw">def</span> <span class="fn">greet</span>(name: <span class="bu">str</span>) -> <span class="bu">str</span>:
+    <span class="kw">return</span> <span class="str">f"Hello, {name}"</span>
+
+<span class="cm"># الحاويات</span>
+<span class="kw">def</span> <span class="fn">process_ids</span>(ids: List[<span class="bu">int</span>]) -> Dict[<span class="bu">str</span>, <span class="bu">int</span>]:
+    <span class="kw">return</span> {<span class="str">"count"</span>: <span class="bu">len</span>(ids)}
+
+<span class="cm"># Optional و Union</span>
+<span class="kw">def</span> <span class="fn">find_user</span>(uid: <span class="bu">int</span>) -> Optional[<span class="bu">dict</span>]:
+    <span class="kw">return</span> <span class="kw">None</span> <span class="kw">if</span> uid > <span class="num">100</span> <span class="kw">else</span> {<span class="str">"id"</span>: uid}
+
+<span class="cm"># Union لأنواع متعددة</span>
+<span class="kw">def</span> <span class="fn">parse_value</span>(data: Union[<span class="bu">str</span>, <span class="bu">bytes</span>]) -> <span class="bu">str</span>:
+    <span class="kw">return</span> data.<span class="fn">decode</span>() <span class="kw">if</span> <span class="bu">isinstance</span>(data, <span class="bu">bytes</span>) <span class="kw">else</span> data
+      </div>
+      <div class="note"><strong>🔍 كيف يعمل؟</strong> greet(name: str) -> str: تأخذ الاسم (نص) وتُعيد نصاً. process_ids تأخذ قائمة أرقام (List[int]) وتُعيد قاموساً (Dict[str, int]). Optional[dict] يعني: قد تُعيد dict أو None. Union[str, bytes] يعني: قد تأخذ نصاً أو بايتات — نستخدم isinstance للفحص والتفرع. هذه الأنواع تتيح لأدوات مثل mypy فحص الكود تلقائياً.</div>
+
+      <h3 class="subsection-title">TypeVar — أنواع عامة (Generics)</h3>
+
+      <p>TypeVar يسمح لك بكتابة دوال عامة (Generic) تعمل مع أي نوع، مع الحفاظ على معلومات النوع. بدلاً من فقدان النوع، T يستنتج النوع الفعلي عند الاستخدام.</p>
+
+      <div class="code-block">
+T = TypeVar(<span class="str">'T'</span>)
+
+<span class="kw">def</span> <span class="fn">first</span>(items: List[T]) -> T:
+    <span class="kw">return</span> items[<span class="num">0</span>]
+
+<span class="bu">print</span>(<span class="fn">first</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]))   <span class="cm"># int — T يستنتج كـ int</span>
+<span class="bu">print</span>(<span class="fn">first</span>([<span class="str">"a"</span>, <span class="str">"b"</span>]))  <span class="cm"># str — T يستنتج كـ str</span>
+      </div>
+      <div class="note"><strong>🔍 كيف يعمل؟</strong> T = TypeVar('T') يُعرِّف متغير نوع عام. الدالة first(items: List[T]) -> T: تأخذ قائمة من أي نوع T وتُعيد عنصراً من نفس النوع T. عندما نمرر [1, 2, 3]، mypy يستنتج أن T = int. عندما نمرر ["a", "b"]، T = str. هذا أفضل من استخدام Any لأننا نحتفظ بمعلومات النوع.</div>
+
+      <div class="note">
+        <strong>💡 نصيحة:</strong> استخدم type hints لكل الدوال. أدوات مثل <span class="inline-code">mypy</span> تفحص الأخطاء قبل التشغيل. شغّل <span class="inline-code">mypy my_file.py</span> لاكتشاف الأخطاء.
+      </div>
+
+      <h2 class="section-title">2. Logging — تسجيل الأحداث بدلاً من print</h2>
+
+      <p>
+        استخدام <span class="inline-code">print()</span> لتصحيح الأخطاء مؤقت فقط. في التطبيقات الحقيقية، استخدم <span class="inline-code">logging</span>:
+      </p>
+
+      <p>التسجيل (logging) يتيح لك تصنيف الرسائل حسب الأهمية (معلومات، تحذير، خطأ)، تسجيلها في ملفات، وإيقاف/تشغيل مستويات معينة دون حذف الكود. في الإنتاج، logging أفضل من print لأنه يمكنك تتبّع الأخطاء حتى بعد إغلاق الطرفية.</p>
+
+      <div class="code-block">
+<span class="kw">import</span> logging
+
+<span class="cm"># إعداد logging</span>
+logging.basicConfig(
+    level=logging.INFO,
+    format=<span class="str">'%(asctime)s - %(name)s - %(levelname)s - %(message)s'</span>,
+    filename=<span class="str">'app.log'</span>  <span class="cm"># سجل في ملف</span>
+)
+
+logger = logging.getLogger(__name__)
+
+<span class="kw">def</span> <span class="fn">divide</span>(a: <span class="bu">float</span>, b: <span class="bu">float</span>) -> <span class="bu">float</span>:
+    logger.info(<span class="str">f"Dividing {a} by {b}"</span>)
+    <span class="kw">if</span> b == <span class="num">0</span>:
+        logger.error(<span class="str">"Division by zero!"</span>)
+        <span class="kw">raise</span> <span class="bu">ValueError</span>(<span class="str">"Cannot divide by zero"</span>)
+    <span class="kw">return</span> a / b
+
+logger.debug(<span class="str">"Debug message"</span>)   <span class="cm"># التفاصيل الدقيقة</span>
+logger.info(<span class="str">"Info message"</span>)     <span class="cm"># معلومات عامة</span>
+logger.warning(<span class="str">"Warning"</span>)      <span class="cm">"> تحذير</span>
+logger.error(<span class="str">"Error occurred"</span>) <span class="cm">"> خطأ</span>
+logger.critical(<span class="str">"Critical!"</span>)   <span class="cm">"> خطأ كارثي</span>
+      </div>
+      <div class="note"><strong>🔍 كيف يعمل السطر تلو السطر؟</strong> basicConfig يُهيئ النظام: level=INFO يعني سجّل فقط INFO وما فوق (تجاهل DEBUG). format يُحدد شكل السجل (وقت + اسم + مستوى + رسالة). filename يكتب في ملف بدلاً من الشاشة. getLogger(__name__) يُنشئ مسجّلاً (logger) باسم الملف الحالي — يساعد في تتبّع مصدر الرسالة. كل مستوى له دالة: info, warning, error, critical. في الإنتاج، ارفع المستوى إلى WARNING أو ERROR لتقليل الضوضاء.</div>
+
+      <div class="note">
+        <strong>💡 مستويات logging:</strong> DEBUG (10) &lt; INFO (20) &lt; WARNING (30) &lt; ERROR (40) &lt; CRITICAL (50). ضبط <span class="inline-code">level=logging.INFO</span> يعني تجاهل DEBUG.
+      </div>
+
+      <h3 class="subsection-title">Logging مع ملفات دوارة (Rotating)</h3>
+
+      <p>في التطبيقات الحقيقية، ملفات السجل تكبر بسرعة. RotatingFileHandler يحلّ المشكلة: عندما يصل الملف لحجم معين، يُؤرشفه ويبدأ واحداً جديداً — مع الاحتفاظ بعدد محدد من النسخ الاحتياطية.</p>
+
+      <div class="code-block">
+<span class="kw">from</span> logging.handlers <span class="kw">import</span> RotatingFileHandler
+
+handler = RotatingFileHandler(
+    <span class="str">'app.log'</span>, maxBytes=<span class="num">1024</span>*<span class="num">1024</span>, backupCount=<span class="num">5</span>
+)
+logging.basicConfig(level=logging.INFO, handlers=[handler])
+<span class="cm"># الملف يدور عند 1MB، وآخر 5 نسخ احتياطية</span>
+      </div>
+      <div class="note"><strong>🔍 كيف يعمل؟</strong> RotatingFileHandler يُراقب حجم الملف. عندما يصل لـ maxByte (1MB هنا = 1024*1024)، يُعيد تسمية الملف (app.log → app.log.1) وينشئ app.log جديد. backupCount=5 يحتفظ بآخر 5 نسخ — app.log.1, app.log.2, ... app.log.5. هذا يمنع السجلات من استهلاك كل مساحة القرص.</div>
+
+      <h2 class="section-title">3. أنماط العمارة البرمجية — Architecture Patterns</h2>
+
+      <p>
+        مع نمو التطبيق، تحتاج إلى فصل المسؤوليات. إليك أهم الأنماط لتطبيقات بايثون:
+      </p>
+
+      <h3 class="subsection-title">نمط Repository — فصل منطق البيانات</h3>
+
+      <p>Repository Pattern يفصل منطق الوصول إلى البيانات (SQL, API, ملفات) عن باقي التطبيق. بدلاً من كتابة استعلامات SQL في كل مكان، نُعرِّف واجهة (Interface) ونتنفيذها في كلاسات منفصلة. هذا يسهّل تغيير قاعدة البيانات لاحقاً واختبار الكود.</p>
+
+      <div class="code-block">
+<span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+<span class="kw">from</span> typing <span class="kw">import</span> List, Optional
+
+<span class="cm"># واجهة抽象 للمستودع</span>
+<span class="kw">class</span> <span class="fn">UserRepository</span>(ABC):
+    <span class="kw">def</span> <span class="fn">get_by_id</span>(<span class="kw">self</span>, uid: <span class="bu">int</span>) -> Optional[<span class="bu">dict</span>]: ...
+    <span class="kw">def</span> <span class="fn">get_all</span>(<span class="kw">self</span>) -> List[<span class="bu">dict</span>]: ...
+    <span class="kw">def</span> <span class="fn">save</span>(<span class="kw">self</span>, user: <span class="bu">dict</span>) -> <span class="bu">int</span>: ...
+
+<span class="cm"># تنفيذ مع PostgreSQL</span>
+<span class="kw">class</span> <span class="fn">PostgresUserRepository</span>(UserRepository):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, connection):
+        <span class="kw">self</span>.conn = connection
+
+    <span class="kw">def</span> <span class="fn">get_by_id</span>(<span class="kw">self</span>, uid: <span class="bu">int</span>) -> Optional[<span class="bu">dict</span>]:
+        cursor = <span class="kw">self</span>.conn.cursor()
+        cursor.execute(<span class="str">"SELECT * FROM users WHERE id = %s"</span>, (uid,))
+        row = cursor.fetchone()
+        <span class="kw">return</span> <span class="bu">dict</span>(row) <span class="kw">if</span> row <span class="kw">else</span> <span class="kw">None</span>
+
+    <span class="kw">def</span> <span class="fn">get_all</span>(<span class="kw">self</span>) -> List[<span class="bu">dict</span>]:
+        cursor = <span class="kw">self</span>.conn.cursor()
+        cursor.execute(<span class="str">"SELECT * FROM users"</span>)
+        <span class="kw">return</span> [<span class="bu">dict</span>(row) <span class="kw">for</span> row <span class="kw">in</span> cursor.fetchall()]
+
+    <span class="kw">def</span> <span class="fn">save</span>(<span class="kw">self</span>, user: <span class="bu">dict</span>) -> <span class="bu">int</span>:
+        cursor = <span class="kw">self</span>.conn.cursor()
+        cursor.execute(
+            <span class="str">"INSERT INTO users (name, email) VALUES (%s, %s) RETURNING id"</span>,
+            (user[<span class="str">'name'</span>], user[<span class="str">'email'</span>])
+        )
+        <span class="kw">self</span>.conn.commit()
+        <span class="kw">return</span> cursor.fetchone()[<span class="num">0</span>]
+      </div>
+      <div class="note"><strong>🔍 كيف يعمل؟</strong> UserRepository هو كلاس مجرّد (ABC) يُعرِّف الواجهة: get_by_id, get_all, save — دون تنفيذ. PostgresUserRepository يُنفّذ هذه الدوال باستخدام psycopg2. الميزة: يمكنك إنشاء InMemoryUserRepository للاختبار، أو MongoUserRepository لتغيير قاعدة البيانات — كلها تتبع نفس الواجهة. التطبيق لا يعرف أي نوع مستودع يستخدم (Dependency Injection).</div>
+
+      <h3 class="subsection-title">نمط Service Layer — منطق الأعمال</h3>
+
+      <p>Service Layer يحتوي على منطق الأعمال (Business Logic) — القواعد التي تميّز تطبيقك. هو الطبقة الوسطى بين واجهة المستخدم (API/UI) وطبقة البيانات (Repository). هنا نتحقق من صحة البيانات، نسجّل الأحداث، ونطبق قواعد العمل.</p>
+
+      <div class="code-block">
+<span class="kw">class</span> <span class="fn">UserService</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, repo: UserRepository, logger: logging.Logger):
+        <span class="kw">self</span>.repo = repo
+        <span class="kw">self</span>.logger = logger
+
+    <span class="kw">def</span> <span class="fn">register_user</span>(<span class="kw">self</span>, name: <span class="bu">str</span>, email: <span class="bu">str</span>) -> <span class="bu">int</span>:
+        <span class="kw">if</span> <span class="kw">not</span> email <span class="kw">or</span> <span class="str">'@'</span> <span class="kw">not</span> <span class="kw">in</span> email:
+            <span class="kw">raise</span> <span class="bu">ValueError</span>(<span class="str">"Invalid email"</span>)
+        user_id = <span class="kw">self</span>.repo.save({<span class="str">"name"</span>: name, <span class="str">"email"</span>: email})
+        <span class="kw">self</span>.logger.info(<span class="str">f"User registered: {user_id}"</span>)
+        <span class="kw">return</span> user_id
+
+    <span class="kw">def</span> <span class="fn">get_user</span>(<span class="kw">self</span>, uid: <span class="bu">int</span>) -> <span class="bu">dict</span>:
+        user = <span class="kw">self</span>.repo.get_by_id(uid)
+        <span class="kw">if</span> <span class="kw">not</span> user:
+            <span class="kw">raise</span> <span class="bu">ValueError</span>(<span class="str">f"User {uid} not found"</span>)
+        <span class="kw">return</span> user
+      </div>
+      <div class="note"><strong>🔍 كيف يعمل؟</strong> UserService يستقبل repository و logger عن طريق Dependency Injection — لا ينشئهما بنفسه (مرونة أعلى). register_user: يتحقق من صحة الإيميل (تحتوي @)، ثم يحفظ عبر repo، ويسجّل العملية. get_user: يبحث عن المستخدم، وإذا لم يُوجد يرفع ValueError. Service Layer لا يعرف تفاصيل قاعدة البيانات — هذا مسؤولية Repository.</div>
+
+      <h3 class="subsection-title">نمط Builder — بناء كائنات معقدة</h3>
+
+      <p>Builder Pattern يسمح ببناء كائن معقّد خطوة بخطوة بطريقة مقروءة. كل دالة تُعدّل الكائن وتُعيد self (نفس الكائن) — هذا يُسمى Method Chaining. النتيجة: كود يشبه الجمل الإنجليزية.</p>
+
+      <div class="code-block">
+<span class="kw">class</span> <span class="fn">QueryBuilder</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>._select = <span class="str">"*"</span>
+        <span class="kw">self</span>._from = <span class="str">""</span>
+        <span class="kw">self</span>._where = []
+        <span class="kw">self</span>._order_by = <span class="str">""</span>
+
+    <span class="kw">def</span> <span class="fn">select</span>(<span class="kw">self</span>, fields: <span class="bu">str</span>):
+        <span class="kw">self</span>._select = fields; <span class="kw">return</span> <span class="kw">self</span>
+
+    <span class="kw">def</span> <span class="fn">from_table</span>(<span class="kw">self</span>, table: <span class="bu">str</span>):
+        <span class="kw">self</span>._from = table; <span class="kw">return</span> <span class="kw">self</span>
+
+    <span class="kw">def</span> <span class="fn">where</span>(<span class="kw">self</span>, condition: <span class="bu">str</span>):
+        <span class="kw">self</span>._where.append(condition); <span class="kw">return</span> <span class="kw">self</span>
+
+    <span class="kw">def</span> <span class="fn">build</span>(<span class="kw">self</span>) -> <span class="bu">str</span>:
+        query = <span class="str">f"SELECT {self._select} FROM {self._from}"</span>
+        <span class="kw">if</span> <span class="kw">self</span>._where:
+            query += <span class="str">" WHERE "</span> + <span class="str">" AND "</span>.join(<span class="kw">self</span>._where)
+        <span class="kw">return</span> query
+
+<span class="cm"># استخدام</span>
+query = QueryBuilder().select(<span class="str">"id, name"</span>).from_table(<span class="str">"users"</span>).where(<span class="str">"age > 18"</span>).build()
+<span class="bu">print</span>(query)  <span class="cm"># SELECT id, name FROM users WHERE age > 18</span>
+      </div>
+      <div class="note"><strong>🔍 كيف يعمل؟</strong> كل دالة (select, from_table, where) تُحدّث حالة الكائن وتُعيد self — مما يسمح بالتسلسل (chaining). build() تجمّع الاستعلام النهائي. هذا أفضل من تمرير 10 وسائط لدالة constructor. النمط مستخدم في مكتبات معروفة: SQLAlchemy, Django ORM, و FastAPI (في إعداد المسارات).</div>
+
+      <h2 class="section-title">4. Dataclasses — بيانات نظيفة بدون boilerplate</h2>
+
+      <p>كتابة كلاس عادي لتخزين بيانات يتطلب كتابة __init__ و __repr__ و __eq__ يدوياً — الكثير من الكود المتكرر (boilerplate). @dataclass يُولّد كل هذا تلقائياً. فقط عرّف الحقول (fields) والنوع، واترك الباقي لبايثون.</p>
+
+      <div class="code-block">
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
+
+<span class="nd">@dataclass</span>
+<span class="kw">class</span> <span class="fn">User</span>:
+    <span class="bu">id</span>: <span class="bu">int</span>
+    name: <span class="bu">str</span>
+    email: <span class="bu">str</span>
+    age: <span class="bu">int</span> = <span class="num">0</span>
+    tags: List[<span class="bu">str</span>] = field(default_factory=list)
+
+    <span class="kw">def</span> <span class="fn">is_adult</span>(<span class="kw">self</span>) -> <span class="bu">bool</span>:
+        <span class="kw">return</span> <span class="kw">self</span>.age >= <span class="num">18</span>
+
+user = User(<span class="bu">id</span>=<span class="num">1</span>, name=<span class="str">"Ahmed"</span>, email=<span class="str">"a@b.com"</span>, age=<span class="num">25</span>)
+<span class="bu">print</span>(user.is_adult())  <span class="cm"># True</span>
+      </div>
+      <div class="note"><strong>🔍 كيف يعمل؟</strong> @dataclass يُنشئ تلقائياً: __init__ (id, name, email, age, tags)، __repr__ (تمثيل readable)، __eq__ (مقارنة). age: int = 0 قيمة افتراضية. tags: القائمة تحتاج default_factory=list (وليس =[] مباشرة) لأن القيم الافتراضية القابلة للتغيير (mutable) تسبب مشاكل في بايثون. يمكنك إضافة دوال عادية (is_adult) بجانب الحقول.</div>
+
+      <h2 class="section-title">5. Context Managers — إدارة الموارد</h2>
+
+      <p>Context Managers (مديري السياق) يضمنون فتح وإغلاق الموارد (ملفات، اتصالات قاعدة بيانات، locks) بشكل آمن — حتى لو حدث خطأ. تستخدمهم مع جملة with. يمكنك تنفيذهم بطريقتين: كلاس مع __enter__ و __exit__، أو decorator @contextmanager الأسهل.</p>
+
+      <div class="code-block">
+<span class="kw">from</span> contextlib <span class="kw">import</span> contextmanager
+
+<span class="cm"># باستخدام الكلاس</span>
+<span class="kw">class</span> <span class="fn">DatabaseConnection</span>:
+    <span class="kw">def</span> <span class="fn">__enter__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.conn = <span class="str">"open_connection"</span>
+        <span class="kw">return</span> <span class="kw">self</span>.conn
+
+    <span class="kw">def</span> <span class="fn">__exit__</span>(<span class="kw">self</span>, exc_type, exc_val, exc_tb):
+        <span class="bu">print</span>(<span class="str">"Closing connection"</span>)
+
+<span class="kw">with</span> <span class="fn">DatabaseConnection</span>() <span class="kw">as</span> conn:
+    <span class="bu">print</span>(<span class="str">"Working with"</span>, conn)
+
+<span class="cm"># باستخدام contextmanager (أسهل)</span>
+<span class="nd">@contextmanager</span>
+<span class="kw">def</span> <span class="fn">open_file</span>(path: <span class="bu">str</span>, mode: <span class="bu">str</span> = <span class="str">'r'</span>):
+    file = <span class="bu">open</span>(path, mode)
+    <span class="kw">try</span>:
+        <span class="kw">yield</span> file
+    <span class="kw">finally</span>:
+        file.close()
+
+<span class="kw">with</span> <span class="fn">open_file</span>(<span class="str">"test.txt"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f:
+    f.write(<span class="str">"Hello"</span>)
+      </div>
+      <div class="note"><strong>🔍 كيف يعمل؟</strong> الطريقة الأولى (كلاس): __enter__ يُنفّذ عند الدخول إلى with ويُعيد المورد. __exit__ يُنفّذ عند الخروج (حتى مع الأخطاء) ويُغلق المورد. الطريقة الثانية (@contextmanager): الدالة تفتح المورد، yield يُسلّمه لكتلة with، finally يُغلقه — أسهل وأقل كود. كلتاهما تضمن أن المورد سيُغلق حتى لو حدث خطأ داخل with.</div>
+
+      <h2 class="section-title">6. التمارين</h2>
+
+      <div class="exercise">
+        <strong>تمرين 1: Type Hints</strong><br>
+        أعد كتابة دالة تأخذ قائمة من الأرقام وتعيد مجموعها مع type hints كاملة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 2: Logging</strong><br>
+        أنشئ logger يكتب في ملف <span class="inline-code">app.log</span> بمستوى INFO. أضف دوال <span class="inline-code">add</span> و <span class="inline-code">subtract</span> تسجل كل عملية.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 3: Repository Pattern</strong><br>
+        أنشئ Repository للتعامل مع منتجات (Products) بواجهة <span class="inline-code">ProductRepository</span> وتنفيذ <span class="inline-code">InMemoryProductRepository</span> يخزن في قاموس.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4: Dataclass + Service</strong><br>
+        عرّف <span class="inline-code">@dataclass Order</span> يحتوي على <span class="inline-code">id</span>, <span class="inline-code">product</span>, <span class="inline-code">quantity</span>, <span class="inline-code">total</span>. أنشئ <span class="inline-code">OrderService</span> مع دوال <span class="inline-code">create_order</span> و <span class="inline-code">get_order</span>.
+      </div>
+
+      <div class="summary-box">
+        <h3>📝 ملخص الفصل</h3>
+        <ul>
+          <li><strong>Type Hints</strong>: تحسن القراءة وتتيح الفحص الآلي بـ mypy</li>
+          <li><strong>Logging</strong>: بديل احترافي عن print() مع 5 مستويات</li>
+          <li><strong>Repository Pattern</strong>: فصل منطق الوصول للبيانات</li>
+          <li><strong>Service Layer</strong>: فصل منطق الأعمال</li>
+          <li><strong>Dataclasses</strong>: إنشاء كلاسات بيانات بدون boilerplate</li>
+          <li><strong>Context Managers</strong>: إدارة آمنة للموارد (ملفات، اتصالات)</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else { document.body.classList.remove('sidebar-active'); }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) { document.body.classList.toggle('sidebar-active'); }
+    else { sidebar.classList.toggle('open'); }
+  });
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) { sidebar.classList.remove('open'); }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) { link.classList.add('active'); }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='📋';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='✅';btn.classList.add('copied');setTimeout(function(){btn.textContent='📋';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+</body>
+</html>

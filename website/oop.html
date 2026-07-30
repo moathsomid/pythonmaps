@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>البرمجة كائنية التوجه OOP - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+<div class="main-content">
+<div class="chapter-page">
+  <div class="chapter-header">
+    <span class="part-badge">🔷 مواضيع متقدمة</span>
+    <h1>البرمجة كائنية التوجه OOP في بايثون</h1>
+    <p>دليل متكامل وشامل: كلاسات، وراثة، بوليمورفيزم، Dunder Methods، Decorators، ومبادئ SOLID</p>
+  </div>
+  <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+    <h2 class="section-title">1. مقدمة عن البرمجة كائنية التوجه (OOP)</h2>
+    <p>البرمجة كائنية التوجه (Object-Oriented Programming) هي نموذج برمجي يعتمد على مفهوم "الكائنات" (Objects) التي تحتوي على بيانات (خصائص/Attributes) وسلوك (طرق/Methods). بايثون هي لغة برمجة كائنية التوجه بالكامل - كل شيء فيها هو كائن.</p>
+
+    <div class="note"><strong>مبدأ أساسي:</strong> OOP يساعدك على تنظيم الكود وجعله أكثر قابلية لإعادة الاستخدام والصيانة. كلما كبر مشروعك، كلما كانت الحاجة إلى OOP أكبر.</div>
+
+    <h2 class="section-title">2. الكلاسات (Classes) - نظرة عميقة</h2>
+    <p>الـ Class هو المخطط (Blueprint) الذي يُنشئ منه الكائنات. دعنا نرى كلاس متقدم مع جميع العناصر المهمة:</p>
+
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Employee</span>:
+    <span class="cm"># Class attribute - مشترك بين جميع النسخ</span>
+    raise_amount = <span class="num">1.04</span>
+    num_of_emps = <span class="num">0</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, first, last, pay):
+        <span class="cm"># Instance attributes - خاصة بكل نسخة</span>
+        <span class="kw">self</span>.first = first
+        <span class="kw">self</span>.last = last
+        <span class="kw">self</span>.pay = pay
+        <span class="kw">self</span>.email = first + <span class="str">'.'</span> + last + <span class="str">'@company.com'</span>
+        Employee.num_of_emps += <span class="num">1</span>
+
+    <span class="cm"># Regular method - تأخذ self كأول باراميتر</span>
+    <span class="kw">def</span> <span class="fn">fullname</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="str">f"{self.first} {self.last}"</span>
+
+    <span class="kw">def</span> <span class="fn">apply_raise</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.pay = <span class="bu">int</span>(<span class="kw">self</span>.pay * <span class="kw">self</span>.raise_amount)
+
+    <span class="cm"># Classmethod - تأخذ cls كأول باراميتر</span>
+    <span class="nd">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">set_raise_amount</span>(<span class="kw">cls</span>, amount):
+        <span class="kw">cls</span>.raise_amount = amount
+
+    <span class="nd">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">from_string</span>(<span class="kw">cls</span>, emp_str):
+        <span class="cm"># Alternative constructor</span>
+        first, last, pay = emp_str.split(<span class="str">'-'</span>)
+        <span class="kw">return</span> <span class="kw">cls</span>(first, last, <span class="bu">int</span>(pay))
+
+    <span class="cm"># Staticmethod - لا تأخذ self ولا cls</span>
+    <span class="nd">@staticmethod</span>
+    <span class="kw">def</span> <span class="fn">is_workday</span>(day):
+        <span class="kw">return</span> day.weekday() != <span class="num">5</span> <span class="kw">and</span> day.weekday() != <span class="num">6</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 شرح الكلاس Employee وأنواع الميثودز</strong><p>هذا الكلاس يمثل نموذجاً متكاملاً لموظف ويوضح الفروقات الجوهرية بين أنواع الميثودز الثلاثة في بايثون. <strong>Class attributes</strong> مثل <code>raise_amount</code> هي خصائص مشتركة بين جميع نسخ الكلاس ويمكن الوصول إليها عبر <code>Employee.raise_amount</code> أو <code>self.raise_amount</code>. <strong>Instance methods</strong> مثل <code>fullname</code> و <code>apply_raise</code> تأخذ <code>self</code> كأول وسيط وتتعامل مع بيانات كل كائن على حدة. <strong>Class methods</strong> المزينة بـ <code>@classmethod</code> تأخذ <code>cls</code> وتستخدم بشكل أساسي كـ alternative constructors أو لتعديل خصائص الكلاس نفسه. أما <strong>Static methods</strong> المزينة بـ <code>@staticmethod</code> فهي دوال عادية توضع داخل الكلاس لأسباب تنظيمية ولا تحتاج للوصول إلى الكلاس أو الكائن. الخاصية <code>num_of_emps</code> هي class attribute تزداد تلقائياً مع إنشاء كل كائن جديد، مما يتيح تتبع عدد الموظفين.</p></div>
+
+    <h3 class="subsection-title">أنواع الطرق (Methods)</h3>
+    <ul>
+      <li><strong>Instance Methods (طرق النسخة):</strong> تأخذ <span class="inline-code">self</span> كأول وسيط. يمكنها الوصول وتعديل بيانات الكائن.</li>
+      <li><strong>Class Methods (طرق الكلاس):</strong> تأخذ <span class="inline-code">cls</span> كأول وسيط (ديكوريتور <span class="inline-code">@classmethod</span>). تستخدم لإنشاء alternative constructors أو تعديل خصائص الكلاس.</li>
+      <li><strong>Static Methods (طرق ثابتة):</strong> لا تأخذ <span class="inline-code">self</span> ولا <span class="inline-code">cls</span> (ديكوريتور <span class="inline-code">@staticmethod</span>). دوال عادية داخل الكلاس لأسباب تنظيمية.</li>
+    </ul>
+
+    <div class="code-block">
+<span class="cm"># استخدام classmethod كـ alternative constructor</span>
+emp_str_1 = <span class="str">'John-Doe-70000'</span>
+new_emp_1 = Employee.<span class="fn">from_string</span>(emp_str_1)
+<span class="bu">print</span>(new_emp_1.email)  <span class="cm"># John.Doe@company.com</span>
+
+<span class="cm"># استخدام staticmethod</span>
+<span class="kw">import</span> datetime
+my_date = datetime.date(<span class="num">2024</span>, <span class="num">5</span>, <span class="num">10</span>)
+<span class="bu">print</span>(Employee.<span class="fn">is_workday</span>(my_date))  <span class="cm"># True (Friday)</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 تطبيق classmethod و staticmethod عملياً</strong><p>هذا المثال يوضح كيف يمكن استخدام <code>@classmethod</code> كـ alternative constructor عبر الميثود <code>from_string</code> التي تستقبل نصاً بتنسيق "الاسم-اللقب-الراتب" وتحوله إلى كائن Employee. هذا النمط شائع جداً في مكتبات بايثون مثل <code>datetime</code> الذي يوفر constructors بديلة مثل <code>fromtimestamp</code> و <code>fromisoformat</code>. أما <code>@staticmethod</code> <code>is_workday</code> فتحدد إذا كان اليوم المعطى يوم عمل (الإثنين إلى الجمعة) باستخدام دالة <code>weekday()</code> التي تعيد 5 للسبت و 6 للأحد. static methods تكون مفيدة للدوال المساعدة التي لها علاقة منطقية بالكلاس لكنها لا تحتاج للوصول إلى <code>self</code> أو <code>cls</code>.</p></div>
+
+    <h3 class="subsection-title">@property Decorator - الخصائص المحسوبة</h3>
+    <p>يسمح لك بتعريف methods يتم الوصول إليها كأنها attributes:</p>
+
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Employee</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, first, last):
+        <span class="kw">self</span>.first = first
+        <span class="kw">self</span>.last = last
+
+    <span class="nd">@property</span>
+    <span class="kw">def</span> <span class="fn">fullname</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="str">f"{self.first} {self.last}"</span>
+
+    <span class="nd">@property</span>
+    <span class="kw">def</span> <span class="fn">email</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="str">f"{self.first}.{self.last}@company.com"</span>
+
+    <span class="nd">@fullname.setter</span>
+    <span class="kw">def</span> <span class="fn">fullname</span>(<span class="kw">self</span>, name):
+        first, last = name.split(<span class="str">' '</span>)
+        <span class="kw">self</span>.first = first
+        <span class="kw">self</span>.last = last
+
+    <span class="nd">@fullname.deleter</span>
+    <span class="kw">def</span> <span class="fn">fullname</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.first = <span class="kw">None</span>
+        <span class="kw">self</span>.last = <span class="kw">None</span>
+
+<span class="cm"># الاستخدام</span>
+emp = Employee(<span class="str">'John'</span>, <span class="str">'Smith'</span>)
+<span class="bu">print</span>(emp.fullname)  <span class="cm"># John Smith - بدون () لأنها property</span>
+<span class="bu">print</span>(emp.email)     <span class="cm"># John.Smith@company.com</span>
+emp.fullname = <span class="str">'Corey Schafer'</span>  <span class="cm"># يستخدم setter</span>
+<span class="kw">del</span> emp.fullname    <span class="cm"># يستخدم deleter</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 @property Decorator ودوره في التحكم بالخصائص</strong><p>الديكوريتور <code>@property</code> يحول دالة إلى خاصية readable يمكن الوصول إليها بدون أقواس <code>()</code>، مما يجعل الكود أكثر نظافة واتساقاً. يتيح لك <code>@property</code> تعريف getter يحسب القيمة ديناميكياً (مثل <code>fullname</code> الذي يدمج first و last). باستخدام <code>@fullname.setter</code> يمكنك التحكم في عملية التعيين (assignment) وتنفيذ منطق validation أو side effects عند تغيير القيمة. <code>@fullname.deleter</code> يتحكم في سلوك <code>del obj.attribute</code>. هذه الآلية تسمح لك بالحفاظ على واجهة بسيطة (تبدو كأنها attribute عادي) مع إخفاء منطق معقد خلف الكواليس، دون الحاجة لكتابة getter و setter صريحين كما في لغات مثل Java.</p></div>
+
+    <h2 class="section-title">3. الوراثة (Inheritance) - مستوى احترافي</h2>
+    <p>الوراثة تسمح لكلاس باشتقاق خصائص وسلوك كلاس آخر. هذا يقلل تكرار الكود ويسهل الصيانة.</p>
+
+    <h3 class="subsection-title">وراثة فردية (Single Inheritance)</h3>
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Developer</span>(Employee):
+    raise_amount = <span class="num">1.10</span>  <span class="cm"># تجاوز قيمة الكلاس الأب</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, first, last, pay, prog_lang):
+        <span class="bu">super</span>().<span class="fn">__init__</span>(first, last, pay)  <span class="cm"># استدعاء __init__ الأب</span>
+        <span class="kw">self</span>.prog_lang = prog_lang
+
+dev_1 = Developer(<span class="str">'Sara'</span>, <span class="str">'Ali'</span>, <span class="num">80000</span>, <span class="str">'Python'</span>)
+<span class="bu">print</span>(dev_1.email)       <span class="cm"># Sara.Ali@company.com</span>
+<span class="bu">print</span>(dev_1.prog_lang)   <span class="cm"># Python</span>
+<span class="bu">print</span>(dev_1.pay)         <span class="cm"># 80000</span>
+dev_1.<span class="fn">apply_raise</span>()
+<span class="bu">print</span>(dev_1.pay)         <span class="cm"># 88000 (raise_amount = 1.10)</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 الوراثة الفردية واستخدام super()</strong><p>كلاس <code>Developer</code> يرث من <code>Employee</code> ويكتسب تلقائياً جميع الخصائص والميثودز مثل <code>email</code> و <code>fullname</code> و <code>apply_raise</code>. يستخدم <code>super().__init__(first, last, pay)</code> لاستدعاء constructor الكلاس الأب وتجنب تكرار كود التهيئة، مع إضافة الخاصية الجديدة <code>prog_lang</code>. تم تغيير <code>raise_amount</code> إلى <code>1.10</code> في الكلاس الابن، مما يوضح concept الـ override حيث أن الكلاس الابن يمكنه تجاوز قيم الكلاس الأب. هذا المبدأ يسمى <strong>DRY (Don't Repeat Yourself)</strong> حيث نعيد استخدام كود الأب ونضيف فقط الجديد في الابن.</p></div>
+
+
+    <div class="note"><strong>super():</strong> تسمح باستدعاء methods من الكلاس الأب. هذا يمنع تكرار الكود ويحافظ على مبدأ DRY (Don't Repeat Yourself).</div>
+
+    <h3 class="subsection-title">تسلسل البحث عن الميثود (MRO - Method Resolution Order)</h3>
+    <p>MRO هو الترتيب الذي تبحث فيه بايثون عن method في سلسلة الوراثة:</p>
+
+    <div class="code-block">
+<span class="bu">print</span>(Developer.<span class="fn">__mro__</span>)
+<span class="cm"># (<class 'Developer'>, <class 'Employee'>, <class 'object'>)</span>
+
+<span class="cm"># يمكنك رؤية MRO باستخدام:</span>
+<span class="bu">print</span>(Developer.<span class="fn">mro</span>())  <span class="cm"># نفس النتيجة</span>
+<span class="bu">print</span>(<span class="bu">help</span>(Developer))    <span class="cm"># يظهر MRO مع كل التفاصيل</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 MRO - Method Resolution Order</strong><p>MRO هو الترتيب الذي تتبعه بايثون عند البحث عن method في هرم الوراثة، وتستخدم خوارزمية <strong>C3 Linearization</strong> لحسابه. يمكنك عرض MRO عبر <code>ClassName.__mro__</code> أو <code>ClassName.mro()</code>. في الوراثة الفردية، MRO يكون بسيطاً: الكلاس الابن → الكلاس الأب → <code>object</code>. فهم MRO ضروري جداً في الوراثة المتعددة لتوقع أي method سيتم استدعاؤه. عندما تستدعي <code>apply_raise()</code> على كائن <code>Developer</code>، تبحث بايثون أولاً في <code>Developer</code>، ثم <code>Employee</code>، وأخيراً <code>object</code>.</p></div>
+
+
+    <h3 class="subsection-title">الوراثة المتعددة (Multiple Inheritance)</h3>
+    <p>بايثون تدعم الوراثة من عدة كلاسات. الترتيب يهم ويحدد MRO:</p>
+
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Manager</span>(Employee):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, first, last, pay, employees=<span class="kw">None</span>):
+        <span class="bu">super</span>().<span class="fn">__init__</span>(first, last, pay)
+        <span class="kw">if</span> employees <span class="kw">is</span> <span class="kw">None</span>:
+            <span class="kw">self</span>.employees = []
+        <span class="kw">else</span>:
+            <span class="kw">self</span>.employees = employees
+
+    <span class="kw">def</span> <span class="fn">add_emp</span>(<span class="kw">self</span>, emp):
+        <span class="kw">if</span> emp <span class="kw">not</span> <span class="kw">in</span> <span class="kw">self</span>.employees:
+            <span class="kw">self</span>.employees.append(emp)
+
+    <span class="kw">def</span> <span class="fn">remove_emp</span>(<span class="kw">self</span>, emp):
+        <span class="kw">if</span> emp <span class="kw">in</span> <span class="kw">self</span>.employees:
+            <span class="kw">self</span>.employees.remove(emp)
+
+    <span class="kw">def</span> <span class="fn">print_emps</span>(<span class="kw">self</span>):
+        <span class="kw">for</span> emp <span class="kw">in</span> <span class="kw">self</span>.employees:
+            <span class="bu">print</span>(<span class="str">f'--> {emp.fullname()}'</span>)
+
+<span class="cm"># مثال الوراثة المتعددة</span>
+<span class="kw">class</span> <span class="fn">A</span>:
+    <span class="kw">def</span> <span class="fn">do_something</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="str">'Method from A'</span>
+
+<span class="kw">class</span> <span class="fn">B</span>:
+    <span class="kw">def</span> <span class="fn">do_something</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="str">'Method from B'</span>
+
+<span class="kw">class</span> <span class="fn">C</span>(A, B):  <span class="cm"># A له الأولوية (C3 Linearization)</span>
+    <span class="kw">pass</span>
+
+c = C()
+<span class="bu">print</span>(c.<span class="fn">do_something</span>())  <span class="cm"># 'Method from A'</span>
+<span class="bu">print</span>(C.<span class="fn">__mro__</span>)  <span class="cm"># C -> A -> B -> object</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 الوراثة المتعددة وأولوية MRO</strong><p>كلاس <code>Manager</code> يرث من <code>Employee</code> ويضيف قائمة بالموظفين التابعين له مع ميثودز لإدارة هذه القائمة مثل <code>add_emp</code> و <code>remove_emp</code>. في الوراثة المتعددة (كلاس <code>C(A, B)</code>)، ترتيب الكلاسات الأب في تعريف الكلاس هو الذي يحدد الأولوية: الكلاس المذكور أولاً (<code>A</code>) له الأولوية عند البحث عن الميثودز. خوارزمية C3 Linearization تضمن أن الترتيب يحافظ على اتساق: الكلاس الابن قبل الأب، وإذا ورث من عدة كلاسات فالترتيب في definition يحدد الأولوية. MRO لـ C هو: <code>C → A → B → object</code>، لذلك <code>c.do_something()</code> ستعيد <code>'Method from A'</code>.</p></div>
+
+    <h3 class="subsection-title">Mixins - إعادة استخدام السلوك</h3>
+    <p>Mixins كلاسات صغيرة توفر functionality محددة، تُستخدم مع الوراثة المتعددة:</p>
+
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">LogMixin</span>:
+    <span class="kw">def</span> <span class="fn">log</span>(<span class="kw">self</span>, message):
+        <span class="bu">print</span>(<span class="str">f'[LOG] {message}'</span>)
+
+<span class="kw">class</span> <span class="fn">JSONMixin</span>:
+    <span class="kw">def</span> <span class="fn">to_json</span>(<span class="kw">self</span>):
+        <span class="kw">import</span> json
+        <span class="kw">return</span> json.<span class="fn">dumps</span>(<span class="kw">self</span>.<span class="fn">__dict__</span>)
+
+<span class="kw">class</span> <span class="fn">User</span>(LogMixin, JSONMixin):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name):
+        <span class="kw">self</span>.name = name
+        <span class="kw">self</span>.<span class="fn">log</span>(<span class="str">f'User {name} created'</span>)
+
+user = User(<span class="str">'Ahmed'</span>)
+<span class="bu">print</span>(user.<span class="fn">to_json</span>())  <span class="cm"># {"name": "Ahmed"}</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Mixins - إعادة استخدام السلوك بمرونة</strong><p>Mixins هي كلاسات صغيرة ومتخصصة توفر functionality محددة ولا تُستخدم بمفردها أبداً. <code>LogMixin</code> يوفر capability التسجيل (<code>log</code>) بينما <code>JSONMixin</code> يوفر تحويل الكائن إلى JSON عبر <code>to_json</code>. كلاس <code>User</code> يرث من كلا الميكسينز ويكتسب قدراتهما دون الحاجة لوراثة هرمية معقدة. هذه التقنية مفيدة جداً لإضافة capabilities متعددة (مثل logging, serialization, validation) إلى كلاسات متعددة دون تكرار كود. Mixins تتبع مبدأ "مسؤولية واحدة" حيث كل mixin يركز على وظيفة محددة.</p></div>
+
+    <h3 class="subsection-title">Abstract Base Classes (ABC) - تقنيات متقدمة</h3>
+    <p>تستخدم لفرض تنفيذ methods معينة في الكلاسات المشتقة. توفر بايثون آليات متعددة:</p>
+
+    <div class="code-block">
+<span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod, ABCMeta
+
+<span class="cm"># الطريقة 1: وراثة ABC (الأسهل والأشيع)</span>
+<span class="kw">class</span> <span class="fn">Shape</span>(ABC):
+    <span class="nd">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">perimeter</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>  <span class="cm"># Abstract property من Python 3.3</span>
+    <span class="kw">def</span> <span class="fn">description</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">Square</span>(Shape):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, side): <span class="kw">self</span>.side = side
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>.side ** <span class="num">2</span>
+    <span class="kw">def</span> <span class="fn">perimeter</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>.side * <span class="num">4</span>
+    <span class="nd">@property</span>
+    <span class="kw">def</span> <span class="fn">description</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">f'Square(side={self.side})'</span>
+
+<span class="cm"># shape = Shape()  # TypeError! لا يمكن إنشاء كائن من ABC</span>
+square = Square(<span class="num">5</span>)
+<span class="bu">print</span>(square.<span class="fn">area</span>())  <span class="cm"># 25</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Abstract Base Classes (ABC) وفرض الواجهات</strong><p>ABCs تسمح لك بتعريف واجهات (interfaces) تجبر الكلاسات المشتقة على تنفيذ ميثودز محددة. الميثودز المزينة بـ <code>@abstractmethod</code> يجب أن تُنفذ في أي كلاس غير abstract يرث من <code>Shape</code>. إذا حاولت إنشاء كائن من <code>Shape</code> مباشرة، ستحصل على <code>TypeError</code>. يمكن أيضاً استخدام <code>@abstractmethod</code> مع <code>@property</code> كما في <code>description</code> لفرض تنفيذ خصائص معينة. هذا يضمن أن كل الأشكال الهندسية ستوفر واجهة موحدة (<code>area</code>, <code>perimeter</code>, <code>description</code>) مع تنفيذ مختلف لكل منها.</p></div>
+
+    <div class="code-block">
+<span class="cm"># الطريقة 2: metaclass=ABCMeta للكلاسات التي ترث من غير ABC</span>
+<span class="kw">class</span> <span class="fn">MyAbstract</span>(metaclass=ABCMeta):
+    <span class="nd">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">must_implement</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+
+<span class="cm"># Virtual Subclass - تسجيل كلاس بدون وراثة!</span>
+<span class="nd">@Shape.register</span>
+<span class="kw">class</span> <span class="fn">Circle</span>:  <span class="cm"># لا يرث من Shape ولا يعلم بوجوده!</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, radius): <span class="kw">self</span>.radius = radius
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="num">3.14</span> * <span class="kw">self</span>.radius ** <span class="num">2</span>
+    <span class="kw">def</span> <span class="fn">perimeter</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="num">2</span> * <span class="num">3.14</span> * <span class="kw">self</span>.radius
+    <span class="nd">@property</span>
+    <span class="kw">def</span> <span class="fn">description</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">f'Circle(r={self.radius})'</span>
+
+<span class="bu">print</span>(<span class="bu">isinstance</span>(Circle(<span class="num">3</span>), Shape))  <span class="cm"># True رغم أن Circle لا يرث!</span>
+<span class="bu">print</span>(<span class="bu">issubclass</span>(Circle, Shape))     <span class="cm"># True</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Virtual Subclasses و ABCMeta</strong><p>بالإضافة إلى <code>ABC</code>، يمكنك استخدام <code>metaclass=ABCMeta</code> لتعريف كلاسات abstract خاصة بتلك التي تحتاج لوراثة كلاس آخر غير ABC. الميزة الأقوى هي <strong>Virtual Subclasses</strong> عبر <code>@Shape.register</code>: يمكنك تسجيل أي كلاس كـ subclass للكلاس abstract بدون أن يرث منه، ولا يحتاج الكلاس المسجل حتى أن يعلم بوجود الكلاس abstract! هذا مفيد جداً عند التعامل مع مكتبات خارجية لا يمكنك تعديل كودها. بعد التسجيل، تعمل <code>isinstance()</code> و <code>issubclass()</code> بشكل طبيعي.</p></div>
+
+    <div class="note"><strong>متى تستخدم register():</strong> مع كلاسات من مكتبات خارجية لا يمكنك تعديلها. مثلاً: <span class="inline-code">Iterator.register(MyCustomIter)</span>.</div>
+
+    <h2 class="section-title">4. تعدد الأشكال (Polymorphism)</h2>
+    <p>تعدد الأشكال يعني أن الكائنات المختلفة يمكنها الاستجابة لنفس الاستدعاء بطريقتها الخاصة:</p>
+
+    <h3 class="subsection-title">Duck Typing</h3>
+    <p>"إذا مشى مثل البطة وصوت مثل البطة، فهي بطة". بايثون تهتم بالسلوك وليس النوع:</p>
+
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Dog</span>:
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="str">'Woof!'</span>
+
+<span class="kw">class</span> <span class="fn">Cat</span>:
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="str">'Meow!'</span>
+
+<span class="kw">class</span> <span class="fn">Duck</span>:
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="str">'Quack!'</span>
+
+<span class="kw">def</span> <span class="fn">make_sound</span>(animal):
+    <span class="bu">print</span>(animal.<span class="fn">speak</span>())  <span class="cm"># لا يهم النوع، المهم وجود method speak</span>
+
+<span class="cm"># نفس الدالة تعمل مع أنواع مختلفة!</span>
+<span class="fn">make_sound</span>(Dog())   <span class="cm"># Woof!</span>
+<span class="fn">make_sound</span>(Cat())   <span class="cm"># Meow!</span>
+<span class="fn">make_sound</span>(Duck())  <span class="cm"># Quack!</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Duck Typing - التصنيف حسب السلوك</strong><p>Duck Typing هو جوهر تعدد الأشكال في بايثون: الدالة <code>make_sound</code> تهتم فقط بوجود الميثود <code>speak()</code> وليس بنوع الكائن. لا تحتاج الكلاسات <code>Dog</code> و <code>Cat</code> و <code>Duck</code> لوراثة كلاس مشترك أو تنفيذ واجهة محددة - يكفي أن توفر الميثود المطلوب. هذا يمنح مرونة هائلة ويقلل من التعقيد مقارنة باللغات الأخرى التي تفرض typing صارم. مع ذلك، يجب توثيق الواجهات المتوقعة جيداً لأن الخطأ سيكون في وقت التشغيل (runtime) وليس في وقت الترجمة.</p></div>
+
+    <h3 class="subsection-title">Protocols - التصنيف الهيكلي (Structural Subtyping)</h3>
+    <p>منذ Python 3.8، <span class="inline-code">typing.Protocol</span> يسمح بالتصنيف الهيكلي: "إذا طبقت الواجهة فأنت من النوع" - بدون وراثة صريحة:</p>
+
+    <div class="code-block">
+<span class="kw">from</span> typing <span class="kw">import</span> Protocol, runtime_checkable
+
+<span class="nd">@runtime_checkable</span>  <span class="cm"># يسمح باستخدام isinstance()</span>
+<span class="kw">class</span> <span class="fn">Drawable</span>(Protocol):
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>) -> <span class="bu">str</span>: ...  <span class="cm"># توقعات بدون تنفيذ (ellipsis)</span>
+
+<span class="cm"># هذه الكلاسات لا تعلم بوجود Drawable أصلاً!</span>
+<span class="kw">class</span> <span class="fn">Circle</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>) -> <span class="bu">str</span>: <span class="kw">return</span> <span class="str">'Drawing a circle'</span>
+
+<span class="kw">class</span> <span class="fn">Square</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>) -> <span class="bu">str</span>: <span class="kw">return</span> <span class="str">'Drawing a square'</span>
+
+<span class="kw">class</span> <span class="fn">Car</span>:
+    <span class="kw">def</span> <span class="fn">drive</span>(<span class="kw">self</span>) -> <span class="bu">str</span>: <span class="kw">return</span> <span class="str">'Driving'</span>
+
+<span class="kw">def</span> <span class="fn">render</span>(obj: Drawable):
+    <span class="bu">print</span>(obj.<span class="fn">draw</span>())
+
+<span class="fn">render</span>(Circle())  <span class="cm"># صحيح - Circle تطابق Drawable هيكلياً</span>
+<span class="fn">render</span>(Square())  <span class="cm"># صحيح</span>
+<span class="cm"># render(Car())  # خطأ type checker - Car لا تملك draw()</span>
+
+<span class="bu">print</span>(<span class="bu">isinstance</span>(Circle(), Drawable))  <span class="cm"># True بفضل @runtime_checkable</span>
+<span class="bu">print</span>(<span class="bu">isinstance</span>(Car(), Drawable))     <span class="cm"># False</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Protocols - التصنيف الهيكلي في Python 3.8+</strong><p>Protocols توفر طريقة للتصنيف الهيكلي (structural subtyping) بدلاً من التصنيف الاسمي (nominal subtyping). الفرق الأساسي أن الكلاسات <code>Circle</code> و <code>Square</code> لا تحتاج لوراثة <code>Drawable</code> أو حتى معرفة وجوده - يكفي أن تطابق واجهته (تملك ميثود <code>draw</code> بتوقيع مناسب). <code>@runtime_checkable</code> يجعل الـ protocol قابلاً للاستخدام مع <code>isinstance()</code>. Protocols مفيدة جداً في أنظمة typing حيث تريد تعريف واجهات دقيقة مع الحفاظ على مرونة Duck Typing، وهي مفضلة على ABCs عند التعامل مع مكتبات خارجية.</p></div>
+
+    <div class="note"><strong>ABC vs Protocol:</strong> ABC → "يجب أن ترث مني" (nominal subtyping). Protocol → "يجب أن تطابق واجهتي" (structural subtyping). استخدم Protocol مع مكتبات خارجية لا يمكنك تعديلها.</div>
+
+    <h3 class="subsection-title">Protocols المدمجة في بايثون</h3>
+    <p>بايثون تستخدم protocols في كل مكان - هذه آلية عمل الدوال المدمجة:</p>
+
+    <div class="code-block">
+<span class="cm"># Iterator Protocol (الموجود منذ البداية)</span>
+<span class="kw">class</span> <span class="fn">MyRange</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, start, end):
+        <span class="kw">self</span>.value = start
+        <span class="kw">self</span>.end = end
+
+    <span class="kw">def</span> <span class="fn">__iter__</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>
+
+    <span class="kw">def</span> <span class="fn">__next__</span>(<span class="kw">self</span>):
+        <span class="kw">if</span> <span class="kw">self</span>.value >= <span class="kw">self</span>.end:
+            <span class="kw">raise</span> StopIteration
+        current = <span class="kw">self</span>.value; <span class="kw">self</span>.value += <span class="num">1</span>
+        <span class="kw">return</span> current
+
+<span class="kw">for</span> num <span class="kw">in</span> <span class="fn">MyRange</span>(<span class="num">1</span>, <span class="num">5</span>):
+    <span class="bu">print</span>(num)  <span class="cm"># 1 2 3 4</span>
+
+<span class="cm"># Iterable = Protocol(__iter__)</span>
+<span class="cm"># Iterator = Protocol(__iter__, __next__)</span>
+<span class="cm"># Sized = Protocol(__len__)</span>
+<span class="cm"># Hashable = Protocol(__hash__)</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Protocols المدمجة: Iterator Protocol</strong><p>هذا مثال على كيفية عمل <strong>Iterator Protocol</strong> في بايثون. أي كلاس يطبق <code>__iter__</code> (يعيد نفسه) و <code>__next__</code> (يعيد القيمة التالية أو يرفع <code>StopIteration</code>) يصبح iterator قابلاً للاستخدام في حلقات <code>for</code>. كلاس <code>MyRange</code> يطبق هذا الـ protocol ويعمل تماماً مثل دالة <code>range()</code> المدمجة. بايثون تحتوي على العديد من protocols المدمجة: <code>Iterable</code> (__iter__)، <code>Iterator</code> (__iter__ + __next__)، <code>Sized</code> (__len__)، <code>Hashable</code> (__hash__)، وغيرها. هذه الـ protocols هي ما يجعل الدوال المدمجة مثل <code>len()</code> و <code>iter()</code> تعمل مع أي نوع مخصص.</p></div>
+
+
+    <h2 class="section-title">5. Dunder Methods (Magic Methods) - دليل كامل</h2>
+    <p>Dunder (Double UNDERscore) methods تسمح بتخصيص سلوك الكلاس ليدعم عمليات بايثون المدمجة:</p>
+
+    <h3 class="subsection-title">إنشاء وتدمير الكائنات</h3>
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Resource</span>:
+    <span class="kw">def</span> <span class="fn">__new__</span>(<span class="kw">cls</span>, *args, **kwargs):
+        <span class="cm"># يُستدعى أولاً لإنشاء كائن جديد (نادراً ما يُستخدم)</span>
+        <span class="bu">print</span>(<span class="str">'Creating instance'</span>)
+        instance = <span class="bu">super</span>().<span class="fn">__new__</span>(<span class="kw">cls</span>)
+        <span class="kw">return</span> instance
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name):
+        <span class="cm"># يُستدعى بعد __new__ لتهيئة الكائن</span>
+        <span class="kw">self</span>.name = name
+        <span class="bu">print</span>(<span class="str">f'Initializing {name}'</span>)
+
+    <span class="kw">def</span> <span class="fn">__del__</span>(<span class="kw">self</span>):
+        <span class="cm"># يُستدعى عند حذف الكائن (destructor)</span>
+        <span class="bu">print</span>(<span class="str">f'Destroying {self.name}'</span>)
+    </div>
+
+<div class="explanation-box"><strong>🔍 __new__ و __init__ و __del__ - دورة حياة الكائن</strong><p><code>__new__</code> هو أول ميثود يُستدعى عند إنشاء كائن، وهو المسؤول عن تخصيص الذاكرة (memory allocation) وإرجاع الكائن الجديد. يُستخدم <code>__new__</code> بشكل أساسي مع الأنماط غير القابلة للتغيير (immutable) مثل <code>int</code> و <code>str</code> أو مع Singleton pattern. يليه مباشرة <code>__init__</code> الذي يقوم بتهيئة الكائن (initialization) وتعيين القيم الأولية للخصائص. <code>__del__</code> هو الـ destructor ويُستدعى عندما يتم حذف الكائن (عندما يصل reference count إلى الصفر أو عند تشغيل garbage collector). من المهم ملاحظة أن <code>__del__</code> لا يُستدعى بالضرورة فور استخدام <code>del</code>، وقد لا يُستدعى أبداً.</p></div>
+
+    <h3 class="subsection-title">تمثيل الكائن كنص</h3>
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Book</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, title, author, pages):
+        <span class="kw">self</span>.title = title
+        <span class="kw">self</span>.author = author
+        <span class="kw">self</span>.pages = pages
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="kw">self</span>):
+        <span class="cm"># للمستخدم النهائي (print, str())</span>
+        <span class="kw">return</span> <span class="str">f"'{self.title}' by {self.author}"</span>
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="cm"># للمطور (debugging, repr()) - يجب أن يكون واضحاً</span>
+        <span class="kw">return</span> <span class="str">f"Book('{self.title}', '{self.author}', {self.pages})"</span>
+
+    <span class="kw">def</span> <span class="fn">__len__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="kw">self</span>.pages
+
+book = Book(<span class="str">'Python Crash Course'</span>, <span class="str">'Eric Matthes'</span>, <span class="num">560</span>)
+<span class="bu">print</span>(book)           <span class="cm"># 'Python Crash Course' by Eric Matthes</span>
+<span class="bu">print</span>(<span class="bu">repr</span>(book))    <span class="cm"># Book('Python Crash Course', 'Eric Matthes', 560)</span>
+<span class="bu">print</span>(<span class="bu">len</span>(book))     <span class="cm"># 560</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 __str__ و __repr__ و __len__ - تمثيل الكائنات</strong><p><code>__str__</code> يُستخدم لإنشاء تمثيل readable للمستخدم النهائي ويُستدعى عند استخدام <code>print()</code> أو <code>str()</code>. <code>__repr__</code> يُستخدم لإنشاء تمثيل unambiguous للمطور ويجب أن يكون واضحاً كافياً لإعادة إنشاء الكائن (ideal: <code>eval(repr(obj)) == obj</code>). <code>__len__</code> يسمح باستخدام دالة <code>len()</code> المدمجة مع الكائن، وتستخدم عادة مع containers. الفرق الجوهري: <code>__str__</code> للقراءة البشرية، <code>__repr__</code> للـ debugging وإعادة الإنشاء. إذا لم تعرّف <code>__str__</code> فستستخدم بايثون <code>__repr__</code> كبديل.</p></div>
+
+    <h3 class="subsection-title">المقارنة والتجزئة</h3>
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Person</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, age):
+        <span class="kw">self</span>.name = name
+        <span class="kw">self</span>.age = age
+
+    <span class="kw">def</span> <span class="fn">__eq__</span>(<span class="kw">self</span>, other):  <span class="cm"># ==</span>
+        <span class="kw">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(other, Person):
+            <span class="kw">return</span> NotImplemented
+        <span class="kw">return</span> <span class="kw">self</span>.name == other.name <span class="kw">and</span> <span class="kw">self</span>.age == other.age
+
+    <span class="kw">def</span> <span class="fn">__lt__</span>(<span class="kw">self</span>, other):   <span class="cm"># <</span>
+        <span class="kw">return</span> <span class="kw">self</span>.age < other.age
+
+    <span class="kw">def</span> <span class="fn">__hash__</span>(<span class="kw">self</span>):      <span class="cm"># لجعل الكائن hashable (للاستخدام في set, dict key)</span>
+        <span class="kw">return</span> <span class="bu">hash</span>((<span class="kw">self</span>.name, <span class="kw">self</span>.age))
+
+<span class="cm"># @total_ordering - يملأ طرق المقارنة الناقصة تلقائياً</span>
+<span class="kw">from</span> functools <span class="kw">import</span> total_ordering
+
+<span class="nd">@total_ordering</span>
+<span class="kw">class</span> <span class="fn">Employee</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, salary):
+        <span class="kw">self</span>.name = name
+        <span class="kw">self</span>.salary = salary
+
+    <span class="kw">def</span> <span class="fn">__eq__</span>(<span class="kw">self</span>, other):
+        <span class="kw">return</span> <span class="kw">self</span>.salary == other.salary
+
+    <span class="kw">def</span> <span class="fn">__lt__</span>(<span class="kw">self</span>, other):
+        <span class="kw">return</span> <span class="kw">self</span>.salary < other.salary
+
+<span class="cm"># الآن __le__, __gt__, __ge__ متوفرة تلقائياً!</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 __eq__ و __hash__ و @total_ordering</strong><p><code>__eq__</code> يعرّف سلوك عامل المساواة <code>==</code> ويجب أن يعيد <code>NotImplemented</code> إذا كان الكائن الآخر من نوع غير متوافق (بدلاً من رفع <code>TypeError</code>). <code>__lt__</code> يعرّف <code><</code> ويستخدم في عمليات الترتيب. <code>__hash__</code> يجعل الكائن hashable للاستخدام كـ key في القواميس أو عنصر في المجموعات (<code>set</code>). قاعدة مهمة: إذا عرّفت <code>__eq__</code> يجب عادة تعريف <code>__hash__</code> أيضاً (وإلا سيصبح الكائن unhashable). الديكوريتور <code>@total_ordering</code> من <code>functools</code> يوفّر الوقت: يعرّف <code>__eq__</code> و <code>__lt__</code> فقط ويولّد تلقائياً <code>__le__</code> و <code>__gt__</code> و <code>__ge__</code> بناءً عليهما.</p></div>
+
+
+    <h3 class="subsection-title">العمليات الحسابية</h3>
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Vector</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, x, y):
+        <span class="kw">self</span>.x = x; <span class="kw">self</span>.y = y
+
+    <span class="kw">def</span> <span class="fn">__add__</span>(<span class="kw">self</span>, other):    <span class="cm"># +</span>
+        <span class="kw">return</span> Vector(<span class="kw">self</span>.x + other.x, <span class="kw">self</span>.y + other.y)
+
+    <span class="kw">def</span> <span class="fn">__sub__</span>(<span class="kw">self</span>, other):    <span class="cm"># -</span>
+        <span class="kw">return</span> Vector(<span class="kw">self</span>.x - other.x, <span class="kw">self</span>.y - other.y)
+
+    <span class="kw">def</span> <span class="fn">__mul__</span>(<span class="kw">self</span>, scalar):   <span class="cm"># *</span>
+        <span class="kw">return</span> Vector(<span class="kw">self</span>.x * scalar, <span class="kw">self</span>.y * scalar)
+
+    <span class="kw">def</span> <span class="fn">__rmul__</span>(<span class="kw">self</span>, scalar):  <span class="cm"># 3 * v (عندما يفشل __mul__ على اليسار)</span>
+        <span class="kw">return</span> <span class="kw">self</span>.<span class="fn">__mul__</span>(scalar)
+
+    <span class="kw">def</span> <span class="fn">__neg__</span>(<span class="kw">self</span>):          <span class="cm"># -v</span>
+        <span class="kw">return</span> Vector(-<span class="kw">self</span>.x, -<span class="kw">self</span>.y)
+
+    <span class="kw">def</span> <span class="fn">__abs__</span>(<span class="kw">self</span>):           <span class="cm"># abs(v)</span>
+        <span class="kw">return</span> (<span class="kw">self</span>.x**<span class="num">2</span> + <span class="kw">self</span>.y**<span class="num">2</span>)**<span class="num">0.5</span>
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="str">f'Vector({self.x}, {self.y})'</span>
+
+v1 = Vector(<span class="num">2</span>, <span class="num">4</span>)
+v2 = Vector(<span class="num">1</span>, <span class="num">3</span>)
+<span class="bu">print</span>(v1 + v2)      <span class="cm"># Vector(3, 7)</span>
+<span class="bu">print</span>(v1 * <span class="num">3</span>)      <span class="cm"># Vector(6, 12)</span>
+<span class="bu">print</span>(<span class="num">3</span> * v1)      <span class="cm"># Vector(6, 12) - thanks to __rmul__</span>
+<span class="bu">print</span>(<span class="bu">abs</span>(v1))      <span class="cm"># 4.472...</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 __add__ و __rmul__ والعمليات الحسابية المخصصة</strong><p>هذا المثال يوضح كيفية جعل الكلاس يدعم العمليات الحسابية المدمجة. <code>__add__</code> يعرّف الجمع (<code>+</code>)، <code>__sub__</code> للطرح، <code>__mul__</code> للضرب، <code>__neg__</code> للسالب الأحادي (<code>-v</code>)، و <code>__abs__</code> للقيمة المطلقة. المهم هنا هو <code>__rmul__</code> (reflected multiplication): عندما تكتب <code>3 * v1</code> وتحاول بايثون استدعاء <code>(3).__mul__(v1)</code> ويفشل، تبحث عن <code>v1.__rmul__(3)</code>. هذا يسمح للعملية بالعمل في كلا الاتجاهين. كل عملية حسابية لها reflected counterpart (<code>__radd__</code>, <code>__rsub__</code>, إلخ) تُستدعى عندما يكون المعامل الأيسر لا يدعم العملية.</p></div>
+
+    <h3 class="subsection-title">الوصول إلى العناصر كـ Container</h3>
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Playlist</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.songs = []
+
+    <span class="kw">def</span> <span class="fn">__getitem__</span>(<span class="kw">self</span>, index):   <span class="cm"># playlist[0]</span>
+        <span class="kw">return</span> <span class="kw">self</span>.songs[index]
+
+    <span class="kw">def</span> <span class="fn">__setitem__</span>(<span class="kw">self</span>, index, value):  <span class="cm"># playlist[0] = song</span>
+        <span class="kw">self</span>.songs[index] = value
+
+    <span class="kw">def</span> <span class="fn">__delitem__</span>(<span class="kw">self</span>, index):  <span class="cm"># del playlist[0]</span>
+        <span class="kw">del</span> <span class="kw">self</span>.songs[index]
+
+    <span class="kw">def</span> <span class="fn">__contains__</span>(<span class="kw">self</span>, item): <span class="cm"># 'song' in playlist</span>
+        <span class="kw">return</span> item <span class="kw">in</span> <span class="kw">self</span>.songs
+
+    <span class="kw">def</span> <span class="fn">__len__</span>(<span class="kw">self</span>):              <span class="cm"># len(playlist)</span>
+        <span class="kw">return</span> <span class="bu">len</span>(<span class="kw">self</span>.songs)
+
+    <span class="kw">def</span> <span class="fn">__iter__</span>(<span class="kw">self</span>):             <span class="cm"># for song in playlist</span>
+        <span class="kw">return</span> <span class="bu">iter</span>(<span class="kw">self</span>.songs)
+
+    <span class="kw">def</span> <span class="fn">__reversed__</span>(<span class="kw">self</span>):        <span class="cm"># reversed(playlist)</span>
+        <span class="kw">return</span> <span class="bu">reversed</span>(<span class="kw">self</span>.songs)
+    </div>
+
+<div class="explanation-box"><strong>🔍 Container Protocols - محاكاة القوائم والقواميس</strong><p>هذه الميثودز تحوّل أي كلاس إلى container كامل الوظائف يشبه القوائم. <code>__getitem__</code> يسمح بالوصول عبر الفهرس (<code>playlist[0]</code>)، <code>__setitem__</code> يسمح بتعيين القيم، و <code>__delitem__</code> يسمح بالحذف. <code>__contains__</code> يفعّل استخدام <code>in</code> للتحقق من وجود عنصر. <code>__iter__</code> يجعل الكائن قابلاً للتكرار في حلقات <code>for</code>. <code>__reversed__</code> يسمح باستخدام <code>reversed()</code>. بتطبيق هذه الميثودز، يصبح كلاسك متوافقاً تماماً مع واجهة الـ containers البايثونية القياسية ويمكن استخدامه مع دوال مثل <code>sorted()</code> و <code>enumerate()</code>.</p></div>
+
+    <h3 class="subsection-title">Context Managers - __enter__ و __exit__</h3>
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">ManagedFile</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, filename, mode):
+        <span class="kw">self</span>.filename = filename
+        <span class="kw">self</span>.mode = mode
+
+    <span class="kw">def</span> <span class="fn">__enter__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.file = <span class="bu">open</span>(<span class="kw">self</span>.filename, <span class="kw">self</span>.mode)
+        <span class="kw">return</span> <span class="kw">self</span>.file  <span class="cm"># القيمة التي يأخذها 'as'</span>
+
+    <span class="kw">def</span> <span class="fn">__exit__</span>(<span class="kw">self</span>, exc_type, exc_val, exc_tb):
+        <span class="kw">self</span>.file.close()
+        <span class="kw">if</span> exc_type:
+            <span class="bu">print</span>(<span class="str">f'An error occurred: {exc_val}'</span>)
+        <span class="kw">return</span> <span class="kw">True</span>  <span class="cm"># يمنع انتشار الاستثناء</span>
+
+<span class="kw">with</span> <span class="fn">ManagedFile</span>(<span class="str">'test.txt'</span>, <span class="str">'w'</span>) <span class="kw">as</span> f:
+    f.<span class="fn">write</span>(<span class="str">'Hello, world!'</span>)
+    </div>
+
+<div class="explanation-box"><strong>🔍 Context Managers - __enter__ و __exit__</strong><p>Context Managers تدير الموارد عبر two-phase protocol: <code>__enter__</code> يُستدعى عند الدخول إلى كتلة <code>with</code> ويعيد القيمة المرتبطة بـ <code>as</code> (مثل الملف المفتوح). <code>__exit__</code> يُستدعى عند الخروج من الكتلة (سواء بنجاح أو بخطأ) ويستقبل three arguments: نوع الاستثناء وقيمته و traceback. إذا أعاد <code>__exit__</code> <code>True</code>، فسيتم منع انتشار الاستثناء (أي التعامل معه ضمنياً). هذا النمط يضمن تحرير الموارد حتى في حالة حدوث أخطاء، وهو أفضل من <code>try/finally</code> التقليدي. الاستخدام الأكثر شيوعاً هو <code>with open() as f</code> الذي يغلق الملف تلقائياً.</p></div>
+
+    <h3 class="subsection-title">Callable Objects - __call__</h3>
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Counter</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.count = <span class="num">0</span>
+
+    <span class="kw">def</span> <span class="fn">__call__</span>(<span class="kw">self</span>, *args, **kwargs):
+        <span class="kw">self</span>.count += <span class="num">1</span>
+        <span class="bu">print</span>(<span class="str">f'Called {self.count} times'</span>)
+        <span class="kw">return</span> <span class="kw">self</span>.count
+
+counter = Counter()
+counter()     <span class="cm"># Called 1 times</span>
+counter()     <span class="cm"># Called 2 times</span>
+counter()     <span class="cm"># Called 3 times</span>
+<span class="bu">print</span>(<span class="bu">callable</span>(counter))  <span class="cm"># True</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 __call__ - جعل الكائنات قابلة للاستدعاء</strong><p>باستخدام <code>__call__</code> يمكن جعل أي كائن قابلاً للاستدعاء مثل الدوال (<code>counter()</code>). هذا مفيد جداً لإنشاء كائنات تحتفظ بحالة بين الاستدعاءات (stateful callables). مثلاً، كلاس <code>Counter</code> يتتبع عدد المرات التي استُدعي فيها. دالة <code>callable()</code> تتحقق مما إذا كان الكائن قابلاً للاستدعاء. <code>__call__</code> يُستخدم في العديد من التطبيقات مثل decorators (التي تحتاج لحفظ حالة) واستراتيجيات الـ partial application والـ callback objects المتقدمة. هذا النمط يسمى "closures مع حالة" أو "functor".</p></div>
+
+    <h2 class="section-title">6. Decorators (الديكوريتورز) - دليل كامل</h2>
+    <p>Decorators هي دوال تعدل سلوك دوال أخرى. هي أداة قوية جداً في بايثون:</p>
+
+    <h3 class="subsection-title">مبدأ العمل - Functions كـ First-Class Citizens</h3>
+    <div class="code-block">
+<span class="cm"># الدوال في بايثون هي كائنات من الدرجة الأولى</span>
+<span class="kw">def</span> <span class="fn">greet</span>(name):
+    <span class="kw">return</span> <span class="str">f'Hello {name}'</span>
+
+<span class="cm"># يمكننا تخزين دالة في متغير</span>
+my_func = greet
+<span class="bu">print</span>(<span class="fn">my_func</span>(<span class="str">'Ahmed'</span>))  <span class="cm"># Hello Ahmed</span>
+
+<span class="cm"># يمكننا تمرير دالة كوسيط</span>
+<span class="kw">def</span> <span class="fn">call_func</span>(func, arg):
+    <span class="kw">return</span> <span class="fn">func</span>(arg)
+
+<span class="bu">print</span>(<span class="fn">call_func</span>(greet, <span class="str">'Sara'</span>))  <span class="cm"># Hello Sara</span>
+
+<span class="cm"># يمكننا تعريف دالة داخل دالة (Nested function)</span>
+<span class="kw">def</span> <span class="fn">outer</span>(message):
+    <span class="kw">def</span> <span class="fn">inner</span>():
+        <span class="bu">print</span>(message)
+    <span class="kw">return</span> inner  <span class="cm"># نعيد الدالة الداخلية (Closure)</span>
+
+closure = <span class="fn">outer</span>(<span class="str">'Hello from closure!'</span>)
+closure()  <span class="cm"># Hello from closure!</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 First-Class Functions و Closures</strong><p>في بايثون، الدوال هي كائنات من الدرجة الأولى (first-class citizens): يمكن تخزينها في متغيرات، تمريرها كوسيط لدوال أخرى، وإعادتها كقيمة من دوال أخرى. المثال يوضح كل هذه المفاهيم: <code>my_func = greet</code> تخزين دالة، <code>call_func(greet, arg)</code> تمرير دالة كوسيط، و <code>outer</code> تعيد الدالة الداخلية <code>inner</code>. هذا الأخير يسمى <strong>Closure</strong>: دالة داخلية تتذكر البيئة التي أنشئت فيها (المتغير <code>message</code>) حتى بعد انتهاء الدالة الخارجية. Closures هي الأساس الذي تبنى عليه الـ decorators.</p></div>
+
+    <h3 class="subsection-title">إنشاء Decorator بسيط</h3>
+    <div class="code-block">
+<span class="kw">def</span> <span class="fn">my_decorator</span>(func):
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+        <span class="bu">print</span>(<span class="str">'Before function call'</span>)
+        result = <span class="fn">func</span>(*args, **kwargs)
+        <span class="bu">print</span>(<span class="str">'After function call'</span>)
+        <span class="kw">return</span> result
+    <span class="kw">return</span> wrapper
+
+<span class="nd">@my_decorator</span>
+<span class="kw">def</span> <span class="fn">say_hello</span>(name):
+    <span class="bu">print</span>(<span class="str">f'Hello {name}'</span>)
+
+<span class="fn">say_hello</span>(<span class="str">'Ahmed'</span>)
+<span class="cm"># Before function call</span>
+<span class="cm"># Hello Ahmed</span>
+<span class="cm"># After function call</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Decorator بسيط - إضافة سلوك قبل وبعد الدالة</strong><p>الـ decorator هو دالة تستقبل دالة أخرى وتعيد دالة جديدة تحل محلها. <code>@my_decorator</code> هو syntactic sugar للكتابة <code>say_hello = my_decorator(say_hello)</code>. الدالة <code>wrapper</code> تستخدم <code>*args</code> و <code>**kwargs</code> لتكون مرنة وتقبل أي وسائط. تقوم بتنفيذ كود قبل وبعد استدعاء الدالة الأصلية، وتعيد نتيجتها. هذا النمط يستخدم في الـ logging والـ timing والتحقق من الصلاحيات والتخزين المؤقت (caching). الـ decorators هي واحدة من أقوى ميزات بايثون وتستخدم على نطاق واسع في أطر العمل مثل Flask و Django.</p></div>
+
+
+    <h3 class="subsection-title">Decorators مع وسائط</h3>
+    <div class="code-block">
+<span class="kw">def</span> <span class="fn">repeat</span>(num_times):
+    <span class="kw">def</span> <span class="fn">decorator</span>(func):
+        <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+            <span class="kw">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(num_times):
+                result = <span class="fn">func</span>(*args, **kwargs)
+            <span class="kw">return</span> result
+        <span class="kw">return</span> wrapper
+    <span class="kw">return</span> decorator
+
+<span class="nd">@repeat(num_times=3)</span>
+<span class="kw">def</span> <span class="fn">greet</span>(name):
+    <span class="bu">print</span>(<span class="str">f'Hello {name}'</span>)
+
+<span class="fn">greet</span>(<span class="str">'World'</span>)
+<span class="cm"># Hello World (تتكرر 3 مرات)</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Decorators مع وسائط - multilayer wrappers</strong><p>عندما يحتاج الـ decorator لوسائط خاصة به (<code>num_times</code>)، نحتاج لثلاث مستويات من الدوال المتداخلة: <code>repeat</code> تأخذ الوسائط وتعيد <code>decorator</code> الذي يأخذ الدالة الأصلية ويعيد <code>wrapper</code>. هذا يكافئ <code>greet = repeat(num_times=3)(greet)</code>. هذا النمط شائع في مكتبات مثل Flask (<code>@app.route('/path')</code>) و <code>@click.option('--name')</code>. يمكنك التفكير فيها كـ "مصنع decorators" (decorator factory) ينتج decorator مخصص حسب الوسائط المعطاة.</p></div>
+
+
+    <h3 class="subsection-title">الحفاظ على Metadata باستخدام functools.wraps</h3>
+    <div class="code-block">
+<span class="kw">from</span> functools <span class="kw">import</span> wraps
+
+<span class="kw">def</span> <span class="fn">my_decorator</span>(func):
+    <span class="nd">@wraps</span>(func)  <span class="cm"># يحافظ على اسم الدالة و docstring</span>
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+        <span class="cm">"""Wrapper function"""</span>
+        <span class="bu">print</span>(<span class="str">'Before'</span>)
+        <span class="kw">return</span> <span class="fn">func</span>(*args, **kwargs)
+    <span class="kw">return</span> wrapper
+
+<span class="nd">@my_decorator</span>
+<span class="kw">def</span> <span class="fn">say_hello</span>():
+    <span class="cm">"""Say hello function"""</span>
+    <span class="bu">print</span>(<span class="str">'Hello!'</span>)
+
+<span class="bu">print</span>(say_hello.<span class="fn">__name__</span>)  <span class="cm"># say_hello (بدون wraps: wrapper)</span>
+<span class="bu">print</span>(say_hello.<span class="fn">__doc__</span>)   <span class="cm"># Say hello function</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 functools.wraps - الحفاظ على هوية الدالة</strong><p>بدون <code>@wraps(func)</code>، ستفقد الدالة المزخرفة هويتها: يصبح <code>__name__</code> يساوي <code>'wrapper'</code> و <code>__doc__</code> يساوي <code>'Wrapper function'</code> بدلاً من القيم الأصلية. <code>@wraps</code> ينسخ metadata الدالة الأصلية (<code>__name__</code>، <code>__doc__</code>، <code>__module__</code>، <code>__annotations__</code>، وغيرها) إلى الدالة <code>wrapper</code>. هذا أمر بالغ الأهمية لـ debugging والتوثيق التلقائي. دائماً استخدم <code>@wraps</code> عند كتابة أي decorator - إنها ممارسة قياسية لا تهملها.</p></div>
+
+    <h3 class="subsection-title">Decorator لقياس وقت التنفيذ</h3>
+    <div class="code-block">
+<span class="kw">import</span> time
+<span class="kw">from</span> functools <span class="kw">import</span> wraps
+
+<span class="kw">def</span> <span class="fn">timer</span>(func):
+    <span class="nd">@wraps</span>(func)
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+        start = time.<span class="fn">perf_counter</span>()
+        result = <span class="fn">func</span>(*args, **kwargs)
+        end = time.<span class="fn">perf_counter</span>()
+        <span class="bu">print</span>(<span class="str">f'{func.__name__} took {end - start:.6f}s'</span>)
+        <span class="kw">return</span> result
+    <span class="kw">return</span> wrapper
+
+<span class="nd">@timer</span>
+<span class="kw">def</span> <span class="fn">slow_function</span>():
+    time.<span class="fn">sleep</span>(<span class="num">1</span>)
+    <span class="kw">return</span> <span class="str">'Done'</span>
+
+<span class="fn">slow_function</span>()  <span class="cm"># slow_function took 1.000123s</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 @timer Decorator - قياس وقت التنفيذ</strong><p>هذا مثال عملي على decorator يقيس وقت تنفيذ أي دالة باستخدام <code>time.perf_counter()</code> (أعلى دقة متاحة). يطبع اسم الدالة ووقت التنفيذ بالثواني. هذا النوع من الـ decorators مفيد جداً في تحليل أداء الكود (profiling) واكتشاف bottlenecks. يمكن توسيعه ليشمل عدد الاستدعاءات أو تنسيقات مختلفة للوقت. باستخدام <code>@wraps(func)</code> نضمن أن الدوال المزخرفة تحتفظ بأسمائها الأصلية. يمكنك تطبيق <code>@timer</code> على أي دالة لقياس أدائها بدون تعديل كود الدالة نفسها.</p></div>
+
+    <h3 class="subsection-title">Class Decorators</h3>
+    <div class="code-block">
+<span class="kw">def</span> <span class="fn">singleton</span>(cls):
+    <span class="cm">"""Decorator لتحويل كلاس إلى Singleton"""</span>
+    instances = {}
+    <span class="nd">@wraps</span>(cls)
+    <span class="kw">def</span> <span class="fn">get_instance</span>(*args, **kwargs):
+        <span class="kw">if</span> cls <span class="kw">not</span> <span class="kw">in</span> instances:
+            instances[cls] = <span class="fn">cls</span>(*args, **kwargs)
+        <span class="kw">return</span> instances[cls]
+    <span class="kw">return</span> get_instance
+
+<span class="nd">@singleton</span>
+<span class="kw">class</span> <span class="fn">Database</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="bu">print</span>(<span class="str">'Connecting to database...'</span>)
+
+db1 = Database()  <span class="cm"># Connecting to database...</span>
+db2 = Database()  <span class="cm"># لا يطبع شيئاً - نفس النسخة!</span>
+<span class="bu">print</span>(db1 <span class="kw">is</span> db2)  <span class="cm"># True</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Class Decorator - نمط Singleton</strong><p>الـ class decorator يعمل على الكلاس نفسه بدلاً من الدوال. هنا <code>@singleton</code> يحوّل كلاس <code>Database</code> إلى singleton: مهما حاولت إنشاء نسخ متعددة ستحصل دائماً على نفس النسخة. الآلية بسيطة: قاموس <code>instances</code> يخزن النسخة الأولى لكل كلاس، وأي استدعاء لاحق يعيد نفس النسخة. لاحظ أن استخدام <code>@wraps(cls)</code> يحافظ على metadata الكلاس. هذه طريقة أنيقة لتطبيق singleton مقارنة بالطرق الأخرى مثل metaclasses. من المهم تنبيه أن class decorator يعيد دالة (<code>get_instance</code>) وليس كلاساً، لكن هذا الشفاف يعمل في معظم الحالات.</p></div>
+
+
+    <h3 class="subsection-title">Decorator متقدم - التحقق من الصلاحيات</h3>
+    <div class="code-block">
+<span class="kw">from</span> functools <span class="kw">import</span> wraps
+
+<span class="kw">def</span> <span class="fn">requires_auth</span>(roles=<span class="kw">None</span>):
+    <span class="kw">def</span> <span class="fn">decorator</span>(func):
+        <span class="nd">@wraps</span>(func)
+        <span class="kw">def</span> <span class="fn">wrapper</span>(user, *args, **kwargs):
+            <span class="kw">if</span> <span class="kw">not</span> user.<span class="fn">get</span>(<span class="str">'authenticated'</span>):
+                <span class="kw">raise</span> PermissionError(<span class="str">'User not authenticated'</span>)
+            <span class="kw">if</span> roles <span class="kw">and</span> user.<span class="fn">get</span>(<span class="str">'role'</span>) <span class="kw">not</span> <span class="kw">in</span> roles:
+                <span class="kw">raise</span> PermissionError(<span class="str">'Insufficient permissions'</span>)
+            <span class="kw">return</span> <span class="fn">func</span>(user, *args, **kwargs)
+        <span class="kw">return</span> wrapper
+    <span class="kw">return</span> decorator
+
+<span class="nd">@requires_auth(roles=['admin'])</span>
+<span class="kw">def</span> <span class="fn">delete_user</span>(user, user_id):
+    <span class="bu">print</span>(<span class="str">f'User {user_id} deleted'</span>)
+
+admin = {<span class="str">'authenticated'</span>: <span class="kw">True</span>, <span class="str">'role'</span>: <span class="str">'admin'</span>}
+<span class="fn">delete_user</span>(admin, <span class="num">1</span>)  <span class="cm"># يعمل بنجاح</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 @requires_auth - التحقق من الصلاحيات بالديكوريتورز</strong><p>هذا decorator متقدم يتحقق من صلاحيات المستخدم قبل تنفيذ الدالة. يستخدم نمط decorator مع وسائط (ثلاثة مستويات) ويقبل قائمة بالأدوار المسموح لها. يقوم أولاً بالتحقق من أن المستخدم مصادق (<code>authenticated</code>) ثم يتأكد أن دوره ضمن الأدوار المسموحة. إذا فشل أي شرط يرفع <code>PermissionError</code>. هذا النمط شائع جداً في أطر عمل الويب مثل Flask و Django حيث تُستخدم decorators لحماية endpoints. الميزة الأساسية: فصل منطق التحقق من الصلاحيات عن منطق العمل الأساسي (separation of concerns).</p></div>
+
+    <h2 class="section-title">7. Descriptors - التحكم في الوصول للخصائص</h2>
+    <p>Descriptors تسمح بتخصيص سلوك الوصول إلى attributes:</p>
+
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">PositiveNumber</span>:
+    <span class="kw">def</span> <span class="fn">__set_name__</span>(<span class="kw">self</span>, owner, name):
+        <span class="kw">self</span>.name = <span class="str">f'_{name}'</span>
+
+    <span class="kw">def</span> <span class="fn">__get__</span>(<span class="kw">self</span>, instance, owner):
+        <span class="kw">return</span> <span class="bu">getattr</span>(instance, <span class="kw">self</span>.name)
+
+    <span class="kw">def</span> <span class="fn">__set__</span>(<span class="kw">self</span>, instance, value):
+        <span class="kw">if</span> value <= <span class="num">0</span>:
+            <span class="kw">raise</span> ValueError(<span class="str">'Value must be positive'</span>)
+        <span class="bu">setattr</span>(instance, <span class="kw">self</span>.name, value)
+
+<span class="kw">class</span> <span class="fn">Order</span>:
+    quantity = PositiveNumber()
+    price = PositiveNumber()
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, quantity, price):
+        <span class="kw">self</span>.quantity = quantity
+        <span class="kw">self</span>.price = price
+
+order = Order(<span class="num">5</span>, <span class="num">10.0</span>)
+<span class="cm"># order.quantity = -1  # ValueError!</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Descriptors - إعادة استخدام منطق التحقق من القيم</strong><p>الـ Descriptor Protocol (<code>__get__</code> و <code>__set__</code> و <code>__set_name__</code>) يسمح بإنشاء كائنات تتحكم في الوصول إلى خصائص الكلاسات الأخرى. <code>PositiveNumber</code> هو data descriptor يضمن أن القيمة موجبة دائماً. <code>__set_name__</code> يُستدعى تلقائياً عند تعريف الكلاس لتحديد اسم الخاصية. هذا النمط أفضل من تكرار كود التحقق في كل <code>@property</code> لأنه يعيد استخدام منطق التحقق عبر خصائص متعددة. بايثون نفسها تستخدم descriptors داخلياً في <code>@property</code> و <code>@classmethod</code> و <code>@staticmethod</code>. الفرق بين data descriptor (يملك <code>__set__</code>) و non-data descriptor يحدد أولوية الوصول.</p></div>
+
+
+    <h2 class="section-title">8. __slots__ - تحسين الأداء والذاكرة</h2>
+    <p>يمنع إنشاء __dict__ ويوفر ذاكرة للكلاسات التي تحتوي آلاف النسخ:</p>
+
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Point</span>:
+    __slots__ = (<span class="str">'x'</span>, <span class="str">'y'</span>)
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, x, y):
+        <span class="kw">self</span>.x = x
+        <span class="kw">self</span>.y = y
+
+    <span class="cm"># لا يمكن إضافة خصائص غير معرفة في __slots__</span>
+    <span class="cm"># p.z = 5  # AttributeError!</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 __slots__ - توفير الذاكرة ومنع الخصائص الديناميكية</strong><p><code>__slots__</code> يمنع إنشاء <code>__dict__</code> لكل كائن ويخزن الخصائص في array ذي حجم ثابت، مما يقلل استهلاك الذاكرة بشكل كبير (يصل إلى 40-50% توفيراً). كل كائن بايثون يحمل <code>__dict__</code> وهو قاموس يستهلك ذاكرة إضافية (hashing overhead). باستخدام <code>__slots__</code>، نحدد الخصائص المسموح بها مسبقاً ولا يمكن إضافة خصائص جديدة ديناميكياً (محاولة تعيين <code>p.z = 5</code> سترفع <code>AttributeError</code>). هذا مفيد جداً في الكلاسات التي تنشئ آلاف أو ملايين النسخ مثل تمثيل البيانات في machine learning أو معالجة datasets ضخمة. مع ذلك، <code>__slots__</code> له تكلفة: لا يمكن استخدامه مع الوراثة بسهولة (يجب تعريفه في كل كلاس ابن)، وقد تتعطل بعض الأدوات التي تعتمد على <code>__dict__</code>.</p></div>
+
+
+    <h2 class="section-title">9. مبادئ SOLID في OOP - مع أمثلة عملية</h2>
+    <p>SOLID هي خمس مبادئ أساسية لكتابة كود كائني قابل للصيانة والتوسع. إليك كل مبدأ مع مثال عملي:</p>
+
+    <h3 class="subsection-title">S - Single Responsibility Principle (SRP)</h3>
+    <p>كل Class يجب أن يكون له سبب واحد فقط للتغيير (مسؤولية واحدة):</p>
+    <div class="code-block">
+<span class="cm"># قبل - مخالف لـ SRP: كلاس واحد يفعل كل شيء</span>
+<span class="kw">class</span> <span class="fn">Report</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, data):
+        <span class="kw">self</span>.data = data
+    <span class="kw">def</span> <span class="fn">generate</span>(<span class="kw">self</span>): ...
+    <span class="kw">def</span> <span class="fn">save_to_db</span>(<span class="kw">self</span>): ...   <span class="cm"># مسئولية زائدة</span>
+    <span class="kw">def</span> <span class="fn">send_email</span>(<span class="kw">self</span>): ...    <span class="cm"># مسئولية زائدة</span>
+
+<span class="cm"># بعد - كل class له مسئولية واحدة</span>
+<span class="kw">class</span> <span class="fn">ReportGenerator</span>:
+    <span class="kw">def</span> <span class="fn">generate</span>(<span class="kw">self</span>, data): ...
+
+<span class="kw">class</span> <span class="fn">ReportRepository</span>:
+    <span class="kw">def</span> <span class="fn">save</span>(<span class="kw">self</span>, report): ...
+
+<span class="kw">class</span> <span class="fn">EmailService</span>:
+    <span class="kw">def</span> <span class="fn">send</span>(<span class="kw">self</span>, report, recipient): ...
+    </div>
+
+<div class="explanation-box"><strong>🔍 S - مبدأ المسؤولية الواحدة (SRP)</strong><p>يقول المبدأ: "يجب أن يكون لكل كلاس سبب واحد فقط للتغيير". قبل التطبيق، كلاس <code>Report</code> يتحمل مسؤوليات متعددة: إنشاء التقرير، حفظه في قاعدة البيانات، وإرساله عبر البريد. هذا يعني أن أي تغيير في سياسة الحفظ أو الإرسال سيؤدي لتعديل نفس الكلاس. بعد التطبيق، فصلنا المسؤوليات إلى ثلاث كلاسات متخصصة: <code>ReportGenerator</code> للإنشاء، <code>ReportRepository</code> للحفظ، و <code>EmailService</code> للإرسال. فوائد هذا الفصل: سهولة الاختبار (يمكن اختبار كل كلاس بمفرده)، سهولة التعديل (تغيير طريقة الحفظ لا يؤثر على منطق الإنشاء)، وإعادة الاستخدام (يمكن استخدام <code>EmailService</code> مع أنواع تقارير أخرى).</p></div>
+
+    <h3 class="subsection-title">O - Open/Closed Principle (OCP)</h3>
+    <p>مفتوح للامتداد (extension) ومغلق للتعديل (modification). استخدم الوراثة والتركيب بدلاً من تغيير الكود الموجود:</p>
+    <div class="code-block">
+<span class="cm"># قبل - تعديل الكود كلما أضفنا shape جديد</span>
+<span class="kw">class</span> <span class="fn">AreaCalculator</span>:
+    <span class="kw">def</span> <span class="fn">calculate</span>(<span class="kw">self</span>, shapes):
+        total = <span class="num">0</span>
+        <span class="kw">for</span> shape <span class="kw">in</span> shapes:
+            <span class="kw">if</span> <span class="bu">isinstance</span>(shape, Circle):
+                total += <span class="num">3.14</span> * shape.radius ** <span class="num">2</span>
+            <span class="kw">elif</span> <span class="bu">isinstance</span>(shape, Square):
+                total += shape.side ** <span class="num">2</span>
+        <span class="kw">return</span> total
+
+<span class="cm"># بعد - مفتوح للامتداد عبر abstractmethod</span>
+<span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+
+<span class="kw">class</span> <span class="fn">Shape</span>(ABC):
+    <span class="nd">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">Circle</span>(Shape):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, radius): <span class="kw">self</span>.radius = radius
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="num">3.14</span> * <span class="kw">self</span>.radius ** <span class="num">2</span>
+
+<span class="kw">class</span> <span class="fn">Square</span>(Shape):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, side): <span class="kw">self</span>.side = side
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>.side ** <span class="num">2</span>
+
+<span class="cm"># AreaCalculator لم يتغير! أي Shape جديد يضاف بدون تعديله</span>
+<span class="kw">class</span> <span class="fn">AreaCalculator</span>:
+    <span class="kw">def</span> <span class="fn">calculate</span>(<span class="kw">self</span>, shapes):
+        <span class="kw">return</span> <span class="bu">sum</span>(shape.<span class="fn">area</span>() <span class="kw">for</span> shape <span class="kw">in</span> shapes)
+    </div>
+
+<div class="explanation-box"><strong>🔍 O - مبدأ الـ Open/Closed (OCP)</strong><p>مبدأ OCP يقول: "مفتوح للامتداد، مغلق للتعديل". قبل التطبيق، كلما أضفنا شكلاً هندسياً جديداً، نضطر لتعديل <code>AreaCalculator</code> وإضافة <code>elif</code> جديد - هذا يخالف OCP. بعد التطبيق، استخدمنا <code>Shape</code> كـ abstract base class مع <code>@abstractmethod area()</code>. أي شكل جديد يرث من <code>Shape</code> ويطبق <code>area()</code> بدون أي تعديل على <code>AreaCalculator</code>. الامتداد يحدث عبر إنشاء كلاسات جديدة، وليس بتعديل كلاس موجود. هذا هو power of polymorphism: <code>calculate</code> يستخدم <code>shape.area()</code> ولا يهتم بنوع الشكل.</p></div>
+
+    <h3 class="subsection-title">L - Liskov Substitution Principle (LSP)</h3>
+    <p>الكائنات المشتقة يجب أن تحل محل الكائنات الأساسية دون تغيير في صحة البرنامج. المربع ليس مستطيلاً في OOP:</p>
+    <div class="code-block">
+<span class="cm"># قبل - Rectangle له setter منفصل لكل بُعد، Square يكسره!</span>
+<span class="kw">class</span> <span class="fn">Rectangle</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, w, h): <span class="kw">self</span>._w, <span class="kw">self</span>._h = w, h
+    <span class="kw">def</span> <span class="fn">set_width</span>(<span class="kw">self</span>, w): <span class="kw">self</span>._w = w
+    <span class="kw">def</span> <span class="fn">set_height</span>(<span class="kw">self</span>, h): <span class="kw">self</span>._h = h
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>._w * <span class="kw">self</span>._h
+
+<span class="kw">class</span> <span class="fn">Square</span>(Rectangle):  <span class="cm"># LSP Violation!</span>
+    <span class="kw">def</span> <span class="fn">set_width</span>(<span class="kw">self</span>, w):
+        <span class="kw">self</span>._w = <span class="kw">self</span>._h = w
+    <span class="kw">def</span> <span class="fn">set_height</span>(<span class="kw">self</span>, h):
+        <span class="kw">self</span>._w = <span class="kw">self</span>._h = h
+
+<span class="cm"># استخدام: الكود يفترض أن تغيير width لا يؤثر على height</span>
+<span class="kw">def</span> <span class="fn">test_area</span>(rect):
+    rect.<span class="fn">set_width</span>(<span class="num">5</span>)
+    rect.<span class="fn">set_height</span>(<span class="num">4</span>)
+    <span class="kw">assert</span> rect.<span class="fn">area</span>() == <span class="num">20</span>  <span class="cm"># Square: 4*4=16! فشل!</span>
+
+<span class="cm"># بعد - استخدام Abstract Class مشترك</span>
+<span class="kw">class</span> <span class="fn">Shape</span>(ABC):
+    <span class="nd">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">Rectangle</span>(Shape):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, w, h): <span class="kw">self</span>.w, <span class="kw">self</span>.h = w, h
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>.w * <span class="kw">self</span>.h
+
+<span class="kw">class</span> <span class="fn">Square</span>(Shape):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, side): <span class="kw">self</span>.side = side
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>.side ** <span class="num">2</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Abstract Base Classes (ABC) وفرض الواجهات</strong><p>ABCs تسمح لك بتعريف واجهات (interfaces) تجبر الكلاسات المشتقة على تنفيذ ميثودز محددة. الميثودز المزينة بـ <code>@abstractmethod</code> يجب أن تُنفذ في أي كلاس غير abstract يرث من <code>Shape</code>. إذا حاولت إنشاء كائن من <code>Shape</code> مباشرة، ستحصل على <code>TypeError</code>. يمكن أيضاً استخدام <code>@abstractmethod</code> مع <code>@property</code> كما في <code>description</code> لفرض تنفيذ خصائص معينة. هذا يضمن أن كل الأشكال الهندسية ستوفر واجهة موحدة (<code>area</code>, <code>perimeter</code>, <code>description</code>) مع تنفيذ مختلف لكل منها.</p></div>
+
+    <h3 class="subsection-title">I - Interface Segregation Principle (ISP)</h3>
+    <p>الواجهات المتخصصة أفضل من واجهة عامة واحدة. لا تجبر الكلاسات على تنفيذ methods لا تحتاجها:</p>
+    <div class="code-block">
+<span class="cm"># قبل - واجهة عامة تفرض methods غير مرغوب فيها</span>
+<span class="kw">class</span> <span class="fn">Worker</span>(ABC):
+    <span class="nd">@abstractmethod</span> <span class="kw">def</span> <span class="fn">work</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+    <span class="nd">@abstractmethod</span> <span class="kw">def</span> <span class="fn">eat</span>(<span class="kw">self</span>): <span class="kw">pass</span>  <span class="cm"># Robot لا يأكل!</span>
+
+<span class="kw">class</span> <span class="fn">Robot</span>(Worker):  <span class="cm"># مجبر على تنفيذ eat!</span>
+    <span class="kw">def</span> <span class="fn">work</span>(<span class="kw">self</span>): ...
+    <span class="kw">def</span> <span class="fn">eat</span>(<span class="kw">self</span>): <span class="kw">raise</span> NotImplementedError(<span class="str">'Robots do not eat'</span>)
+
+<span class="cm"># بعد - واجهات متخصصة</span>
+<span class="kw">class</span> <span class="fn">Workable</span>(ABC):
+    <span class="nd">@abstractmethod</span> <span class="kw">def</span> <span class="fn">work</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">Eatable</span>(ABC):
+    <span class="nd">@abstractmethod</span> <span class="kw">def</span> <span class="fn">eat</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">Human</span>(Workable, Eatable): ...
+<span class="kw">class</span> <span class="fn">Robot</span>(Workable): ...
+    </div>
+
+<div class="explanation-box"><strong>🔍 I - مبدأ فصل الواجهات (ISP)</strong><p>مبدأ ISP يقول: "لا تجبر العميل على الاعتماد على واجهات لا يستخدمها". قبل التطبيق، <code>Worker</code> يحتوي على <code>eat</code> و <code>work</code>. كلاس <code>Robot</code> يضطر لتنفيذ <code>eat()</code> رغم أن الروبوتات لا تأكل، مما يسبب <code>NotImplementedError</code>. بعد التطبيق، فصلنا الواجهات إلى <code>Workable</code> و <code>Eatable</code>. <code>Robot</code> يطبق فقط <code>Workable</code>، بينما <code>Human</code> يطبق كليهما. هذا يجعل الكود أكثر مرونة ويتبع مبدأ "مسؤولية واحدة" على مستوى الواجهات.</p></div>
+
+    <h3 class="subsection-title">D - Dependency Inversion Principle (DIP)</h3>
+    <p>اعتمد على التجريد (Abstract) لا على التنفيذ (Concrete). الكلاسات عالية المستوى لا تعتمد على كلاسات منخفضة المستوى:</p>
+    <div class="code-block">
+<span class="cm"># قبل - اعتماد مباشر على MySQLDatabase</span>
+<span class="kw">class</span> <span class="fn">UserService</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.db = MySQLDatabase()  <span class="cm"># اقتران قوي!</span>
+
+<span class="cm"># بعد - الاعتماد على التجريد (Dependency Injection)</span>
+<span class="kw">class</span> <span class="fn">Database</span>(ABC):
+    <span class="nd">@abstractmethod</span> <span class="kw">def</span> <span class="fn">save</span>(<span class="kw">self</span>, data): <span class="kw">pass</span>
+    <span class="nd">@abstractmethod</span> <span class="kw">def</span> <span class="fn">find</span>(<span class="kw">self</span>, id): <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">PostgreSQLDatabase</span>(Database):
+    <span class="kw">def</span> <span class="fn">save</span>(<span class="kw">self</span>, data): <span class="bu">print</span>(<span class="str">'PostgreSQL: saving...'</span>)
+    <span class="kw">def</span> <span class="fn">find</span>(<span class="kw">self</span>, id): ...
+
+<span class="kw">class</span> <span class="fn">MongoDatabase</span>(Database):
+    <span class="kw">def</span> <span class="fn">save</span>(<span class="kw">self</span>, data): <span class="bu">print</span>(<span class="str">'MongoDB: saving...'</span>)
+    <span class="kw">def</span> <span class="fn">find</span>(<span class="kw">self</span>, id): ...
+
+<span class="kw">class</span> <span class="fn">UserService</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, db: Database):  <span class="cm"># يعتمد على التجريد!</span>
+        <span class="kw">self</span>.db = db
+
+<span class="cm"># يمكن تبديل قاعدة البيانات دون تغيير UserService!</span>
+service = UserService(PostgreSQLDatabase())
+service2 = UserService(MongoDatabase())
+    </div>
+
+    <div class="explanation-box"><strong>🔍 D - مبدأ عكس التبعيات (DIP)</strong><p>مبدأ DIP يقول: "اعتمد على التجريدات، وليس على التنفيذات الملموسة". قبل التطبيق، <code>UserService</code> يعتمد مباشرة على <code>MySQLDatabase</code> (اقتران قوي). لتغيير قاعدة البيانات، يجب تعديل <code>UserService</code>. بعد التطبيق، عرّفنا <code>Database</code> كـ ABC وأصبح <code>UserService</code> يعتمد على التجريد. يمكننا الآن تمرير أي نوع قاعدة بيانات (<code>PostgreSQLDatabase</code>, <code>MongoDatabase</code>) بدون تغيير <code>UserService</code>. هذا هو Dependency Injection: حقن التبعيات من الخارج يقلل الاقتران ويسهل الاختبار.</p></div>
+
+    <h2 class="section-title">10. Metaclasses - كلاسات تصنع الكلاسات</h2>
+    <p>Metaclass هو "كلاس الكلاس". تماماً كما أن الكلاس يصنع الكائنات، الـ metaclass يصنع الكلاسات. في بايثون، النوع الافتراضي لـ metaclass هو <span class="inline-code">type</span>:</p>
+
+    <div class="code-block">
+<span class="cm"># type() كـ metaclass</span>
+MyClass = <span class="bu">type</span>(<span class="str">'MyClass'</span>, (BaseClass,), {<span class="str">'attr'</span>: <span class="num">1</span>})
+<span class="cm"># يساوي تماماً:</span>
+<span class="kw">class</span> <span class="fn">MyClass</span>(BaseClass):
+    attr = <span class="num">1</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Metaclasses - type() كمنشئ للكلاسات</strong><p>في بايثون، الكلاسات نفسها هي كائنات من نوع <code>type</code>. العبارة <code>type('MyClass', (BaseClass,), {'attr': 1})</code> تنشئ كلاساً جديداً ديناميكياً بنفس الطريقة التي يعمل بها تعريف <code>class</code>. هذا يعني أن <code>type</code> هو metaclass افتراضي لجميع الكلاسات. metaclass هو "كلاس الكلاس": يتحكم في كيفية إنشاء الكلاسات وتصرفها. فهم هذا المفهوم يفتح الباب لتقنيات متقدمة مثل إنشاء APIs ديناميكية (مثل SQLAlchemy و Django ORM) وتعديل سلوك الكلاسات بشكل آلي.</p></div>
+
+    <h3 class="subsection-title">متى تحتاج Metaclass؟</h3>
+    <ul>
+      <li>تريد تعديل سلوك إنشاء الكلاس نفسه (وليس الكائنات)</li>
+      <li>تريد فرض واجهات أو قواعد في كل الكلاسات في نظامك</li>
+      <li>تريد تسجيل/توثيق كل الكلاسات التي تنشأ (مثل ORM: SQLAlchemy, Django)</li>
+      <li>تريد تحويل attributes تلقائياً (مثل dataclasses)</li>
+    </ul>
+
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">SingletonMeta</span>(<span class="bu">type</span>):
+    _instances = {}
+    <span class="kw">def</span> <span class="fn">__call__</span>(<span class="kw">cls</span>, *args, **kwargs):
+        <span class="kw">if</span> cls <span class="kw">not</span> <span class="kw">in</span> <span class="kw">cls</span>._instances:
+            <span class="kw">cls</span>._instances[cls] = <span class="bu">super</span>().<span class="fn">__call__</span>(*args, **kwargs)
+        <span class="kw">return</span> <span class="kw">cls</span>._instances[cls]
+
+<span class="kw">class</span> <span class="fn">Database</span>(metaclass=SingletonMeta):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="bu">print</span>(<span class="str">'Connection established'</span>)
+
+db1 = Database()  <span class="cm"># Connection established</span>
+db2 = Database()  <span class="cm"># لا يطبع - نفس النسخة!</span>
+<span class="bu">print</span>(db1 <span class="kw">is</span> db2)  <span class="cm"># True</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Metaclass Singleton - التحكم في إنشاء النسخ</strong><p>هذا metaclass يطبق نمط Singleton عبر override <code>__call__</code> في الـ metaclass. الفرق عن class decorator أن metaclass يحافظ على نوع الكائن (type identity). <code>__call__</code> في metaclass يُستدعى عند إنشاء كائن من الكلاس (<code>Database()</code>). يتحقق أولاً إذا كان هناك نسخة موجودة، وإلا ينشئ واحدة عبر <code>super().__call__()</code>. هذا يضمن نسخة واحدة لكل كلاس يستخدم هذا metaclass. هذه الطريقة هي الأفضل للـ singleton عندما تحتاج الوراثة أو الحفاظ على typing صحيح.</p></div>
+
+    <div class="code-block">
+<span class="cm"># Metaclass لإضافة prefix تلقائي لطرق الكلاس</span>
+<span class="kw">class</span> <span class="fn">PrefixMeta</span>(<span class="bu">type</span>):
+    <span class="kw">def</span> <span class="fn">__new__</span>(<span class="kw">cls</span>, name, bases, namespace):
+        <span class="cm"># namespace هو dict لكل attributes الكلاس</span>
+        prefix = namespace.<span class="fn">get</span>(<span class="str">'prefix'</span>, <span class="str">''</span>)
+        new_namespace = {}
+        <span class="kw">for</span> key, value <span class="kw">in</span> namespace.<span class="fn">items</span>():
+            <span class="kw">if</span> <span class="bu">callable</span>(value) <span class="kw">and</span> <span class="kw">not</span> key.<span class="fn">startswith</span>(<span class="str">'__'</span>):
+                new_namespace[prefix + key] = value
+            <span class="kw">else</span>:
+                new_namespace[key] = value
+        <span class="kw">return</span> <span class="bu">super</span>().<span class="fn">__new__</span>(cls, name, bases, new_namespace)
+
+<span class="kw">class</span> <span class="fn">APIEndpoints</span>(metaclass=PrefixMeta):
+    prefix = <span class="str">'api_'</span>
+    <span class="kw">def</span> <span class="fn">get_user</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+    <span class="kw">def</span> <span class="fn">create_post</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+
+api = APIEndpoints()
+api.<span class="fn">api_get_user</span>()     <span class="cm"># method name changed!</span>
+api.<span class="fn">api_create_post</span>()  <span class="cm"># method name changed!</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Metaclass لتعديل Namespace</strong><p>هذا metaclass يعدّل محتوى الكلاس عند إنشائه بإضافة prefix (<code>api_</code>) لأسماء الميثودز. <code>__new__</code> في metaclass يستقبل <code>namespace</code> (قاموس خصائص الكلاس) قبل إنشاء الكلاس. نمر عليه ونضيف البادئة لكل ميثود غير خاص (لا يبدأ بـ <code>__</code>). هذا النوع من المعالجة التلقائية هو أساس أطر العمل مثل Django و SQLAlchemy حيث يتم تحويل تعريفات الكلاسات إلى جداول قاعدة بيانات أو نماذج. metaclasses تمنحك القدرة على "برمجة" كيفية تعريف الكلاسات نفسها.</p></div>
+
+    <h2 class="section-title">11. Descriptors - تحكم كامل في الخصائص</h2>
+    <p>Descriptor هو أي كائن يطبق أحد هذه الميثودز: <span class="inline-code">__get__</span>, <span class="inline-code">__set__</span>, <span class="inline-code">__delete__</span>. بايثون تستخدمهم في <span class="inline-code">@property</span>, <span class="inline-code">@classmethod</span>, <span class="inline-code">@staticmethod</span>.</p>
+
+    <h3 class="subsection-title">Data vs Non-Data Descriptors</h3>
+    <div class="code-block">
+<span class="cm"># Non-data descriptor (فقط __get__) - أقل أولوية من instance dict</span>
+<span class="kw">class</span> <span class="fn">NonDataDescriptor</span>:
+    <span class="kw">def</span> <span class="fn">__get__</span>(<span class="kw">self</span>, instance, owner):
+        <span class="kw">return</span> <span class="str">'from descriptor'</span>
+
+<span class="cm"># Data descriptor (__get__ + __set__) - أولوية أعلى من instance dict</span>
+<span class="kw">class</span> <span class="fn">DataDescriptor</span>:
+    <span class="kw">def</span> <span class="fn">__get__</span>(<span class="kw">self</span>, instance, owner):
+        <span class="kw">return</span> <span class="kw">getattr</span>(instance, <span class="str">'_val'</span>, <span class="str">'default'</span>)
+    <span class="kw">def</span> <span class="fn">__set__</span>(<span class="kw">self</span>, instance, value):
+        <span class="bu">setattr</span>(instance, <span class="str">'_val'</span>, value)
+
+<span class="kw">class</span> <span class="fn">Test</span>:
+    nd = NonDataDescriptor()
+    d = DataDescriptor()
+
+t = Test()
+t.nd = <span class="str">'instance value'</span>
+t.d = <span class="str">'instance value'</span>
+<span class="bu">print</span>(t.nd)  <span class="cm"># 'instance value' (instance dict يفوق non-data desc)</span>
+<span class="bu">print</span>(t.d)   <span class="cm"># 'default' (data desc يفوق instance dict!)</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Data vs Non-Data Descriptors</strong><p>الفرق بين data descriptor (يملك <code>__set__</code> أو <code>__delete__</code>) و non-data descriptor (يملك <code>__get__</code> فقط) يحدد أولوية الوصول. Data descriptor له أولوية أعلى من <code>__dict__</code> الخاص بالكائن (instance dict). هذا يفسر لماذا <code>t.d = 'instance value'</code> لا يتجاوز <code>DataDescriptor</code> (لا يزال <code>t.d</code> يعيد القيمة من descriptor). أما non-data descriptor فأولوته أقل من instance dict، لذلك <code>t.nd = 'instance value'</code> يتجاوزه. هذا التمييز مهم جداً في فهم كيفية عمل <code>@property</code> و <code>@classmethod</code> و <code>@staticmethod</code>.</p></div>
+
+    <h3 class="subsection-title">property() باستخدام Descriptor Protocol</h3>
+    <div class="code-block">
+<span class="cm"># تنفيذ property() من الصفر باستخدام descriptors</span>
+<span class="kw">class</span> <span class="fn">Property</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, fget=<span class="kw">None</span>, fset=<span class="kw">None</span>, fdel=<span class="kw">None</span>):
+        <span class="kw">self</span>.fget = fget; <span class="kw">self</span>.fset = fset; <span class="kw">self</span>.fdel = fdel
+
+    <span class="kw">def</span> <span class="fn">__get__</span>(<span class="kw">self</span>, instance, owner):
+        <span class="kw">if</span> instance <span class="kw">is</span> <span class="kw">None</span>: <span class="kw">return</span> <span class="kw">self</span>
+        <span class="kw">return</span> <span class="kw">self</span>.fget(instance)
+
+    <span class="kw">def</span> <span class="fn">__set__</span>(<span class="kw">self</span>, instance, value):
+        <span class="kw">if</span> <span class="kw">self</span>.fset <span class="kw">is</span> <span class="kw">None</span>:
+            <span class="kw">raise</span> AttributeError(<span class="str">"can't set attribute"</span>)
+        <span class="kw">self</span>.fset(instance, value)
+
+    <span class="kw">def</span> <span class="fn">setter</span>(<span class="kw">self</span>, fset):
+        <span class="kw">return</span> Property(<span class="kw">self</span>.fget, fset, <span class="kw">self</span>.fdel)
+
+<span class="kw">class</span> <span class="fn">Person</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name):
+        <span class="kw">self</span>._name = name
+
+    <span class="nd">@Property</span>
+    <span class="kw">def</span> <span class="fn">name</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="kw">self</span>._name
+
+    <span class="nd">@name.setter</span>
+    <span class="kw">def</span> <span class="fn">name</span>(<span class="kw">self</span>, value):
+        <span class="kw">if</span> <span class="kw">not</span> value: <span class="kw">raise</span> ValueError(<span class="str">'Name required'</span>)
+        <span class="kw">self</span>._name = value
+    </div>
+
+<div class="explanation-box"><strong>🔍 تنفيذ @property من الصفر باستخدام Descriptors</strong><p>هذا مثال متقدم يوضح كيفية بناء آلية <code>@property</code> بنفسك باستخدام descriptor protocol. كلاس <code>Property</code> يخزن الدوال <code>fget</code>، <code>fset</code>، <code>fdel</code> التي تمثل getter و setter و deleter. <code>__get__</code> يستدعي <code>self.fget(instance)</code>، <code>__set__</code> يستدعي <code>self.fset(instance, value)</code> مع التحقق من وجوده. الميثود <code>setter</code> يعيد كائن <code>Property</code> جديداً مع <code>fset</code> المحدد. هذا يشرح كيف يعمل <code>@property</code> داخلياً: هو مجرد data descriptor يوفر sugary syntax للـ getter/setter pattern.</p></div>
+
+
+    <h2 class="section-title">12. Context Managers - إدارة الموارد باحترافية</h2>
+    <p>Context Managers تدير الموارد (ملفات، اتصالات قاعدة بيانات، locks) وتضمن تحريرها حتى مع حدوث أخطاء:</p>
+
+    <h3 class="subsection-title">طريقتان للتنفيذ</h3>
+    <div class="code-block">
+<span class="cm"># الطريقة 1: كلاس مع __enter__ و __exit__</span>
+<span class="kw">class</span> <span class="fn">DatabaseConnection</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, dsn):
+        <span class="kw">self</span>.dsn = dsn
+
+    <span class="kw">def</span> <span class="fn">__enter__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.conn = <span class="fn">connect</span>(<span class="kw">self</span>.dsn)
+        <span class="kw">return</span> <span class="kw">self</span>.conn
+
+    <span class="kw">def</span> <span class="fn">__exit__</span>(<span class="kw">self</span>, exc_type, exc_val, exc_tb):
+        <span class="kw">self</span>.conn.close()
+        <span class="kw">if</span> exc_type:  <span class="cm"># حدث خطأ</span>
+            <span class="bu">print</span>(<span class="str">f'Error: {exc_val}'</span>)
+        <span class="kw">return</span> <span class="kw">False</span>  <span class="cm"># لا تمنع انتشار الخطأ (True تمنعه)</span>
+
+<span class="cm"># الطريقة 2: contextmanager decorator مع generator</span>
+<span class="kw">from</span> contextlib <span class="kw">import</span> contextmanager
+
+<span class="nd">@contextmanager</span>
+<span class="kw">def</span> <span class="fn">database_connection</span>(dsn):
+    <span class="bu">print</span>(<span class="str">'Connecting...'</span>)
+    conn = <span class="fn">connect</span>(dsn)
+    <span class="kw">try</span>:
+        <span class="kw">yield</span> conn  <span class="cm"># ما قبل yield = __enter__, ما بعد = __exit__</span>
+    <span class="kw">finally</span>:
+        conn.close()
+        <span class="bu">print</span>(<span class="str">'Connection closed'</span>)
+
+<span class="cm"># الاستخدام (نفس الشيء للطريقتين)</span>
+<span class="kw">with</span> <span class="fn">DatabaseConnection</span>(<span class="str">'postgresql://...'</span>) <span class="kw">as</span> conn:
+    conn.<span class="fn">execute</span>(<span class="str">'SELECT * FROM users'</span>)
+    </div>
+
+<div class="explanation-box"><strong>🔍 Context Managers - طريقتان للتنفيذ</strong><p>(1) عبر كلاس مع <code>__enter__</code> و <code>__exit__</code>: مناسب لـ context managers معقدة تحتاج حالة (state). (2) عبر <code>@contextmanager</code> مع generator: أبسط وأنسب للحالات البسيطة. في الطريقة الأولى، نتحكم بالدخول والخروج بشكل صريح. في الطريقة الثانية، <code>yield</code> يفصل بين ما ينفذ عند الدخول (قبل yield) وعند الخروج (بعد yield). كتلة <code>finally</code> تضمن التنظيف حتى مع الاستثناءات. كلا الطريقتين متكافئتان، اختر حسب التعقيد.</p></div>
+
+    <h3 class="subsection-title">contextlib.nested و ExitStack</h3>
+    <div class="code-block">
+<span class="kw">from</span> contextlib <span class="kw">import</span> ExitStack
+
+<span class="cm"># إدارة موارد متعددة ديناميكياً</span>
+<span class="kw">def</span> <span class="fn">process_files</span>(filenames):
+    <span class="kw">with</span> ExitStack() <span class="kw">as</span> stack:
+        files = [stack.<span class="fn">enter_context</span>(<span class="bu">open</span>(f)) <span class="kw">for</span> f <span class="kw">in</span> filenames]
+        <span class="cm"># كل الملفات ستُغلق تلقائياً عند الخروج من with</span>
+        <span class="kw">return</span> [f.<span class="fn">read</span>() <span class="kw">for</span> f <span class="kw">in</span> files]
+    </div>
+
+<div class="explanation-box"><strong>🔍 ExitStack - إدارة موارد متعددة ديناميكياً</strong><p><code>ExitStack</code> يسمح بإدارة عدد متغير من الموارد داخل <code>with</code>. كل مورد يُضاف عبر <code>stack.enter_context()</code> سيتم تنظيفه تلقائياً عند الخروج من <code>with</code> بترتيب عكسي (LIFO). هذا مفيد جداً عندما لا تعرف عدد الموارد مسبقاً (مثل قائمة ملفات). ExitStack يتعامل مع الاستثناءات بشكل صحيح: إذا فشل فتح ملف، سيتم إغلاق الملفات التي فتحت قبله. هذه أداة متقدمة من <code>contextlib</code> يجب أن يعرفها كل مطور بايثون محترف.</p></div>
+
+    <div class="note"><strong>نصيحة أداء:</strong> استخدم <span class="inline-code">contextlib.contextmanager</span> للـ context managers البسيطة، واستخدم class للـ complex ones التي تحتاج حالة معقدة.</div>
+
+    <h2 class="section-title">13. Composition - التركيب (Has-A) بدل الوراثة (Is-A)</h2>
+    <p>الـ Composition يعني "الكائن يحتوي على كائن آخر" بدلاً من "الكائن هو نوع من كائن آخر". هذه قاعدة ذهبية: <strong>"فضّل التركيب على الوراثة" (Favor Composition over Inheritance)</strong>:</p>
+
+    <div class="code-block">
+<span class="cm"># قبل - وراثة (Is-A): مرتبطة بقوة، يصعب تغييرها</span>
+<span class="kw">class</span> <span class="fn">Car</span>:
+    <span class="kw">def</span> <span class="fn">start</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'Starting...'</span>
+
+<span class="kw">class</span> <span class="fn">ElectricCar</span>(Car):  <span class="cm"># Is-A Car - لكن هل هذا دقيق؟</span>
+    <span class="kw">def</span> <span class="fn">start</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'Starting silently...'</span>
+
+<span class="kw">class</span> <span class="fn">FlyingCar</span>(Car):    <span class="cm"># Is-A Car + can fly</span>
+    <span class="kw">def</span> <span class="fn">start</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'Starting with wings...'</span>
+
+<span class="cm"># بعد - Composition (Has-A): مرن، كل جزء مستقل</span>
+<span class="kw">class</span> <span class="fn">Engine</span>:
+    <span class="kw">def</span> <span class="fn">start</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'Engine started'</span>
+
+<span class="kw">class</span> <span class="fn">ElectricMotor</span>:
+    <span class="kw">def</span> <span class="fn">start</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'Motor running silently'</span>
+
+<span class="kw">class</span> <span class="fn">Wings</span>:
+    <span class="kw">def</span> <span class="fn">deploy</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'Wings deployed'</span>
+
+<span class="kw">class</span> <span class="fn">Car</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, engine: Engine):  <span class="cm"># Has-A Engine</span>
+        <span class="kw">self</span>.engine = engine
+
+<span class="cm"># نركب المكونات حسب الحاجة - بدون كلاسات كثيرة!</span>
+gas_car = Car(Engine())
+electric_car = Car(ElectricMotor())
+flying_car = Car(Engine())
+flying_car.wings = Wings()  <span class="cm"># نضيف مكون إضافي</span>
+
+<span class="bu">print</span>(gas_car.engine.<span class="fn">start</span>())       <span class="cm"># Engine started</span>
+<span class="bu">print</span>(electric_car.engine.<span class="fn">start</span>())  <span class="cm"># Motor running silently</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Composition (Has-A) - التركيب بدل الوراثة</strong><p>الـ Composition يعني "الكائن يحتوي على كائن آخر" بدلاً من "الكائن هو نوع من كائن آخر". كلاس <code>Car</code> يحتوي على <code>Engine</code> (أو <code>ElectricMotor</code>) بدلاً من أن يكون نوعاً خاصاً من السيارة لكل محرك. الميزة: يمكن تركيب المكونات حسب الحاجة. تريد سيارة كهربائية؟ استخدم <code>Car(ElectricMotor())</code>. تريد إضافة أجنحة؟ <code>flying_car.wings = Wings()</code>. هذا أكثر مرونة من هرم وراثي معقد. القاعدة: "فضّل التركيب على الوراثة" (Favor Composition over Inheritance).</p></div>
+
+
+    <h3 class="subsection-title">Dependency Injection - حقن التبعيات (DI)</h3>
+    <p>DI هو تطبيق عملي لـ Composition: تمرير dependencies من الخارج بدلاً من إنشائها داخلياً:</p>
+
+    <div class="code-block">
+<span class="cm"># بدون DI - الكلاس يخلق dependencies بنفسه (اقتران قوي)</span>
+<span class="kw">class</span> <span class="fn">OrderService</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.logger = FileLogger()    <span class="cm"># مقرون بـ FileLogger!</span>
+        <span class="kw">self</span>.email = SendGridEmail()  <span class="cm"># مقرون بـ SendGrid!</span>
+
+<span class="cm"># مع DI - نمرر dependencies (اقتران ضعيف)</span>
+<span class="kw">class</span> <span class="fn">OrderService</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, logger, email_service):
+        <span class="kw">self</span>.logger = logger           <span class="cm"># أي Logger!</span>
+        <span class="kw">self</span>.email = email_service     <span class="cm"># أي EmailService!</span>
+
+<span class="cm"># يمكننا تبديل أي مكون بسهولة</span>
+service = OrderService(ConsoleLogger(), SMTPEmail())
+test_service = OrderService(MockLogger(), MockEmail())  <span class="cm"># للاختبارات</span>
+    </div>
+
+    <div class="explanation-box"><strong>🔍 Dependency Injection - حقن التبعيات</strong><p>بدون DI، الكلاس يخلق dependencies بنفسه (<code>FileLogger()</code>، <code>SendGridEmail()</code>) مما يسبب اقتراناً قوياً ويصعب الاختبار. مع DI، نمرر dependencies عبر constructor. هذا يسمح بتبديل أي مكون بسهولة: استخدم <code>ConsoleLogger</code> في التطوير، <code>FileLogger</code> في الإنتاج، و <code>MockLogger</code> في الاختبارات. DI هو تطبيق عملي لمبدأ DIP (Dependency Inversion). أطر العمل مثل <code>dependency_injector</code> و FastAPI تستخدم DI بشكل مكثف.</p></div>
+
+    <div class="note"><strong>قاعدة عامة:</strong> إذا احتجت 3+ مستويات وراثة، فتوقف وفكر في Composition بدلاً من ذلك. التركيب يجعل الكود أسهل للاختبار والصيانة.</div>
+
+    <h2 class="section-title">14. Design Patterns - أنماط التصميم في بايثون</h2>
+    <p>أنماط التصميم (Design Patterns) هي حلول قابلة لإعادة الاستخدام لمشاكل شائعة في البرمجة. إليك أهم الأنماط في سياق بايثون:</p>
+
+    <h3 class="subsection-title">Factory Method & Abstract Factory - المصنع البسيط والمجرد</h3>
+    <div class="code-block">
+<span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+
+<span class="cm"># Factory Method البسيط</span>
+<span class="kw">class</span> <span class="fn">PaymentGateway</span>(ABC):
+    <span class="nd">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">charge</span>(<span class="kw">self</span>, amount): <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">StripeGateway</span>(PaymentGateway):
+    <span class="kw">def</span> <span class="fn">charge</span>(<span class="kw">self</span>, amount):
+        <span class="bu">print</span>(<span class="str">f'Stripe: charging ${amount}'</span>)
+
+<span class="kw">class</span> <span class="fn">PayPalGateway</span>(PaymentGateway):
+    <span class="kw">def</span> <span class="fn">charge</span>(<span class="kw">self</span>, amount):
+        <span class="bu">print</span>(<span class="str">f'PayPal: charging ${amount}'</span>)
+
+<span class="kw">class</span> <span class="fn">PaymentFactory</span>:
+    _gateways = {<span class="str">'stripe'</span>: StripeGateway, <span class="str">'paypal'</span>: PayPalGateway}
+
+    <span class="nd">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">create</span>(<span class="kw">cls</span>, gateway_type):
+        gateway_cls = <span class="kw">cls</span>._gateways.<span class="fn">get</span>(gateway_type)
+        <span class="kw">if</span> <span class="kw">not</span> gateway_cls:
+            <span class="kw">raise</span> ValueError(<span class="str">f'Unknown gateway: {gateway_type}'</span>)
+        <span class="kw">return</span> gateway_cls()
+
+<span class="cm"># الاستخدام</span>
+gateway = PaymentFactory.<span class="fn">create</span>(<span class="str">'stripe'</span>)
+gateway.<span class="fn">charge</span>(<span class="num">100</span>)
+    </div>
+
+<div class="explanation-box"><strong>🔍 Factory Method - نمط المصنع</strong><p>نمط Factory Method يفصل عملية إنشاء الكائنات عن استخدامها. <code>PaymentFactory</code> يقرر أي نوع من <code>PaymentGateway</code> سيتم إنشاؤه بناءً على مفتاح (<code>stripe</code> أو <code>paypal</code>). المزايا: يمكن إضافة بوابات دفع جديدة بإضافة كلاس وربطه في الـ factory دون تغيير كود العميل. <code>@classmethod</code> يجعل factory method متاحاً بدون إنشاء كائن من الـ factory. هذا النمط شائع في أنظمة الدفع والتوصيل والتنسيقات المختلفة للبيانات.</p></div>
+
+    <div class="code-block">
+<span class="cm"># Abstract Factory - مصنع ينتج عائلات كاملة من المنتجات</span>
+<span class="kw">class</span> <span class="fn">Button</span>(ABC):
+    <span class="nd">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">render</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">Checkbox</span>(ABC):
+    <span class="nd">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">render</span>(<span class="kw">self</span>): <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">WindowsButton</span>(Button):
+    <span class="kw">def</span> <span class="fn">render</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'[Windows Button]'</span>
+
+<span class="kw">class</span> <span class="fn">MacButton</span>(Button):
+    <span class="kw">def</span> <span class="fn">render</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'[Mac Button]'</span>
+
+<span class="kw">class</span> <span class="fn">WindowsCheckbox</span>(Checkbox):
+    <span class="kw">def</span> <span class="fn">render</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'[Windows Checkbox]'</span>
+
+<span class="kw">class</span> <span class="fn">MacCheckbox</span>(Checkbox):
+    <span class="kw">def</span> <span class="fn">render</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'[Mac Checkbox]'</span>
+
+<span class="kw">class</span> <span class="fn">GUIFactory</span>(ABC):  <span class="cm"># Abstract Factory</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">create_button</span>(<span class="kw">self</span>) -> Button: <span class="kw">pass</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">create_checkbox</span>(<span class="kw">self</span>) -> Checkbox: <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">WindowsFactory</span>(GUIFactory):
+    <span class="kw">def</span> <span class="fn">create_button</span>(<span class="kw">self</span>): <span class="kw">return</span> WindowsButton()
+    <span class="kw">def</span> <span class="fn">create_checkbox</span>(<span class="kw">self</span>): <span class="kw">return</span> WindowsCheckbox()
+
+<span class="kw">class</span> <span class="fn">MacFactory</span>(GUIFactory):
+    <span class="kw">def</span> <span class="fn">create_button</span>(<span class="kw">self</span>): <span class="kw">return</span> MacButton()
+    <span class="kw">def</span> <span class="fn">create_checkbox</span>(<span class="kw">self</span>): <span class="kw">return</span> MacCheckbox()
+
+<span class="cm"># استخدام Abstract Factory - نبدل المنصة كلها بسهولة</span>
+<span class="kw">def</span> <span class="fn">create_ui</span>(factory: GUIFactory):
+    btn = factory.<span class="fn">create_button</span>()
+    cb = factory.<span class="fn">create_checkbox</span>()
+    <span class="kw">return</span> [btn.<span class="fn">render</span>(), cb.<span class="fn">render</span>()]
+
+<span class="bu">print</span>(<span class="fn">create_ui</span>(WindowsFactory()))  <span class="cm"># ['[Windows Button]', '[Windows Checkbox]']</span>
+<span class="bu">print</span>(<span class="fn">create_ui</span>(MacFactory()))      <span class="cm"># ['[Mac Button]', '[Mac Checkbox]']</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Abstract Factory - مصنع ينتج عائلات كاملة</strong><p>Abstract Factory يوسّع فكرة Factory Method لينتج عائلة كاملة من المنتجات المتوافقة. <code>GUIFactory</code> يحدد واجهة لإنشاء زراير و checkboxes. <code>WindowsFactory</code> ينتج زراً و checkbox بنمط Windows، و <code>MacFactory</code> بنمط Mac. هذا يضمن أن المنتجات من نفس العائلة متوافقة (لن تحصل على زر Windows مع checkbox Mac). تغيير المنصة يتم بتغيير factory واحد. هذا النمط يستخدم في مكتبات GUI عبر المنصات مثل Qt و wxPython.</p></div>
+
+    <h3 class="subsection-title">Singleton Pattern - أنماط متعددة للتنفيذ</h3>
+    <p>Singleton يضمن وجود نسخة واحدة فقط من الكلاس. في بايثون، هناك عدة طرق:</p>
+
+    <div class="code-block">
+<span class="cm"># الطريقة 1: module-level (الأبسط - والأفضل غالباً)</span>
+<span class="cm"># في ملف database.py:</span>
+<span class="kw">class</span> <span class="fn">Database</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.connected = <span class="kw">False</span>
+    <span class="kw">def</span> <span class="fn">connect</span>(<span class="kw">self</span>): ...
+
+db = Database()  <span class="cm"># هذه النسخة الوحيدة - تستورد من أي مكان</span>
+
+<span class="cm"># الاستخدام في ملف آخر:</span>
+<span class="cm"># from database import db  # نفس النسخة دائماً!</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Singleton - نمط الوحدة الواحدة (Module-level)</strong><p>أبسط وأفضل طريقة للـ Singleton في بايثون: نسخة واحدة من الكلاس تُنشأ على مستوى module. عندما تستورد <code>from database import db</code> من أي مكان في التطبيق، تحصل على نفس النسخة. بايثون تضمن أن modules يتم تنفيذها مرة واحدة فقط (cached after first import). هذه الطريقة بسيطة، واضحة، ولا تحتاج لأي كود إضافي. مناسبة لمعظم حالات singleton مثل اتصالات قاعدة البيانات وإعدادات التطبيق (logging, configuration).</p></div>
+
+    <div class="code-block">
+<span class="cm"># الطريقة 2: __new__ Singleton (مفيد للكلاسات التي تحتاج وراثة)</span>
+<span class="kw">class</span> <span class="fn">Singleton</span>:
+    _instance = <span class="kw">None</span>
+
+    <span class="kw">def</span> <span class="fn">__new__</span>(<span class="kw">cls</span>, *args, **kwargs):
+        <span class="kw">if</span> <span class="kw">cls</span>._instance <span class="kw">is</span> <span class="kw">None</span>:
+            <span class="kw">cls</span>._instance = <span class="bu">super</span>().<span class="fn">__new__</span>(cls)
+            <span class="kw">cls</span>._instance._initialized = <span class="kw">False</span>
+        <span class="kw">return</span> <span class="kw">cls</span>._instance
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">if</span> <span class="kw">not</span> <span class="kw">self</span>._initialized:
+            <span class="bu">print</span>(<span class="str">'Initializing once'</span>)
+            <span class="kw">self</span>._initialized = <span class="kw">True</span>
+
+s1 = Singleton()  <span class="cm"># Initializing once</span>
+s2 = Singleton()  <span class="cm"># لا يطبع - نفس النسخة!</span>
+<span class="bu">print</span>(s1 <span class="kw">is</span> s2)  <span class="cm"># True</span>
+    </div>
+
+    <div class="explanation-box"><strong>🔍 Singleton عبر __new__ - التحكم في إنشاء الكائن</strong><p>هذه الطريقة تستخدم <code>__new__</code> للتحكم في إنشاء الكائن. <code>__new__</code> يُستدعى قبل <code>__init__</code> وهو المسؤول عن تخصيص الذاكرة. إذا كانت <code>_instance</code> موجودة، نعيدها دون إنشاء جديدة. العلم <code>_initialized</code> يمنع إعادة تهيئة الكائن في كل استدعاء. هذه الطريقة تحافظ على نوع الكائن (object identity) وتعمل بشكل جيد مع الوراثة. مقارنة بالطريقة module-level، تمنح تحكماً أكثر لكنها أكثر تعقيداً.</p></div>
+
+    <div class="code-block">
+<span class="cm"># الطريقة 3: Metaclass Singleton (يناسب الوراثة)</span>
+<span class="kw">class</span> <span class="fn">SingletonMeta</span>(<span class="bu">type</span>):
+    _instances = {}
+    <span class="kw">def</span> <span class="fn">__call__</span>(<span class="kw">cls</span>, *args, **kwargs):
+        <span class="kw">if</span> cls <span class="kw">not</span> <span class="kw">in</span> <span class="kw">cls</span>._instances:
+            <span class="kw">cls</span>._instances[cls] = <span class="bu">super</span>().<span class="fn">__call__</span>(*args, **kwargs)
+        <span class="kw">return</span> <span class="kw">cls</span>._instances[cls]
+
+<span class="kw">class</span> <span class="fn">Config</span>(metaclass=SingletonMeta):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="bu">print</span>(<span class="str">'Loading config...'</span>)
+
+c1 = Config()  <span class="cm"># Loading config...</span>
+c2 = Config()  <span class="cm"># لا يطبع</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Metaclass Singleton - التحكم في إنشاء النسخ</strong><p>هذا metaclass يطبق نمط Singleton عبر override <code>__call__</code> في الـ metaclass. الفرق عن class decorator أن metaclass يحافظ على نوع الكائن (type identity). <code>__call__</code> في metaclass يُستدعى عند إنشاء كائن من الكلاس (<code>Database()</code>). يتحقق أولاً إذا كان هناك نسخة موجودة، وإلا ينشئ واحدة عبر <code>super().__call__()</code>. هذا يضمن نسخة واحدة لكل كلاس يستخدم هذا metaclass. هذه الطريقة هي الأفضل للـ singleton عندما تحتاج الوراثة أو الحفاظ على typing صحيح.</p></div>
+
+    <div class="warning"><strong>⚠️ متى تتجنب Singleton:</strong> يجعل الكود مقروناً بشدة (tight coupling) ويصعب اختباره. استخدم Dependency Injection مع Composition بدلاً من Singleton كلما أمكن. Singleton مفيد حقاً فقط للـ logging, configuration, connection pools.</div>
+
+    <h3 class="subsection-title">Observer Pattern - نمط المراقب</h3>
+    <div class="code-block">
+<span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+
+<span class="kw">class</span> <span class="fn">Observer</span>(ABC):
+    <span class="nd">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">update</span>(<span class="kw">self</span>, message): <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">EmailNotifier</span>(Observer):
+    <span class="kw">def</span> <span class="fn">update</span>(<span class="kw">self</span>, message):
+        <span class="bu">print</span>(<span class="str">f'Email: {message}'</span>)
+
+<span class="kw">class</span> <span class="fn">SMSNotifier</span>(Observer):
+    <span class="kw">def</span> <span class="fn">update</span>(<span class="kw">self</span>, message):
+        <span class="bu">print</span>(<span class="str">f'SMS: {message}'</span>)
+
+<span class="kw">class</span> <span class="fn">OrderService</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>._observers = []
+
+    <span class="kw">def</span> <span class="fn">attach</span>(<span class="kw">self</span>, observer):
+        <span class="kw">self</span>._observers.append(observer)
+
+    <span class="kw">def</span> <span class="fn">_notify</span>(<span class="kw">self</span>, message):
+        <span class="kw">for</span> obs <span class="kw">in</span> <span class="kw">self</span>._observers:
+            obs.<span class="fn">update</span>(message)
+
+    <span class="kw">def</span> <span class="fn">place_order</span>(<span class="kw">self</span>, order):
+        <span class="bu">print</span>(<span class="str">f'Processing order {order.id}'</span>)
+        <span class="kw">self</span>._notify(<span class="str">f'Order {order.id} placed'</span>)
+
+<span class="cm"># الاستخدام</span>
+service = OrderService()
+service.<span class="fn">attach</span>(EmailNotifier())
+service.<span class="fn">attach</span>(SMSNotifier())
+service.<span class="fn">place_order</span>(order)
+    </div>
+
+<div class="explanation-box"><strong>🔍 Observer Pattern - نمط المراقب</strong><p>نمط Observer يعرّف علاقة واحد-إلى-متعدد بين الكائنات: عندما يتغير الكائن الرئيسي (Subject)، يتم إعلام جميع المراقبين (Observers) تلقائياً. <code>OrderService</code> هو Subject يسمح بإضافة Observers (<code>EmailNotifier</code>, <code>SMSNotifier</code>). عند تنفيذ طلب (<code>place_order</code>)، يستدعي <code>_notify</code> الذي يمرر الرسالة لكل Observer. هذا يفصل بين منطق العمل الأساسي وآليات الإعلام، ويسهل إضافة أنواع جديدة من الإشعارات دون تعديل <code>OrderService</code>.</p></div>
+
+    <h3 class="subsection-title">Strategy Pattern - نمط الاستراتيجية</h3>
+    <div class="code-block">
+<span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+
+<span class="kw">class</span> <span class="fn">DiscountStrategy</span>(ABC):
+    <span class="nd">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">calculate</span>(<span class="kw">self</span>, price): <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">NoDiscount</span>(DiscountStrategy):
+    <span class="kw">def</span> <span class="fn">calculate</span>(<span class="kw">self</span>, price): <span class="kw">return</span> price
+
+<span class="kw">class</span> <span class="fn">PercentageDiscount</span>(DiscountStrategy):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, percent): <span class="kw">self</span>.percent = percent
+    <span class="kw">def</span> <span class="fn">calculate</span>(<span class="kw">self</span>, price): <span class="kw">return</span> price * (<span class="num">1</span> - <span class="kw">self</span>.percent / <span class="num">100</span>)
+
+<span class="kw">class</span> <span class="fn">FixedAmountDiscount</span>(DiscountStrategy):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, amount): <span class="kw">self</span>.amount = amount
+    <span class="kw">def</span> <span class="fn">calculate</span>(<span class="kw">self</span>, price): <span class="kw">return</span> <span class="bu">max</span>(<span class="num">0</span>, price - <span class="kw">self</span>.amount)
+
+<span class="kw">class</span> <span class="fn">ShoppingCart</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, strategy: DiscountStrategy):
+        <span class="kw">self</span>.strategy = strategy  <span class="cm"># استراتيجية الخصم قابلة للتبديل</span>
+        <span class="kw">self</span>.items = []
+
+    <span class="kw">def</span> <span class="fn">total</span>(<span class="kw">self</span>):
+        subtotal = <span class="bu">sum</span>(item.price <span class="kw">for</span> item <span class="kw">in</span> <span class="kw">self</span>.items)
+        <span class="kw">return</span> <span class="kw">self</span>.strategy.<span class="fn">calculate</span>(subtotal)
+
+<span class="cm"># نبدل الاستراتيجية بسهولة</span>
+cart = ShoppingCart(PercentageDiscount(<span class="num">10</span>))
+<span class="cm"># cart.strategy = FixedAmountDiscount(20)  # تغيير الاستراتيجية في أي وقت!</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Strategy Pattern - نمط الاستراتيجية</strong><p>نمط Strategy يعرّف عائلة من الخوارزميات القابلة للتبديل. <code>DiscountStrategy</code> هو الـ interface المشترك، وكل استراتيجية (<code>NoDiscount</code>, <code>PercentageDiscount</code>, <code>FixedAmountDiscount</code>) تطبق طريقة حساب مختلفة. <code>ShoppingCart</code> يستقبل استراتيجية الخصم عبر constructor ويمكن تغييرها في أي وقت (<code>cart.strategy = FixedAmountDiscount(20)</code>). هذا يتبع مبدأ OCP: إضافة استراتيجية جديدة لا يتطلب تعديل <code>ShoppingCart</code>. Strategy Pattern يحقق "فصل الاهتمامات" (separation of concerns) بشكل جميل.</p></div>
+
+    <h2 class="section-title">15. الوراثة المتعددة و MRO - تحليل عميق</h2>
+    <p>تستخدم بايثون خوارزمية <strong>C3 Linearization</strong> (أو C3 superclass linearization) لتحديد ترتيب البحث (MRO). هذه الخوارزمية تضمن:</p>
+    <ul>
+      <li>الكلاس الابن يأتي دائماً قبل الكلاس الأب</li>
+      <li>إذا ورث كلاس من عدة كلاسات، ترتيبهم في class definition يحدد الأولوية</li>
+      <li>الكلاس object دائماً في النهاية</li>
+    </ul>
+
+    <div class="code-block">
+<span class="cm"># مثال معقد لـ MRO</span>
+<span class="kw">class</span> <span class="fn">A</span>:
+    <span class="kw">def</span> <span class="fn">method</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'A'</span>
+
+<span class="kw">class</span> <span class="fn">B</span>(A):
+    <span class="kw">def</span> <span class="fn">method</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'B'</span>
+
+<span class="kw">class</span> <span class="fn">C</span>(A):
+    <span class="kw">def</span> <span class="fn">method</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">'C'</span>
+
+<span class="kw">class</span> <span class="fn">D</span>(B, C):
+    <span class="kw">pass</span>
+
+<span class="bu">print</span>(D.<span class="fn">__mro__</span>)
+<span class="cm"># D -> B -> C -> A -> object</span>
+<span class="cm"># C3 Linearization: merge([B,C], [B,A,object], [C,A,object], [A,object])</span>
+<span class="cm"># معقدة؟ فقط تذكر: child قبل parent، والترتيب الذي تحدده هو الأولوية</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 MRO المتقدم - C3 Linearization</strong><p>هذا مثال معقد لـ MRO باستخدام الوراثة المتعددة. خوارزمية C3 Linearization المستخدمة من بايثون تضم أبعاداً ثلاثة: (1) الكلاس الابن يسبق الكلاس الأب. (2) ترتيب الكلاسات الأب في تعريف الكلاس يحدد الأولوية. (3) الـ <code>object</code> دائماً في النهاية. <code>D(B, C)</code> → MRO: <code>D → B → C → A → object</code>. لفهمها، تذكر أن الـ algorithm يبدأ بالكلاس الحالي، ثم يدمج (merge) قوائم MRO للكلاسات الأب بطريقة تحافظ على الترتيب النسبي. قاعدة عملية: child قبل parent، والـ first parent له أولوية.</p></div>
+
+
+    <div class="code-block">
+<span class="cm"># super() في الوراثة المتعددة (Cooperative Multiple Inheritance)</span>
+<span class="kw">class</span> <span class="fn">Base</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, **kwargs):
+        <span class="bu">print</span>(<span class="str">'Base.__init__'</span>)
+        <span class="bu">super</span>().<span class="fn">__init__</span>(**kwargs)
+
+<span class="kw">class</span> <span class="fn">LogMixin</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, **kwargs):
+        <span class="bu">print</span>(<span class="str">'LogMixin.__init__'</span>)
+        <span class="bu">super</span>().<span class="fn">__init__</span>(**kwargs)
+
+<span class="kw">class</span> <span class="fn">ValidateMixin</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, **kwargs):
+        <span class="bu">print</span>(<span class="str">'ValidateMixin.__init__'</span>)
+        <span class="bu">super</span>().<span class="fn">__init__</span>(**kwargs)
+
+<span class="kw">class</span> <span class="fn">User</span>(LogMixin, ValidateMixin, Base):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, **kwargs):
+        <span class="bu">print</span>(<span class="str">'User.__init__'</span>)
+        <span class="bu">super</span>().<span class="fn">__init__</span>(**kwargs)
+        <span class="kw">self</span>.name = name
+
+<span class="cm"># MRO: User -> LogMixin -> ValidateMixin -> Base -> object</span>
+<span class="cm"># كل super() يستدعي التالي في السلسلة!</span>
+user = User(name=<span class="str">'Ahmed'</span>)
+<span class="cm"># User.__init__</span>
+<span class="cm"># LogMixin.__init__</span>
+<span class="cm"># ValidateMixin.__init__</span>
+<span class="cm"># Base.__init__</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Cooperative Multiple Inheritance - super() مع **kwargs</strong><p>في الوراثة المتعددة التعاونية، كل كلاس يستخدم <code>super().__init__(**kwargs)</code> بدلاً من استدعاء كلاس أب محدد. هذا يسمح لكل كلاس بأخذ ما يحتاجه من <code>**kwargs</code> وتمرير الباقي للكلاس التالي في سلسلة MRO. الترتيب: <code>User → LogMixin → ValidateMixin → Base → object</code>. كل كلاس يطبع رسالة ويستدعي <code>super()</code>. النتيجة: يتم استدعاء جميع constructors بالترتيب الصحيح. نصيحة ذهبية: استخدم دائماً <code>**kwargs</code> مع <code>super()</code> في الوراثة المتعددة لتجنب المشاكل.</p></div>
+
+    <div class="note"><strong>نصيحة ذهبية:</strong> في الوراثة المتعددة، استخدم <span class="inline-code">**kwargs</span> و super() دائماً مع <span class="inline-code">**kwargs</span>. هذا يسمح لكل كلاس بأخذ ما يحتاجه وتمرير الباقي للكلاس التالي في MRO.</div>
+
+    <h2 class="section-title">16. أنماط الأداء والذاكرة</h2>
+    <p>فهم كيفية إدارة بايثون للذاكرة يساعدك على كتابة كود OOP أسرع وأخف:</p>
+
+    <h3 class="subsection-title">__slots__ - تحسين الذاكرة</h3>
+    <p>كل كائن بايثون يخزن خصائصه في <span class="inline-code">__dict__</span> (dict) الذي يستهلك ذاكرة إضافية. <span class="inline-code">__slots__</span> يمنع إنشاء <span class="inline-code">__dict__</span> ويخزن الخصائص في tuple، مما يوفر ذاكرة بشكل كبير للكلاسات ذات آلاف النسخ:</p>
+
+    <div class="code-block">
+<span class="kw">import</span> sys
+
+<span class="kw">class</span> <span class="fn">PointNoSlots</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, x, y):
+        <span class="kw">self</span>.x = x; <span class="kw">self</span>.y = y
+
+<span class="kw">class</span> <span class="fn">PointWithSlots</span>:
+    __slots__ = (<span class="str">'x'</span>, <span class="str">'y'</span>)
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, x, y):
+        <span class="kw">self</span>.x = x; <span class="kw">self</span>.y = y
+
+p1 = PointNoSlots(<span class="num">1</span>, <span class="num">2</span>)
+p2 = PointWithSlots(<span class="num">1</span>, <span class="num">2</span>)
+
+<span class="bu">print</span>(<span class="bu">sys</span>.getsizeof(p1.<span class="fn">__dict__</span>))  <span class="cm"># يحتوي __dict__</span>
+<span class="bu">print</span>(<span class="bu">sys</span>.getsizeof(p2))             <span class="cm"># بدون __dict__ - أصغر!</span>
+
+<span class="cm"># __slots__ يمنع إضافة خصائص جديدة</span>
+<span class="cm"># p2.z = 3  # AttributeError: 'PointWithSlots' has no attribute 'z'</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 __slots__ في Point - توفير الذاكرة</strong><p><code>__slots__</code> يمنع إنشاء <code>__dict__</code> لكل كائن ويخزن الخصائص في array ذي حجم ثابت، مما يقلل استهلاك الذاكرة بشكل كبير (يصل إلى 40-50% توفيراً). كل كائن بايثون يحمل <code>__dict__</code> وهو قاموس يستهلك ذاكرة إضافية (hashing overhead). باستخدام <code>__slots__</code>، نحدد الخصائص المسموح بها مسبقاً ولا يمكن إضافة خصائص جديدة ديناميكياً (محاولة تعيين <code>p.z = 5</code> سترفع <code>AttributeError</code>). هذا مفيد جداً في الكلاسات التي تنشئ آلاف النسخ مثل تمثيل البيانات في machine learning أو معالجة datasets ضخمة.</p></div>
+
+    <div class="note"><strong>متى تستخدم __slots__:</strong> عندما يكون لديك آلاف أو ملايين النسخ من الكلاس (مثل معالجة بيانات ضخمة). للكلاسات القليلة، لا داعي.</div>
+
+    <h3 class="subsection-title">__weakref__ - المراجع الضعيفة</h3>
+    <p>المراجع الضعيفة تسمح بالإشارة إلى كائن دون زيادة عداد المراجع (reference count). مفيدة للـ caches و avoid circular references:</p>
+
+    <div class="code-block">
+<span class="kw">import</span> weakref
+
+<span class="kw">class</span> <span class="fn">Cache</span>:
+    _cache = weakref.WeakValueDictionary()
+
+    <span class="nd">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">get</span>(<span class="kw">cls</span>, key):
+        <span class="kw">return</span> <span class="kw">cls</span>._cache.<span class="fn">get</span>(key)
+
+    <span class="nd">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">set</span>(<span class="kw">cls</span>, key, value):
+        <span class="kw">cls</span>._cache[key] = value
+
+<span class="cm"># المراجع الضعيفة تسمح بجمع القمامة (garbage collection)</span>
+<span class="cm"># حتى لو كان الكائن في الـ cache!</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 __weakref__ - المراجع الضعيفة لإدارة الذاكرة</strong><p>المراجع الضعيفة (weak references) تسمح بالإشارة إلى كائن دون زيادة عداد المراجع الخاص به. هذا يسمح لـ garbage collector بجمع الكائن حتى عندما يكون هناك مرجع ضعيف指向ه. <code>WeakValueDictionary</code> هو قاموس يخزن قيماً بمراجع ضعيفة: إذا لم يعد هناك مراجع قوية للقيمة، يتم حذفها تلقائياً من القاموس. مفيد جداً للـ caches: يمكن التخزين المؤقت للبيانات دون منعها من التحرير عندما لا تكون قيد الاستخدام. أيضاً مفيد لتجنب circular references التي تسبب تسرب الذاكرة.</p></div>
+
+    <h3 class="subsection-title">Cached Properties - خصائص مخزنة مؤقتاً</h3>
+    <div class="code-block">
+<span class="kw">from</span> functools <span class="kw">import</span> cached_property
+
+<span class="kw">class</span> <span class="fn">DataAnalyzer</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, data):
+        <span class="kw">self</span>.data = data
+
+    <span class="nd">@cached_property</span>
+    <span class="kw">def</span> <span class="fn">expensive_computation</span>(<span class="kw">self</span>):
+        <span class="cm"># تُحسب مرة واحدة فقط، ثم تخزن في الذاكرة</span>
+        <span class="bu">print</span>(<span class="str">'Computing...'</span>)
+        <span class="kw">return</span> <span class="bu">sum</span>(x ** <span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="kw">self</span>.data)
+
+da = DataAnalyzer([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>])
+<span class="bu">print</span>(da.<span class="fn">expensive_computation</span>)  <span class="cm"># Computing... 55</span>
+<span class="bu">print</span>(da.<span class="fn">expensive_computation</span>)  <span class="cm"># 55 (بدون إعادة حساب!)</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 @cached_property - التخزين المؤقت للخصائص المحسوبة</strong><p><code>@cached_property</code> من <code>functools</code> يجمع بين <code>@property</code> و caching. في أول وصول للخاصية، تُحسب القيمة وتُخزّن. في المرات التالية، تُعاد القيمة المخزنة مباشرة بدون إعادة حساب. هذا مثالي للـ expensive operations (حسابات معقدة، استعلامات قاعدة بيانات، عمليات I/O) التي لا تتغير نتائجها. المثال يوضح أن <code>expensive_computation</code> تُطبع "Computing..." مرة واحدة فقط في أول استدعاء. الفرق عن الـ <code>@property</code> العادي أن caching يجنب إعادة الحساب في كل مرة.</p></div>
+
+    <h2 class="section-title">17. الاستثناءات المخصصة (Custom Exceptions)</h2>
+    <p>إنشاء تسلسل هرمي للاستثناءات الخاصة بك يجعل معالجة الأخطاء أكثر دقة:</p>
+
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">AppError</span>(Exception):
+    <span class="cm">"""Base exception for our application"""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, message, code=<span class="kw">None</span>):
+        <span class="bu">super</span>().<span class="fn">__init__</span>(message)
+        <span class="kw">self</span>.code = code
+
+<span class="kw">class</span> <span class="fn">ValidationError</span>(AppError):
+    <span class="cm">"""خطأ في التحقق من صحة البيانات"""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, field, message):
+        <span class="bu">super</span>().<span class="fn">__init__</span>(<span class="str">f'Validation failed for {field}: {message}'</span>, code=<span class="num">400</span>)
+        <span class="kw">self</span>.field = field
+
+<span class="kw">class</span> <span class="fn">AuthenticationError</span>(AppError):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, message=<span class="str">'Authentication failed'</span>):
+        <span class="bu">super</span>().<span class="fn">__init__</span>(message, code=<span class="num">401</span>)
+
+<span class="kw">class</span> <span class="fn">NotFoundError</span>(AppError):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, resource, id):
+        <span class="bu">super</span>().<span class="fn">__init__</span>(<span class="str">f'{resource} with id {id} not found'</span>, code=<span class="num">404</span>)
+
+<span class="cm"># الاستخدام - معالجة دقيقة حسب النوع</span>
+<span class="kw">try</span>:
+    user = <span class="fn">find_user</span>(<span class="num">42</span>)
+<span class="kw">except</span> NotFoundError <span class="kw">as</span> e:
+    <span class="bu">print</span>(<span class="str">f'Not found: {e}'</span>)  <span class="cm"># ليس خطأ حقيقياً</span>
+<span class="kw">except</span> ValidationError <span class="kw">as</span> e:
+    <span class="bu">print</span>(<span class="str">f'Field {e.field}: {e}'</span>)  <span class="cm"># خطأ في الإدخال</span>
+<span class="kw">except</span> AppError <span class="kw">as</span> e:
+    <span class="bu">print</span>(<span class="str">f'App error {e.code}: {e}'</span>)  <span class="cm"># أي خطأ آخر</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 Custom Exceptions - الاستثناءات المخصصة</strong><p>إنشاء تسلسل هرمي للاستثناءات (<code>AppError → ValidationError, AuthenticationError, NotFoundError</code>) يسمح بمعالجة دقيقة للأخطاء. <code>AppError</code> كـ base يرث من <code>Exception</code> ويضيف خاصية <code>code</code>. كل استثناء متخصص يضيف خصائص إضافية (مثل <code>field</code> في <code>ValidationError</code>). عند المعالجة، يمكن استخدام <code>except</code> متعدد للتعامل مع كل نوع بشكل مختلف: <code>NotFoundError</code> مجرد إعلام، <code>ValidationError</code> خطأ في الإدخال، إلخ. هذا أفضل من رفع <code>Exception</code> عام والتحقق من النص داخله.</p></div>
+
+    <div class="note"><strong>نصيحة:</strong> ابدأ دائماً باستثناء Base واحد (مثل AppError)، واجعله يرث من Exception (وليس BaseException). هذا يسمح لك بالقبض على كل أخطاء تطبيقك بقاعدة واحدة.</div>
+
+    <h2 class="section-title">18. أنواع متقدمة من الخصائص</h2>
+
+    <h3 class="subsection-title">Computed @property مع caching يدوي</h3>
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">Order</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, items, tax_rate):
+        <span class="kw">self</span>.items = items
+        <span class="kw">self</span>.tax_rate = tax_rate
+        <span class="kw">self</span>._total = <span class="kw">None</span>  <span class="cm"># cache</span>
+
+    <span class="nd">@property</span>
+    <span class="kw">def</span> <span class="fn">total</span>(<span class="kw">self</span>):
+        <span class="kw">if</span> <span class="kw">self</span>._total <span class="kw">is</span> <span class="kw">None</span>:
+            subtotal = <span class="bu">sum</span>(item.price * item.qty <span class="kw">for</span> item <span class="kw">in</span> <span class="kw">self</span>.items)
+            <span class="kw">self</span>._total = subtotal * (<span class="num">1</span> + <span class="kw">self</span>.tax_rate)
+        <span class="kw">return</span> <span class="kw">self</span>._total
+
+    <span class="nd">@total.setter</span>
+    <span class="kw">def</span> <span class="fn">total</span>(<span class="kw">self</span>, value):
+        <span class="kw">raise</span> AttributeError(<span class="str">'Total is read-only'</span>)
+    </div>
+
+<div class="explanation-box"><strong>🔍 Computed @property مع Caching يدوي</strong><p>هذا example يوضح كيفية تنفيذ التخزين المؤقت يدوياً للـ <code>@property</code>. خاصية <code>total</code> تحسب المجموع مع الضريبة. المتغير <code>_total</code> يُخزّن النتيجة مؤقتاً: إذا كان <code>None</code> تعاد الحسابات، وإلا تعاد القيمة المخزنة. الـ setter يرفع <code>AttributeError</code> لأن <code>total</code> للقراءة فقط (read-only). هذا النمط مفيد عندما تحتاج تحكماً أكثر من <code>@cached_property</code> (مثلاً، تحتاج إبطال cache عند تغيير البيانات). في الإصدارات الحديثة، <code>@cached_property</code> أبسط لكن manual caching يعطيك مرونة أكبر.</p></div>
+
+
+    <h3 class="subsection-title">__init_subclass__ - Hook عند إنشاء كلاس ابن</h3>
+    <div class="code-block">
+<span class="kw">class</span> <span class="fn">PluginBase</span>:
+    _plugins = {}
+
+    <span class="kw">def</span> <span class="fn">__init_subclass__</span>(<span class="kw">cls</span>, **kwargs):
+        <span class="bu">super</span>().<span class="fn">__init_subclass__</span>(**kwargs)
+        <span class="cm"># يُستدعى تلقائياً عند تعريف أي كلاس يرث من PluginBase</span>
+        name = <span class="kw">cls</span>.<span class="fn">__name__</span>
+        <span class="kw">cls</span>._plugins[name] = <span class="kw">cls</span>
+        <span class="bu">print</span>(<span class="str">f'Plugin registered: {name}'</span>)
+
+    <span class="nd">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">run_all</span>(<span class="kw">cls</span>):
+        <span class="kw">for</span> name, plugin <span class="kw">in</span> <span class="kw">cls</span>._plugins.<span class="fn">items</span>():
+            <span class="bu">print</span>(<span class="str">f'Running {name}'</span>)
+            plugin().<span class="fn">execute</span>()
+
+<span class="cm"># هذه الكلاسات تُسجل تلقائياً!</span>
+<span class="kw">class</span> <span class="fn">EmailPlugin</span>(PluginBase):
+    <span class="kw">def</span> <span class="fn">execute</span>(<span class="kw">self</span>): <span class="bu">print</span>(<span class="str">'Sending email...'</span>)
+
+<span class="kw">class</span> <span class="fn">SMSPlugin</span>(PluginBase):
+    <span class="kw">def</span> <span class="fn">execute</span>(<span class="kw">self</span>): <span class="bu">print</span>(<span class="str">'Sending SMS...'</span>)
+
+PluginBase.<span class="fn">run_all</span>()
+<span class="cm"># Running EmailPlugin</span>
+<span class="cm"># Running SMSPlugin</span>
+    </div>
+
+<div class="explanation-box"><strong>🔍 __init_subclass__ - تسجيل تلقائي للكلاسات الابنة</strong><p><code>__init_subclass__</code> هو hook يُستدعى تلقائياً كلما تم تعريف كلاس جديد يرث من الكلاس الحالي. هنا، كل كلاس يرث من <code>PluginBase</code> يتم تسجيله تلقائياً في <code>_plugins</code> dictionary باسمه. هذا يلغي الحاجة لتسجيل الـ plugins يدوياً. الميثود <code>run_all()</code> يمر على كل الـ plugins المسجلة وينفذها. هذه تقنية قوية تستخدم في أطر العمل لتجميع المكونات تلقائياً (auto-discovery). <code>__init_subclass__</code> أسهل وأكثر أماناً من metaclasses في كثير من الحالات.</p></div>
+
+    <h2 class="section-title">19. خلاصة ونصائح للاحتراف</h2>
+
+    <div class="summary-box">
+      <h3>📝 خلاصة OOP في بايثون - دليل سريع</h3>
+      <ul>
+        <li><strong>كلاس:</strong> مخطط لإنشاء الكائنات، يحتوي attributes و methods</li>
+        <li><strong>Instance Methods:</strong> تأخذ <span class="inline-code">self</span> - تتعامل مع بيانات الكائن</li>
+        <li><strong>Class Methods (&#64;classmethod):</strong> تأخذ <span class="inline-code">cls</span> - للـ alternative constructors والـ class state</li>
+        <li><strong>Static Methods (&#64;staticmethod):</strong> لا تأخذ self/cls - دوال عادية داخل namespace الكلاس</li>
+        <li><strong>&#64;property:</strong> للتحكم في الوصول للخصائص مع caching (&#64;cached_property)</li>
+        <li><strong>وراثة:</strong> super(), MRO (C3 Linearization), multiple inheritance</li>
+        <li><strong>تعدد الأشكال:</strong> Duck typing, ABC, protocols (@runtime_checkable)</li>
+        <li><strong>Dunder Methods:</strong> __init__, __str__, __repr__, __eq__, __hash__, __call__, __enter__/__exit__, __getitem__, __iter__</li>
+        <li><strong>Decorators:</strong> @wraps, decorated with/without args, class decorators, stacking</li>
+        <li><strong>Descriptors:</strong> __get__/__set__/__delete__ - data vs non-data</li>
+        <li><strong>Metaclasses:</strong> type(), __new__, __call__ في metaclass، __init_subclass__</li>
+        <li><strong>__slots__:</strong> توفير ذاكرة للكلاسات ذات آلاف النسخ</li>
+        <li><strong>SOLID:</strong> 5 مبادئ لكود قابل للصيانة والتوسع</li>
+        <li><strong>Design Patterns:</strong> Factory, Observer, Strategy</li>
+        <li><strong>Context Managers:</strong> __enter__/__exit__ أو @contextmanager</li>
+        <li><strong>Custom Exceptions:</strong> تسلسل هرمي خاص بتطبيقك</li>
+      </ul>
+    </div>
+
+    <div class="warning">
+      <strong>⚠️ أخطاء شائعة يجب تجنبها:</strong>
+      <ul>
+        <li>استخدام mutable objects كـ default arguments (<span class="inline-code">def __init__(self, items=[])</span>) - استخدم <span class="inline-code">None</span> بدلاً من ذلك</li>
+        <li>نسيان استدعاء <span class="inline-code">super().__init__()</span> في الكلاسات المشتقة</li>
+        <li>استخدام الوراثة المتعددة بدون فهم MRO - قد يؤدي إلى نتائج غير متوقعة</li>
+        <li>إنشاء getter/setter بدون سبب حقيقي - استخدم @property فقط عندما تحتاج تحكم/logic</li>
+        <li>تعديل الكلاس الأب بطريقة تؤثر على الكلاسات الابن (tight coupling)</li>
+        <li>استخدام <span class="inline-code">type()</span> للتحقق من الأنواع - استخدم <span class="inline-code">isinstance()</span> بدلاً من ذلك</li>
+      </ul>
+    </div>
+
+  </div>
+  <div class="footer">
+    <p>دورة بايثون المكثفة - البرمجة كائنية التوجه OOP - شرح متقدم وشامل</p>
+  </div>
+</div>
+</div>
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) { link.classList.add('active'); }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+</body>
+</html>

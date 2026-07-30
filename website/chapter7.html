@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الفصل 7: إدخال المستخدم وحلقات while - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <div class="part-badge">📘 الجزء الأول: الأساسيات</div>
+      <h1>الفصل السابع: إدخال المستخدم وحلقات while</h1>
+      <p>User Input and while Loops — التفاعل مع المستخدم والتحكم في تدفق البرنامج</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        معظم البرامج الحقيقية تحتاج إلى التفاعل مع المستخدم — قراءة مدخلاته، معالجتها، والاستجابة لها.
+        في هذا الفصل، ستتعلم كيفية استخدام الدالة <span class="inline-code">input()</span> لجلب البيانات من المستخدم،
+        وكيفية استخدام حلقات <span class="inline-code">while</span> لتكرار تنفيذ الأوامر حتى يتحقق شرط معين.
+        هاتان الأداتان تشكلان أساس بناء برامج تفاعلية حقيقية.
+      </p>
+
+      <!-- ========== 7.1 ========== -->
+      <h2 class="section-title">كيف تعمل الدالة <span class="inline-code" style="background:#333;color:#cdd6f4;">input()</span></h2>
+
+      <p>
+        الدالة <span class="inline-code">input()</span> توقف تنفيذ البرنامج مؤقتاً وتنتظر حتى يقوم المستخدم
+        بإدخال نص ثم يضغط مفتاح Enter. بعد ذلك، تأخذ الدالة النص المُدخل وتُرجعه كقيمة نصية (string)
+        يمكن تخزينها في متغير واستخدامها في البرنامج.
+      </p>
+
+      <p>المثال التالي يطلب من المستخدم إدخال اسمه ثم يطبع رسالة ترحيب:</p>
+
+      <div class="code-block"><span class="kw">message</span> = <span class="fn">input</span>(<span class="str">"Tell me something, and I will repeat it back to you: "</span>)
+<span class="fn">print</span>(message)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> يطلب هذا الكود من المستخدم إدخال نص عبر الدالة <code>input()</code>، حيث تظهر الرسالة "Tell me something..." كدليل إرشادي. بعد كتابة المستخدم لأي نص والضغط على Enter، يُخزَّن الإدخال في المتغير <code>message</code>. السطر الثاني يستخدم <code>print()</code> لإعادة طباعة ما كتبه المستخدم تماماً كما هو. المخرجات المتوقعة: إذا أدخل المستخدم "Hello"، سيظهر في الشاشة "Hello".</div>
+
+      <p>
+        عند تشغيل هذا الكود، سيظهر النص داخل الأقواس كرسالة (prompt) في شاشة البرنامج،
+        وسينتظر إدخال المستخدم. أي شيء يكتبه المستخدم يُخزَّن في المتغير <span class="inline-code">message</span>
+        ثم يُطبع مرة أخرى.
+      </p>
+
+      <h3 class="subsection-title">كتابة رسائل توضيحية واضحة (Writing Clear Prompts)</h3>
+
+      <p>
+        يجب أن تكون الرسالة التي تمررها إلى <span class="inline-code">input()</span> واضحة ومحددة حتى يعرف
+        المستخدم بالضبط ما هو المطلوب منه. يمكنك بناء رسالة متعددة الأسطر باستخدام متغير منفصل:
+      </p>
+
+      <div class="code-block">prompt = <span class="str">"If you tell us who you are, we can personalize the messages you see."</span>
+prompt += <span class="str">"\nWhat is your first name? "</span>
+
+name = <span class="fn">input</span>(prompt)
+<span class="fn">print</span>(<span class="str">f"\nHello, {name}!"</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> نبدأ بتعريف متغير <code>prompt</code> يحمل الجملة الترحيبية الأولى. السطر الثاني يستخدم <code>+=</code> لإضافة سطر جديد (<code>\n</code>) وسؤال عن الاسم إلى نفس المتغير، مما يُوسِّع النص الأصلي دون الحاجة لكتابته من جديد. بعدها نمرر <code>prompt</code> إلى <code>input()</code> لتظهر الرسالة كاملة للمستخدم. وأخيراً نطبع رسالة ترحيب مخصصة باستخدام f-string، حيث سيظهر الاسم الذي أدخله المستخدم مباشرة داخل النص — مثلاً "Hello, Ahmed!".</div>
+
+      <p>
+        هنا استخدمنا عامل الإسناد المُركب <span class="inline-code">+=</span> لإضافة سطر جديد
+        إلى نهاية النص الأصلي. هذا يجعل الكود أنظف وأسهل للقراءة عندما تكون الرسالة طويلة.
+      </p>
+
+      <h3 class="subsection-title">استخدام <span class="inline-code" style="background:#333;color:#cdd6f4;">int()</span> لقبول المدخلات الرقمية</h3>
+
+      <p>
+        الدالة <span class="inline-code">input()</span> تُرجع دائماً <strong>نصاً</strong> (string)، حتى لو كتب
+        المستخدم أرقاماً. إذا أردت استخدام القيمة المُدخلة في عمليات حسابية، يجب تحويلها إلى عدد
+        باستخدام الدالة <span class="inline-code">int()</span>:
+      </p>
+
+      <div class="code-block">height = <span class="fn">input</span>(<span class="str">"How tall are you, in inches? "</span>)
+height = <span class="fn">int</span>(height)
+
+<span class="kw">if</span> height >= <span class="num">48</span>:
+    <span class="fn">print</span>(<span class="str">"\nYou're tall enough to ride!"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"\nYou'll be able to ride when you're a little older."</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> يبدأ البرنامج بسؤال المستخدم عن طوله بالبوصات باستخدام <code>input()</code>، والتي تُرجِع دائماً قيمة نصية (string). السطر الثاني هو الأهم: <code>height = int(height)</code> يحوّل النص المُدخل إلى عدد صحيح حتى نتمكن من إجراء مقارنات رقمية. بعد ذلك، تتحقق جملة <code>if</code> من أن الطول أكبر من أو يساوي 48، وتُطبَع رسالة مناسبة حسب النتيجة. بدون التحويل بـ <code>int()</code>، كانت المقارنة <code>height >= 48</code> ستفشل لأن بايثون لا تقارن نصاً بعدد.</div>
+
+      <p>
+        في هذا المثال، يقوم البرنامج بتحويل القيمة النصية إلى عدد صحيح ثم يقارنها مع الحد
+        الأدنى للطول المسموح به لدخول اللعبة. بدون استخدام <span class="inline-code">int()</span>،
+        كانت المقارنة ستفشل لأننا لا يمكننا مقارنة نص بعدد.
+      </p>
+
+      <h3 class="subsection-title">عامل الموديولو (المعامل) — The Modulo Operator</h3>
+
+      <p>
+        عامل الموديولو (<span class="inline-code">%</span>) هو عملية حسابية تُرجع باقي القسمة.
+        يُستخدم بكثرة في البرمجة لتحديد ما إذا كان عدد ما زوجياً أو فردياً، أو للتحقق من قابلية القسمة.
+      </p>
+
+      <div class="code-block"><span class="cm"># باقي قسمة 4 على 3 = 1</span>
+<span class="fn">print</span>(<span class="num">4</span> % <span class="num">3</span>)
+
+<span class="cm"># باقي قسمة 5 على 3 = 2</span>
+<span class="fn">print</span>(<span class="num">5</span> % <span class="num">3</span>)
+
+<span class="cm"># باقي قسمة 6 على 3 = 0 (يقبل القسمة)</span>
+<span class="fn">print</span>(<span class="num">6</span> % <span class="num">3</span>)
+
+<span class="cm"># باقي قسمة 7 على 3 = 1</span>
+<span class="fn">print</span>(<span class="num">7</span> % <span class="num">3</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> يُظهر هذا الكود عامل الموديولو <code>%</code> الذي يُرجِع باقي القسمة بين عددين. في السطر الأول، <code>4 % 3</code> يُرجِع 1 لأن 4 ÷ 3 = 1 والباقي 1. السطر الثاني <code>5 % 3</code> يُرجِع 2. السطر الثالث <code>6 % 3</code> يُرجِع 0 لأن 6 تقبل القسمة على 3 بدون باقٍ. السطر الرابع <code>7 % 3</code> يُرجِع 1. المخرجات ستكون: 1, 2, 0, 1 — كل في سطر منفصل. هذا العامل أساسي لتحديد الأعداد الزوجية والفردية.</div>
+
+      <p>
+        إذا كان باقي قسمة عدد على 2 يساوي 0، فهذا يعني أن العدد زوجي (even).
+        أما إذا كان الباقي 1، فالعدد فردي (odd).
+      </p>
+
+      <div class="code-block">number = <span class="fn">input</span>(<span class="str">"Enter a number, and I'll tell you if it's even or odd: "</span>)
+number = <span class="fn">int</span>(number)
+
+<span class="kw">if</span> number % <span class="num">2</span> == <span class="num">0</span>:
+    <span class="fn">print</span>(<span class="str">f"\nThe number {number} is even."</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">f"\nThe number {number} is odd."</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> يطلب البرنامج من المستخدم إدخال رقم، ثم يُحوّله من نص إلى عدد صحيح باستخدام <code>int()</code>. جملة <code>if</code> تتحقق مما إذا كان باقي قسمة الرقم على 2 يساوي 0 — إذا كان الجواب نعم فالرقم زوجي (even)، وإلا فهو فردي (odd). تستخدم جملة <code>print</code> تقنية f-string لإدراج الرقم الأصلي داخل رسالة الإخراج. المخرجات المتوقعة: إذا أدخل المستخدم 7، ستظهر رسالة "The number 7 is odd.".</div>
+
+      <!-- ========== 7.2 ========== -->
+      <h2 class="section-title">استقبال الإدخال في بايثون 2.7</h2>
+
+      <p>
+        في بايثون 2.7 (وهي نسخة قديمة ومتقادمة)، كانت الدالة المستخدمة لقراءة الإدخال النصي هي
+        <span class="inline-code">raw_input()</span>. أما الدالة <span class="inline-code">input()</span>
+        في بايثون 2.7 فكانت تحاول تقييم (evaluate) الإدخال ككود بايثون، مما كان يُسبب مشاكل أمنية.
+      </p>
+
+      <div class="note">
+        <strong>ملاحظة:</strong> بايثون 2.7 لم تعد مدعومة منذ يناير 2020. يُنصح بشدة باستخدام
+        بايثون 3 في جميع المشاريع الجديدة. كل الأمثلة في هذا الكتاب تستخدم بايثون 3
+        والدالة <span class="inline-code">input()</span>.
+      </div>
+
+      <p>مقارنة بين الطريقتين:</p>
+
+      <div class="code-block"><span class="cm"># Python 3 — باستخدام input()</span>
+name = <span class="fn">input</span>(<span class="str">"What's your name? "</span>)
+
+<span class="cm"># Python 2.7 — باستخدام raw_input()</span>
+name = <span class="fn">raw_input</span>(<span class="str">"What's your name? "</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> يُظهر هذا الكود الفرق الجوهري بين بايثون 3 وبايثون 2.7 في قراءة المدخلات من المستخدم. في بايثون 3 (السطر الأول)، تُستخدم <code>input()</code> التي تُرجِع النص كما هو دون أي تعديل. في بايثون 2.7 (السطر الثاني)، كانت تُستخدم <code>raw_input()</code> لنفس الغرض، بينما <code>input()</code> في 2.7 كانت تحاول تنفيذ النص المُدخل ككود بايثون — مما يُشكّل خطراً أمنياً كبيراً. لهذا السبب، من الضروري استخدام بايثون 3 في جميع المشاريع الجديدة.</div>
+
+      <!-- ========== 7.3 ========== -->
+      <h2 class="section-title">مقدمة عن حلقات <span class="inline-code" style="background:#333;color:#cdd6f4;">while</span></h2>
+
+      <p>
+        حلقة <span class="inline-code">for</span> تأخذ مجموعة من العناصر وتنفذ كتلة من الكود مرة واحدة
+        لكل عنصر. أما حلقة <span class="inline-code">while</span> فتُنفذ كتلة من الكود
+        <strong>طالما</strong> شرط معين يتحقق (<span class="inline-code">True</span>).
+        تتوقف الحلقة فقط عندما يُصبح الشرط <span class="inline-code">False</span>.
+      </p>
+
+      <h3 class="subsection-title">حلقة while في العمل</h3>
+
+      <p>هذا مثال بسيط يحسب الأعداد من 1 إلى 5:</p>
+
+      <div class="code-block">current_number = <span class="num">1</span>
+<span class="kw">while</span> current_number <= <span class="num">5</span>:
+    <span class="fn">print</span>(current_number)
+    current_number += <span class="num">1</span></div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> يبدأ المتغير <code>current_number</code> بالقيمة 1. تتحقق حلقة <code>while</code> من الشرط <code>current_number &lt;= 5</code> — طالما هذا الشرط صحيح (True)، يستمر التكرار. داخل الحلقة، يُطبَع الرقم أولاً ثم يزيد بمقدار 1 عبر <code>current_number += 1</code>. عندما يصل المتغير إلى 6 يصبح الشرط False وتتوقف الحلقة تلقائياً. المخرجات ستكون: 1, 2, 3, 4, 5 — كل رقم في سطر منفصل.</div>
+
+      <p>
+        المتغير <span class="inline-code">current_number</span> يبدأ بالقيمة 1.
+        حلقة <span class="inline-code">while</span> تفحص ما إذا كانت قيمة المتغير أقل من أو تساوي 5.
+        طالما هذا الشرط صحيح، تطبع الحلقة الرقم ثم تزيده بمقدار 1.
+        عندما يصل المتغير إلى 6، يُصبح الشرط <span class="inline-code">False</span> وتتوقف الحلقة.
+      </p>
+
+      <h3 class="subsection-title">السماح للمستخدم بتحديد وقت الخروج</h3>
+
+      <p>
+        يمكنك استخدام حلقة <span class="inline-code">while</span> لتشغيل البرنامج حتى يُدخل المستخدم
+        كلمة مفتاحية للخروج، مثل <span class="inline-code">'quit'</span>:
+      </p>
+
+      <div class="code-block">prompt = <span class="str">"\nTell me something, and I will repeat it back to you:"</span>
+prompt += <span class="str">"\nEnter 'quit' to end the program. "</span>
+
+message = <span class="str">""</span>
+<span class="kw">while</span> message != <span class="str">'quit'</span>:
+    message = <span class="fn">input</span>(prompt)
+
+    <span class="kw">if</span> message != <span class="str">'quit'</span>:
+        <span class="fn">print</span>(message)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> نبدأ بتعريف رسالة prompt من سطرين باستخدام <code>+=</code> ونضبط <code>message = ""</code> كنص فارغ لتجنب خطأ المقارنة في السطر التالي. تفحص الحلقة شرط <code>message != 'quit'</code> — طالما أن المستخدم لم يكتب "quit"، يستمر التكرار. داخل الحلقة، نأخذ إدخال المستخدم عبر <code>input()</code>، وإذا كان الإدخال مختلفاً عن "quit" نطبعه. عند كتابة "quit"، يصبح الشرط False وتنتهي الحلقة دون طباعة كلمة quit نفسها.</div>
+
+      <p>
+        هنا نضع <span class="inline-code">message = ""</span> في البداية حتى تتمكن بايثون من تنفيذ
+        جملة <span class="inline-code">while</span> (لأنها تحتاج لمتغير للمقارنة).
+        داخل الحلقة، نأخذ إدخال المستخدم، وإذا لم يكن 'quit' نطبعه. إذا كتب 'quit'،
+        ينتهي الشرط وتتوقف الحلقة.
+      </p>
+
+      <h3 class="subsection-title">استخدام راية (Flag)</h3>
+
+      <p>
+        في البرامج الأكثر تعقيداً، قد تحتاج عدة شروط مختلفة لتحديد متى يجب أن تتوقف الحلقة.
+        بدلاً من كتابة شرط طويل ومعقد في جملة <span class="inline-code">while</span>، يمكنك تعريف
+        متغير منطقي (boolean) يُسمى "flag" يشير إلى ما إذا كان البرنامج يجب أن يستمر في العمل أم لا:
+      </p>
+
+      <div class="code-block">prompt = <span class="str">"\nTell me something, and I will repeat it back to you:"</span>
+prompt += <span class="str">"\nEnter 'quit' to end the program. "</span>
+
+active = <span class="kw">True</span>
+<span class="kw">while</span> active:
+    message = <span class="fn">input</span>(prompt)
+
+    <span class="kw">if</span> message == <span class="str">'quit'</span>:
+        active = <span class="kw">False</span>
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(message)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> هذا المثال يُعادل السابق لكن باستخدام راية (flag) — متغير منطقي يُسمى <code>active</code>. نضبط <code>active = True</code> وتستمر الحلقة <code>while active:</code> طالما الراية True. داخل الحلقة، إذا كتب المستخدم "quit" نغير الراية إلى <code>False</code> فتنتهي الحلقة فوراً؛ وإلا نطبع الرسالة. هذا الأسلوب أفضل للبرامج المعقدة حيث يمكن إضافة شروط إضافية تغير الراية، مما يجعل الكود أنظف وأسهل في الصيانة والتطوير.</div>
+
+      <p>
+        نعطي الراية <span class="inline-code">active</span> القيمة <span class="inline-code">True</span>
+        في البداية، وتستمر الحلقة طالما <span class="inline-code">active</span> تساوي <span class="inline-code">True</span>.
+        داخل الحلقة، إذا كتب المستخدم 'quit' نغير قيمة الراية إلى <span class="inline-code">False</span>
+        فتنتهي الحلقة. هذا الأسلوب يجعل الكود أكثر وضوحاً ويسهل إضافة شروط إضافية لاحقاً.
+      </p>
+
+      <h3 class="subsection-title">استخدام <span class="inline-code" style="background:#333;color:#cdd6f4;">break</span> للخروج من الحلقة</h3>
+
+      <p>
+        يمكنك استخدام الكلمة المحجوزة <span class="inline-code">break</span> للخروج فوراً من حلقة
+        <span class="inline-code">while</span> أو <span class="inline-code">for</span> دون الحاجة
+        إلى التحقق من شرط الحلقة:
+      </p>
+
+      <div class="code-block">prompt = <span class="str">"\nPlease enter the name of a city you have visited:"</span>
+prompt += <span class="str">"\n(Enter 'quit' when you are finished.) "</span>
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    city = <span class="fn">input</span>(prompt)
+
+    <span class="kw">if</span> city == <span class="str">'quit'</span>:
+        <span class="kw">break</span>
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="str">f"I'd love to go to {city.title()}!"</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> هنا نستخدم <code>while True:</code> لإنشاء حلقة لا نهائية تنتهي فقط عند تنفيذ <code>break</code>. داخل الحلقة، نطلب من المستخدم إدخال اسم مدينة. إذا كتب "quit" يُنفَّذ <code>break</code> ليخرج من الحلقة فوراً إلى السطر الذي يليها. وإلا، تُطبَع رسالة تحتوي على اسم المدينة مع تنسيق <code>title()</code> لجعل الحرف الأول كبيراً. هذا النمط — "while True مع break" — شائع جداً في التطبيقات العملية لأنه يُبقي شرط الخروج داخل الحلقة وليس في توقيع while.</div>
+
+      <p>
+        هنا نستخدم <span class="inline-code">while True</span> لتشغيل الحلقة إلى أجل غير مسمى،
+        ونتوقف فقط عند تنفيذ <span class="inline-code">break</span>. هذه طريقة شائعة جداً في
+        البرامج العملية.
+      </p>
+
+      <div class="note">
+        <strong>ملاحظة:</strong> يمكنك استخدام <span class="inline-code">break</span> في أي حلقة
+        بايثون، سواء كانت <span class="inline-code">for</span> أو <span class="inline-code">while</span>.
+        عند تنفيذ <span class="inline-code">break</span>، ينتقل تدفق البرنامج فوراً إلى الكود الموجود
+        بعد الحلقة مباشرة.
+      </div>
+
+      <h3 class="subsection-title">استخدام <span class="inline-code" style="background:#333;color:#cdd6f4;">continue</span> في الحلقة</h3>
+
+      <p>
+        بدلاً من الخروج الكامل من الحلقة، يمكنك استخدام <span class="inline-code">continue</span>
+        لتخطي بقية الكود في التكرار الحالي والانتقال فوراً إلى التكرار التالي:
+      </p>
+
+      <div class="code-block">current_number = <span class="num">0</span>
+<span class="kw">while</span> current_number < <span class="num">10</span>:
+    current_number += <span class="num">1</span>
+    <span class="kw">if</span> current_number % <span class="num">2</span> == <span class="num">0</span>:
+        <span class="kw">continue</span>
+
+    <span class="fn">print</span>(current_number)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> يبدأ الكود بعدّاد <code>current_number</code> قيمته 0، ثم يدخل حلقة <code>while</code> تستمر طالما العدد أقل من 10. في كل دورة، نزيد العدد أولاً بمقدار 1 ثم نتحقق من أنه زوجي باستخدام <code>% 2 == 0</code>. إذا كان زوجياً، ننفذ <code>continue</code> الذي يقفز فوراً إلى التكرار التالي متجاوزاً جملة <code>print</code>. المخرجات ستكون الأعداد الفردية فقط: 1, 3, 5, 7, 9 — كل عدد في سطر منفصل.</div>
+
+      <p>
+        هذا الكود يطبع الأعداد الفردية فقط من 1 إلى 9. عندما يكون العدد زوجياً
+        (باقي قسمته على 2 يساوي 0)، ننفذ <span class="inline-code">continue</span>
+        الذي يتخطى جملة <span class="inline-code">print</span> وينتقل إلى التكرار التالي.
+      </p>
+
+      <h3 class="subsection-title">تجنب الحلقات اللانهائية</h3>
+
+      <p>
+        كل حلقة <span class="inline-code">while</span> تحتاج إلى طريقة للتوقف. إذا نسيتَ
+        تحديث المتغير الذي يتحقق الشرط منه، ستصبح الحلقة لا نهائية (infinite loop)
+        ويتجمد البرنامج أو يستمر في العمل إلى أجل غير مسمى:
+      </p>
+
+      <div class="code-block"><span class="cm"># هذه حلقة لا نهائية — لا تفعل هذا!</span>
+x = <span class="num">1</span>
+<span class="kw">while</span> x <= <span class="num">5</span>:
+    <span class="fn">print</span>(x)
+    <span class="cm"># نسينا إضافة x += 1</span></div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> يُظهر هذا الكود خطأً شائعاً جداً: حلقة لا نهائية (infinite loop). المتغير <code>x</code> يبدأ بـ 1 وتتكرر الحلقة طالما <code>x &lt;= 5</code>. ولكن داخل الحلقة، نطبع x فقط بدون تحديث قيمته — أي لا يوجد <code>x += 1</code>. نتيجة لذلك، سيظل x يساوي 1 إلى الأبد ويستمر البرنامج في طباعة 1 بلا توقف. هذا يوضح أهمية التأكد من أن شرط الخروج سيصبح False في وقت ما داخل كل حلقة while.</div>
+
+      <div class="warning">
+        <strong>تحذير:</strong> الحلقات اللانهائية خطأ شائع جداً بين المبتدئين. إذا توقف برنامجك
+        عن الاستجابة أو استمر في الطباعة بلا توقف، اضغط <strong>Ctrl+C</strong> في الطرفية
+        لإنهاء البرنامج قسراً. تأكد دائماً من أن شرط الخروج سيصبح <span class="inline-code">False</span>
+        في وقت ما.
+      </div>
+
+      <p>إذا كتبت برنامجاً به حلقة لا نهائية عن طريق الخطأ، فقط اضغط Ctrl+C وأصلح الكود.</p>
+
+      <!-- ========== 7.4 ========== -->
+      <h2 class="section-title">استخدام حلقة <span class="inline-code" style="background:#333;color:#cdd6f4;">while</span> مع القوائم والقواميس</h2>
+
+      <p>
+        حتى الآن، تعاملنا مع حلقات <span class="inline-code">while</span> في اختبارات شرطية بسيطة.
+        لكن القوة الحقيقية لهذه الحلقات تظهر عند استخدامها لتعديل القوائم والقواميس أثناء تشغيل
+        البرنامج. حلقات <span class="inline-code">for</span> لا تسمح بتعديل القائمة التي يتم
+        التكرار عليها، بينما حلقات <span class="inline-code">while</span> تمنحك هذه المرونة.
+      </p>
+
+      <h3 class="subsection-title">نقل العناصر من قائمة إلى أخرى</h3>
+
+      <p>
+        لنفترض أن لدينا قائمة بمستخدمين جدد لم يتم التحقق منهم بعد، ونريد نقلهم إلى قائمة
+        المستخدمين الموثَّقين بعد التحقق منهم:
+      </p>
+
+      <div class="code-block"><span class="cm"># ابدأ بمستخدمين لم يتم التحقق منهم</span>
+unconfirmed_users = [<span class="str">'alice'</span>, <span class="str">'brian'</span>, <span class="str">'candace'</span>]
+confirmed_users = []
+
+<span class="cm"># تحقق من كل مستخدم حتى لا يتبقى أي مستخدم غير موثق</span>
+<span class="kw">while</span> unconfirmed_users:
+    current_user = unconfirmed_users.pop()
+
+    <span class="fn">print</span>(<span class="str">f"Verifying user: {current_user.title()}"</span>)
+    confirmed_users.append(current_user)
+
+<span class="cm"># عرض جميع المستخدمين الموثقين</span>
+<span class="fn">print</span>(<span class="str">"\nThe following users have been confirmed:"</span>)
+<span class="kw">for</span> confirmed_user <span class="kw">in</span> confirmed_users:
+    <span class="fn">print</span>(confirmed_user.title())</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> لدينا قائمتان: <code>unconfirmed_users</code> تضم مستخدمين جدد، و<code>confirmed_users</code> فارغة في البداية. تستخدم الحلقة <code>while unconfirmed_users:</code> — طالما القائمة الأولى غير فارغة (شرط ضمني True)، نستخدم <code>pop()</code> لاستخراج آخر عنصر منها ونخزنه في <code>current_user</code>. نطبع رسالة تحقق ونضيف المستخدم إلى قائمة الموثقين عبر <code>append()</code>. بعد انتهاء الحلقة، نطبع جميع المستخدمين الموثقين باستخدام حلقة <code>for</code>. المخرجات ستظهر الأسماء بالترتيب: Candace, Brian, Alice — لأن <code>pop()</code> تأخذ من النهاية.</div>
+
+      <p>
+        هنا نستخدم <span class="inline-code">while unconfirmed_users</span> — طالما أن القائمة
+        ليست فارغة (شرط <span class="inline-code">True</span>)، نأخذ آخر عنصر منها باستخدام
+        <span class="inline-code">pop()</span> ونضيفه إلى القائمة الثانية بعد طباعة رسالة التحقق.
+        عندما تصبح القائمة الأولى فارغة، يتوقف الشرط وتنتهي الحلقة.
+      </p>
+
+      <h3 class="subsection-title">إزالة كل تكرارات قيمة محددة من قائمة</h3>
+
+      <p>
+        الدالة <span class="inline-code">remove()</span> تزيل التكرار الأول فقط من القيمة.
+        إذا أردت إزالة <strong>كل</strong> التكرارات، تستخدم حلقة <span class="inline-code">while</span>:
+      </p>
+
+      <div class="code-block">pets = [<span class="str">'dog'</span>, <span class="str">'cat'</span>, <span class="str">'dog'</span>, <span class="str">'goldfish'</span>, <span class="str">'cat'</span>, <span class="str">'rabbit'</span>, <span class="str">'cat'</span>]
+<span class="fn">print</span>(pets)
+
+<span class="kw">while</span> <span class="str">'cat'</span> <span class="kw">in</span> pets:
+    pets.remove(<span class="str">'cat'</span>)
+
+<span class="fn">print</span>(pets)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> القائمة <code>pets</code> تحتوي على 7 عناصر مع تكرار "cat" ثلاث مرات و"dog" مرتين. نطبع القائمة الأصلية أولاً، ثم نستخدم <code>while 'cat' in pets:</code> — تستمر الحلقة طالما أن القيمة "cat" لا تزال موجودة في القائمة. في كل تكرار، تزيل <code>remove()</code> التكرار الأول فقط لـ "cat". تتوقف الحلقة تلقائياً بعد إزالة جميع التكرارات. المخرجات ستظهر القائمة قبل وبعد: القائمة النهائية <code>['dog', 'dog', 'goldfish', 'rabbit']</code> خالية تماماً من "cat".</div>
+
+      <p>
+        الحلقة تستمر طالما أن القيمة <span class="inline-code">'cat'</span> موجودة في القائمة.
+        في كل تكرار، تزيل <span class="inline-code">remove()</span> التكرار الأول لـ 'cat'.
+        تتوقف الحلقة تلقائياً بعد إزالة جميع التكرارات.
+      </p>
+
+      <h3 class="subsection-title">ملء قاموس ببيانات المستخدم</h3>
+
+      <p>
+        يمكنك استخدام حلقة <span class="inline-code">while</span> لجمع بيانات من المستخدمين
+        وتخزينها في قاموس. هذا مفيد جداً في بناء تطبيقات الاستبيانات:
+      </p>
+
+      <div class="code-block">responses = {}
+
+<span class="cm"># تعيين راية للإشارة إلى استمرار الاستطلاع</span>
+polling_active = <span class="kw">True</span>
+
+<span class="kw">while</span> polling_active:
+    <span class="cm"># طلب الاسم والإجابة من المستخدم</span>
+    name = <span class="fn">input</span>(<span class="str">"\nWhat is your name? "</span>)
+    response = <span class="fn">input</span>(<span class="str">"Which mountain would you like to climb someday? "</span>)
+
+    <span class="cm"># تخزين الإجابة في القاموس</span>
+    responses[name] = response
+
+    <span class="cm"># معرفة ما إذا كان هناك مستخدم آخر يريد المشاركة</span>
+    repeat = <span class="fn">input</span>(<span class="str">"Would you like to let another person respond? (yes/no) "</span>)
+    <span class="kw">if</span> repeat == <span class="str">'no'</span>:
+        polling_active = <span class="kw">False</span>
+
+<span class="cm"># عرض نتائج الاستطلاع</span>
+<span class="fn">print</span>(<span class="str">"\n--- Poll Results ---"</span>)
+<span class="kw">for</span> name, response <span class="kw">in</span> responses.items():
+    <span class="fn">print</span>(<span class="str">f"{name} would like to climb {response}."</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> هذا برنامج استطلاع متكامل. ننشئ قاموساً فارغاً <code>responses</code> ونضبط راية <code>polling_active = True</code>. داخل حلقة <code>while</code>، نطلب اسم المستخدم وإجابته عن الجبل الذي يريد تسلقه، ونخزنهما في القاموس عبر <code>responses[name] = response</code>. ثم نسأل إذا كان هناك شخص آخر يريد المشاركة؛ إذا كانت الإجابة "no" نغير الراية إلى False. بعد الخروج من الحلقة، نطبع جميع النتائج باستخدام <code>responses.items()</code> التي تُرجع أزواج المفتاح-القيمة. المخرجات ستظهر اسم كل شخص والجبل الذي اختاره.</div>
+
+      <p>
+        في هذا المثال، نستخدم راية <span class="inline-code">polling_active</span> للتحكم في الحلقة.
+        في كل تكرار، نطلب اسم المستخدم وإجابته و نخزنهما في القاموس <span class="inline-code">responses</span>.
+        ثم نسأل المستخدم إذا كان هناك شخص آخر يريد المشاركة. إذا كانت الإجابة 'no'،
+        نغير الراية إلى <span class="inline-code">False</span> وتتوقف الحلقة.
+        بعد ذلك، نعرض جميع الإجابات المخزنة في القاموس.
+      </p>
+
+      <p>
+        هذه هي الطريقة التي تعمل بها البرامج الحقيقية التي تجمع بيانات من المستخدمين —
+        تستخدم حلقة <span class="inline-code">while</span> مع راية وتخزّن النتائج في هيكل
+        بيانات (عادةً قائمة أو قاموس) لمعالجتها لاحقاً.
+      </p>
+
+      <!-- ========== EXERCISES 7 ========== -->
+      <h2 class="section-title">تمارين الفصل السابع</h2>
+
+      <div class="exercise">
+        <strong>تمرين 7-1: تأجير السيارات</strong><br>
+        اكتب برنامجاً يسأل المستخدم عن نوع السيارة التي يريد استئجارها، ثم اطبع رسالة مثل
+        "Let me see if I can find you a Subaru."
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 7-2: حجز مطعم</strong><br>
+        اكتب برنامجاً يسأل المستخدم عن عدد الأشخاص في مجموعته. إذا كان العدد أكبر من 8،
+        اطبع رسالة تفيد بأنهم سيحتاجون إلى الانتظار. وإلا، اطبع رسالة تفيد بأن الطاولة جاهزة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 7-3: مضاعفات العدد 10</strong><br>
+        اسأل المستخدم عن رقم، ثم أخبره إذا كان هذا الرقم من مضاعفات العدد 10 أم لا.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 7-4: إضافات البيتزا</strong><br>
+        اكتب حلقة تطلب من المستخدم إضافة إضافات إلى البيتزا. استمر في الطلب حتى يكتب 'quit'.
+        كلما أضاف المستخدم إضافة، اطبع رسالة تؤكد إضافتها.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 7-5: تذاكر السينما</strong><br>
+        اكتب حلقة تسأل المستخدم عن عمره، ثم تحدد سعر التذكرة:
+        أقل من 3 سنوات: مجاناً، من 3 إلى 12 سنة: 10 دولارات، أكبر من 12 سنة: 15 دولاراً.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 7-6: ثلاث مخارج</strong><br>
+        أعد كتابة التمرين 7-4 أو 7-5 باستخدام شرط <span class="inline-code">while</span> واحد فقط
+        لاختبار حالة التوقف (بدلاً من استخدام <span class="inline-code">break</span> أو راية).
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 7-7: اللانهاية</strong><br>
+        اكتب حلقة لا نهائية وقم بتشغيلها. (لتوقفها اضغط Ctrl+C أو أغلق النافذة.)
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 7-8: محل السندويشات</strong><br>
+        أنشئ قائمة <span class="inline-code">sandwich_orders</span> و قائمة فارغة
+        <span class="inline-code">finished_sandwiches</span>. استخدم حلقة لنقل السندويشات
+        من الأولى إلى الثانية، واطبع رسالة لكل سندويش يتم تحضيره.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 7-9: لا باستارمي</strong><br>
+        باستخدام القائمة من التمرين 7-8، تأكد من أن طلب 'pastrami' يظهر فيها ثلاث مرات.
+        أضف كوداً في بداية البرنامج لطباعة رسالة تفيد بنفاد الباستارمي، ثم استخدم حلقة
+        <span class="inline-code">while</span> لإزالة كل تكرارات 'pastrami' من القائمة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 7-10: إجازة الأحلام</strong><br>
+        اكتب برنامجاً يستطلع المستخدمين عن مكان إجازة أحلامهم. استخدم حلقة لجمع البيانات
+        (يمكن للمستخدم إيقاف البرنامج عند الانتهاء). بعد جمع الإجابات، اطبع النتائج.
+      </div>
+
+      <h2 class="section-title">بروتوكول التكرار - كيف تعمل for خلف الكواليس</h2>
+      <p>عندما تكتب <span class="inline-code">for x in obj:</span>، بايثون تستدعي <span class="inline-code">iter(obj)</span> لتحصل على <strong>مُكرّر (Iterator)</strong>، ثم تستدعي <span class="inline-code">next(iterator)</span> في كل دورة حتى ترفع <span class="inline-code">StopIteration</span>. فهم هذا يفتح لك إمكانيات كبيرة:</p>
+
+      <div class="code-block">
+<span class="cm"># ما يحدث خلف الكواليس عند كتابة for x in [1, 2, 3]:</span>
+it = <span class="bu">iter</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>])      <span class="cm"># list_iterator</span>
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="kw">try</span>:
+        x = <span class="bu">next</span>(it)
+        <span class="bu">print</span>(x)        <span class="cm"># 1, 2, 3</span>
+    <span class="kw">except</span> StopIteration:
+        <span class="kw">break</span>
+
+<span class="cm"># أي كائن يعرّف __iter__ أو __getitem__ يمكن التكرار عليه</span>
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> يكشف هذا الكود ما يحدث خلف الكواليس عند استخدام حلقة <code>for</code>. تستدعي بايثون <code>iter()</code> على القائمة لتحصل على مُكرّر (iterator)، ثم تستدعي <code>next()</code> في كل دورة. كل استدعاء لـ <code>next()</code> يُرجِع العنصر التالي — 1, ثم 2, ثم 3. عندما تنفد العناصر، يرفع المُكرّر استثناء <code>StopIteration</code> الذي نلتقطه في <code>except</code> ونتوقف باستخدام <code>break</code>. المخرجات ستكون: 1, 2, 3 — تماماً كما تفعل حلقة <code>for</code> العادية.</div>
+
+      <div class="code-block">
+<span class="cm"># iter(callable, sentinel) — تكرار حتى قيمة محددة</span>
+<span class="kw">import</span> random
+
+<span class="cm"># يولد أرقاماً حتى تظهر القيمة 0</span>
+<span class="kw">for</span> val <span class="kw">in</span> <span class="bu">iter</span>(<span class="kw">lambda</span>: random.randint(<span class="num">0</span>, <span class="num">5</span>), <span class="num">0</span>):
+    <span class="bu">print</span>(val)  <span class="cm"># يطبع الأرقام حتى (وليس بما فيها) 0</span>
+
+<span class="cm"># قراءة سطور ملف حتى سطر فارغ</span>
+<span class="kw">with</span> <span class="bu">open</span>(<span class="str">'data.txt'</span>) <span class="kw">as</span> f:
+    <span class="kw">for</span> line <span class="kw">in</span> <span class="bu">iter</span>(f.readline, <span class="str">''</span>):
+        <span class="bu">print</span>(line.strip())
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> هذا نمط متقدم من بايثون — الدالة <code>iter()</code> تأخذ وسيطتين: دالة تُستدعى في كل تكرار، وقيمة حارسة (sentinel) يتوقف عندها التكرار. في المثال الأول، <code>lambda: random.randint(0, 5)</code> تُولّد أرقاماً عشوائية بين 0 و5، وتتوقف الحلقة عندما يظهر الرقم 0 (الرقم 0 نفسه لا يُطبَع). المثال الثاني يوضح قراءة سطور ملف حتى الوصول إلى سطر فارغ، وهو نمط مفيد جداً لقراءة الملفات ذات التنسيق المحدد.</div>
+
+      <div class="code-block">
+<span class="cm"># إنشاء مكرّر خاص — تنفيذ بروتوكول التكرار</span>
+<span class="kw">class</span> <span class="fn">CountDown</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, start):
+        <span class="kw">self</span>.n = start
+    <span class="kw">def</span> <span class="fn">__iter__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="kw">self</span>
+    <span class="kw">def</span> <span class="fn">__next__</span>(<span class="kw">self</span>):
+        <span class="kw">if</span> <span class="kw">self</span>.n < <span class="num">0</span>:
+            <span class="kw">raise</span> StopIteration
+        val = <span class="kw">self</span>.n
+        <span class="kw">self</span>.n -= <span class="num">1</span>
+        <span class="kw">return</span> val
+
+<span class="kw">for</span> i <span class="kw">in</span> CountDown(<span class="num">3</span>):
+    <span class="bu">print</span>(i)  <span class="cm"># 3, 2, 1, 0</span>
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong> نعرّف كلاس <code>CountDown</code> يطبّق بروتوكول التكرار عبر تعريف <code>__iter__</code> (الذي يُرجِع self) و <code>__next__</code>. عند بدء التكرار، <code>self.n</code> يساوي الرقم الذي بدأنا به (3). كل استدعاء لـ <code>next()</code> يُرجِع القيمة الحالية ثم يُنقِصها بمقدار 1. عندما يصبح <code>self.n</code> أقل من 0، نرفع استثناء <code>StopIteration</code> لإنهاء التكرار. المخرجات ستكون: 3, 2, 1, 0 — عدّ تنازلياً من 3 إلى 0. هذا يوضح كيفية إنشاء كائنات مخصصة قابلة للتكرار في بايثون.</div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> بايثون تستخدم التكرار الكسول (Lazy) — لا تولّد القيم إلا عند الطلب. <span class="inline-code">iter(callable, sentinel)</span> مثالي لقراءة الملفات وأخذ القراءات من sensors. الكائنات التي تنفذ <span class="inline-code">__getitem__</span> (بدون <span class="inline-code">__iter__</span>) لا تزال قابلة للتكرار لكن بكفاءة أقل.</div>
+
+      <!-- ========== SUMMARY ========== -->
+      <div class="summary-box">
+        <h3>📝 ملخص الفصل السابع</h3>
+        <p>في هذا الفصل تعلمت:</p>
+        <ul>
+          <li>كيف تستخدم الدالة <span class="inline-code">input()</span> لجلب بيانات من المستخدم</li>
+          <li>كيف تكتب رسائل توضيحية واضحة (prompts) لجعل التفاعل مع المستخدم أفضل</li>
+          <li>كيف تحوّل المدخلات النصية إلى أعداد باستخدام <span class="inline-code">int()</span></li>
+          <li>عامل الموديولو <span class="inline-code">%</span> واستخداماته في تحديد الأعداد الزوجية والفردية</li>
+          <li>الفرق بين <span class="inline-code">input()</span> في بايثون 3 و <span class="inline-code">raw_input()</span> في بايثون 2.7</li>
+          <li>كيف تعمل حلقات <span class="inline-code">while</span> وكيف تستخدمها في التكرار حتى يتحقق شرط معين</li>
+          <li>كيف تسمح للمستخدم بتحديد وقت الخروج من البرنامج</li>
+          <li>كيف تستخدم راية (flag) للتحكم في توقف الحلقة</li>
+          <li>كيف تستخدم <span class="inline-code">break</span> للخروج الفوري من الحلقة</li>
+          <li>كيف تستخدم <span class="inline-code">continue</span> للانتقال إلى التكرار التالي</li>
+          <li>كيف تتجنب الحلقات اللانهائية وكيف توقفها باستخدام Ctrl+C</li>
+          <li>كيف تستخدم حلقات <span class="inline-code">while</span> مع القوائم لنقل العناصر وإزالة التكرارات</li>
+          <li>كيف تستخدم حلقات <span class="inline-code">while</span> مع القواميس لجمع بيانات المستخدم</li>
+        </ul>
+      </div>
+
+    <div class="note"><strong>💡 نصيحة ذهبية:</strong> استخدم "sentinel pattern" مع while: متغير يتحكم في الحلقة، يتغير عند الإنهاء. مثلاً: <span class="inline-code">active = True; while active: ... if condition: active = False</span>. للتحقق من صحة الإدخال، استخدم <span class="inline-code">while True: ... if valid: break</span> — أنظف وأسهل للقراءة.</div>
+
+    <div class="warning"><strong>⚠️ خطأ شائع:</strong> الحلقات اللانهائية — تنسى تحديث المتغير الذي تختبره الشرط. إذا كتبت <span class="inline-code">while x < 10:</span> ولم تزد <span class="inline-code">x</span> داخل الحلقة، ستستمر للأبد. في بايثون، استخدم Ctrl+C لإيقافها. أيضاً، المقارنة <span class="inline-code">!=</span> تختلف عن <span class="inline-code">is not</span> — الأول تقارن القيم، الثاني يقارن الكائنات.</div>
+
+    <div class="exercise"><strong>🏋️ تمرين:</strong> اكتب لعبة "خمن الرقم": يخزن البرنامج رقماً عشوائياً بين 1 و 100 (<span class="inline-code">import random; num = random.randint(1, 100)</span>). يطلب من المستخدم التخمين، ويخبره إذا كان التخمين أكبر أو أصغر. يستمر حتى يخمن الرقم الصحيح. احسب عدد المحاولات واطبعه.</div>
+
+    <div class="footer">
+        <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+        <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+    }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

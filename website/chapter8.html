@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الفصل 8: الدوال - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <div class="part-badge">📘 الجزء الأول: الأساسيات</div>
+      <h1>الفصل الثامن: الدوال</h1>
+      <p>Functions — كتابة كود قابل لإعادة الاستخدام وتنظيم البرنامج</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        الدوال (Functions) هي لبنات البناء الأساسية في برمجة بايثون. تتيح لك الدوال كتابة كود
+        يُنفذ مهمة محددة، ثم إعادة استخدامه في أي مكان في برنامجك دون الحاجة إلى كتابته مرة أخرى.
+        في هذا الفصل، ستتعلم كيفية تعريف الدوال، تمرير البيانات إليها، إرجاع القيم منها،
+        وتنظيم الدوال في وحدات منفصلة (modules) لسهولة الصيانة وإعادة الاستخدام.
+      </p>
+
+      <!-- ========== 8.1 ========== -->
+      <h2 class="section-title">تعريف دالة</h2>
+
+      <p>
+        لتعريف دالة في بايثون، تستخدم الكلمة المحجوزة <span class="inline-code">def</span>
+        متبوعة باسم الدالة وأقواس <span class="inline-code">()</span> ونقطتين رأسيتين <span class="inline-code">:</span>.
+        الكود الذي ينتمي إلى الدالة يُكتب بمسافة بادئة (indentation). إليك أبسط دالة ممكنة:
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">greet_user</span>():
+    <span class="cm">"""Display a simple greeting."""</span>
+    <span class="fn">print</span>(<span class="str">"Hello!"</span>)
+
+<span class="fn">greet_user</span>()</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>تبدأ كتابة الدوال في بايثون باستخدام الكلمة المفتاحية <code>def</code> متبوعة باسم الدالة وأقواس <code>()</code> ونقطتين رأسيتين <code>:</code>. الكود الذي يليها يجب أن يكون ذو مسافة بادئة (indentation). الـ docstring بين علامتي <code>"""</code> يشرح وظيفة الدالة. بعد تعريف الدالة، يمكنك استدعاؤها بكتابة اسمها متبوعاً بأقواس.</p></div>
+
+      <p>
+        الكلمة <span class="inline-code">def</span> تُخبر بايثون أننا نُعرِّف دالة جديدة.
+        اسم الدالة هو <span class="inline-code">greet_user</span>. الأقواس الفارغة تعني أن
+        الدالة لا تأخذ أي وسائط (arguments). النقطتان الرأسيتان تفتحان جسم الدالة.
+        السطر الذي يبدأ بـ <span class="inline-code">"""</span> هو docstring — شرح يوضح ما تفعله الدالة.
+        أخيراً، نستدعي الدالة باستخدام اسمها متبوعاً بأقواس.
+      </p>
+
+      <h3 class="subsection-title">تمرير معلومات إلى الدالة</h3>
+
+      <p>
+        يمكن للدالة استقبال بيانات عبر الوسائط (arguments). نضع اسم المتغير داخل الأقواس
+        عند التعريف، ثم نمرر القيمة عند الاستدعاء:
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">greet_user</span>(username):
+    <span class="cm">"""Display a personalized greeting."""</span>
+    <span class="fn">print</span>(<span class="str">f"Hello, {username.title()}!"</span>)
+
+<span class="fn">greet_user</span>(<span class="str">'jesse'</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>عند تعريف دالة، يمكنك تحديد <strong>مُعاملات (parameters)</strong> داخل الأقواس — وهي متغيرات تستقبل القيم التي ترسلها للدالة. عند الاستدعاء، تمرر <strong>وسائط (arguments)</strong> وهي القيم الفعلية. هنا المتغير <code>username</code> هو المُعامل، و <code>'jesse'</code> هو الوسيط.</p></div>
+
+      <p>
+        هنا <span class="inline-code">username</span> هو <strong>مُعامل (parameter)</strong>
+        — اسم يشير إلى القيمة التي تمررها عند استدعاء الدالة.
+        القيمة <span class="inline-code">'jesse'</span> هي <strong>وسيط (argument)</strong>
+        — القيمة الفعلية التي تمررها للدالة.
+      </p>
+
+      <!-- ========== 8.2 ========== -->
+      <h2 class="section-title">تمرير الوسائط</h2>
+
+      <p>
+        بايثون تقدم طرقاً مرنة لتمرير الوسائط إلى الدوال. يمكنك تمريرها حسب الترتيب
+        (positional arguments)، أو باستخدام أسماء المُعاملات (keyword arguments)،
+        أو استخدام قيم افتراضية (default values).
+      </p>
+
+      <h3 class="subsection-title">الوسائط الموضعية (Positional Arguments)</h3>
+
+      <p>
+        تمرر الوسائط الموضعية بنفس ترتيب كتابة المُعاملات في تعريف الدالة. هذا يعني أن
+        أول قيمة تمررها تُخصص لأول مُعامل، والثانية للثاني، وهكذا:
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">describe_pet</span>(animal_type, pet_name):
+    <span class="cm">"""Display information about a pet."""</span>
+    <span class="fn">print</span>(<span class="str">f"\nI have a {animal_type}."</span>)
+    <span class="fn">print</span>(<span class="str">f"My {animal_type}'s name is {pet_name.title()}."</span>)
+
+<span class="fn">describe_pet</span>(<span class="str">'hamster'</span>, <span class="str">'harry'</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>في <strong>الوسائط الموضعية (positional arguments)</strong>، يجب أن تتبع القيم نفس ترتيب المُعاملات في تعريف الدالة. القيمة الأولى تُخصص لأول مُعامل، والثانية للثاني، وهكذا. إذا غيرت الترتيب، ستحصل على نتائج غير متوقعة.</p></div>
+
+      <p>
+        الترتيب مهم جداً. إذا بدلتَ الأماكن (<span class="inline-code">describe_pet('harry', 'hamster')</span>)،
+        ستحصل على نتيجة غير منطقية لأن بايثون ستظن أن اسم الحيوان هو 'harry' ونوعه هو 'hamster'.
+      </p>
+
+      <h3 class="subsection-title">الوسائط المفتاحية (Keyword Arguments)</h3>
+
+      <p>
+        في الوسائط المفتاحية، تمرر أسماء المُعاملات مع قيمها مباشرة عند استدعاء الدالة.
+        هذا يزيل أي التباس بخصوص الترتيب:
+      </p>
+
+      <div class="code-block"><span class="fn">describe_pet</span>(animal_type=<span class="str">'hamster'</span>, pet_name=<span class="str">'harry'</span>)
+<span class="fn">describe_pet</span>(pet_name=<span class="str">'harry'</span>, animal_type=<span class="str">'hamster'</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><strong>الوسائط المفتاحية (keyword arguments)</strong> تربط القيم مباشرة بأسماء المُعاملات باستخدام علامة <code>=</code>. هذا يلغي أهمية الترتيب — يمكنك كتابة المُعاملات بأي ترتيب شئت. هذه الطريقة تجعل الكود أكثر وضوحاً وسهولة في القراءة.</p></div>
+
+      <p>
+        كلا الاستدعاءين صحيحان وينتجان نفس النتيجة. الوسائط المفتاحية تجعل الكود أكثر وضوحاً
+        وقابلية للقراءة، خاصةً عندما تحتوي الدالة على عدة مُعاملات.
+      </p>
+
+      <h3 class="subsection-title">القيم الافتراضية (Default Values)</h3>
+
+      <p>
+        يمكنك إعطاء قيمة افتراضية لأي مُعامل. إذا لم يمرر المستخدم قيمة لهذا المُعامل،
+        تستخدم القيمة الافتراضية:
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">describe_pet</span>(pet_name, animal_type=<span class="str">'dog'</span>):
+    <span class="cm">"""Display information about a pet."""</span>
+    <span class="fn">print</span>(<span class="str">f"\nI have a {animal_type}.</span><span class="str">"</span>)
+    <span class="fn">print</span>(<span class="str">f"My {animal_type}'s name is {pet_name.title()}."</span>)
+
+<span class="fn">describe_pet</span>(pet_name=<span class="str">'willie'</span>)
+<span class="fn">describe_pet</span>(<span class="str">'willie'</span>)          <span class="cm"># نفس النتيجة</span>
+<span class="fn">describe_pet</span>(<span class="str">'harry'</span>, <span class="str">'hamster'</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>يمكنك إعطاء <strong>قيم افتراضية (default values)</strong> للمُعاملات عند تعريف الدالة. إذا لم يمرر المستخدم قيمة لهذا المُعامل، ستستخدم القيمة الافتراضية تلقائياً. يجب وضع المُعاملات ذات القيم الافتراضية بعد المُعاملات التي لا تملك قيماً افتراضية.</p></div>
+
+      <p>
+        المُعاملات ذات القيم الافتراضية يجب أن تأتي بعد المُعاملات التي ليس لها قيم افتراضية.
+        بهذه الطريقة، تستمر الوسائط الموضعية في العمل بشكل صحيح.
+      </p>
+
+      <h3 class="subsection-title">استدعاءات الدوال المتكافئة (Equivalent Function Calls)</h3>
+
+      <p>
+        بفضل الخيارات المتعددة، يمكن استدعاء نفس الدالة بعدة طرق متكافئة:
+      </p>
+
+      <div class="code-block"><span class="cm"># دالة مع قيمة افتراضية</span>
+<span class="kw">def</span> <span class="fn">describe_pet</span>(pet_name, animal_type=<span class="str">'dog'</span>):
+
+<span class="cm"># جميع هذه الاستدعاءات متكافئة:</span>
+<span class="fn">describe_pet</span>(<span class="str">'willie'</span>)
+<span class="fn">describe_pet</span>(pet_name=<span class="str">'willie'</span>)
+<span class="fn">describe_pet</span>(<span class="str">'harry'</span>, <span class="str">'hamster'</span>)
+<span class="fn">describe_pet</span>(pet_name=<span class="str">'harry'</span>, animal_type=<span class="str">'hamster'</span>)
+<span class="fn">describe_pet</span>(animal_type=<span class="str">'hamster'</span>, pet_name=<span class="str">'harry'</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>توفر بايثون مرونة كبيرة في استدعاء الدوال — يمكن استدعاء نفس الدالة بعدة طرق مختلفة. يمكنك استخدام الوسائط الموضعية فقط، أو المفتاحية فقط، أو خليط منهما. جميع هذه الاستدعاءات تؤدي إلى نفس النتيجة طالما أن القيم النهائية صحيحة.</p></div>
+
+      <h3 class="subsection-title">تجنب أخطاء الوسائط</h3>
+
+      <p>
+        إذا نسيت تمرير عدد الوسائط المطلوب (أو أكثر من اللازم)، سترسل بايثون خطأً واضحاً:
+      </p>
+
+      <div class="code-block"><span class="fn">describe_pet</span>()  <span class="cm"># خطأ: missing 2 required positional arguments</span></div>
+
+      <p>
+        اقرأ رسالة الخطأ بعناية — ستخبرك بالضبط بعدد الوسائط المفقودة. هذا أحد الأسباب
+        التي تجعل بايثون سهلة التعلم للمبتدئين.
+      </p>
+
+      <!-- ========== 8.3 ========== -->
+      <h2 class="section-title">قيم الإرجاع (Return Values)</h2>
+
+      <p>
+        الدالة ليست مجرد طباعة نص — يمكنها إرجاع قيمة باستخدام الكلمة المحجوزة
+        <span class="inline-code">return</span>. هذه القيمة يمكن تخزينها في متغير أو استخدامها مباشرة.
+      </p>
+
+      <h3 class="subsection-title">إرجاع قيمة بسيطة</h3>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">get_formatted_name</span>(first_name, last_name):
+    <span class="cm">"""Return a full name, neatly formatted."""</span>
+    full_name = <span class="str">f"{first_name} {last_name}"</span>
+    <span class="kw">return</span> full_name.title()
+
+musician = <span class="fn">get_formatted_name</span>(<span class="str">'jimi'</span>, <span class="str">'hendrix'</span>)
+<span class="fn">print</span>(musician)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>الكلمة المفتاحية <code>return</code> تُستخدم لإرجاع قيمة من الدالة إلى مكان الاستدعاء. يمكن تخزين القيمة المرجعة في متغير واستخدامها لاحقاً. عندما تصل بايثون إلى <code>return</code>، تتوقف فوراً عن تنفيذ الدالة وتُعيد القيمة المحددة.</p></div>
+
+      <p>
+        عندما تستدعي <span class="inline-code">get_formatted_name()</span>، تُنفذ الدالة
+        الكود الخاص بها وتُرجِع القيمة المطلوبة. القيمة المرجعة تُخزَّن في المتغير
+        <span class="inline-code">musician</span> ليتم استخدامها لاحقاً.
+      </p>
+
+      <h3 class="subsection-title">جعل الوسيط اختيارياً (Optional Argument)</h3>
+
+      <p>
+        يمكنك جعل بعض الوسائط اختيارية بإعطائها قيمة افتراضية، مثل <span class="inline-code">''</span> (نص فارغ)،
+        ثم التحقق منها داخل الدالة:
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">get_formatted_name</span>(first_name, last_name, middle_name=<span class="str">''</span>):
+    <span class="cm">"""Return a full name, with an optional middle name."""</span>
+    <span class="kw">if</span> middle_name:
+        full_name = <span class="str">f"{first_name} {middle_name} {last_name}"</span>
+    <span class="kw">else</span>:
+        full_name = <span class="str">f"{first_name} {last_name}"</span>
+    <span class="kw">return</span> full_name.title()
+
+musician = <span class="fn">get_formatted_name</span>(<span class="str">'jimi'</span>, <span class="str">'hendrix'</span>)
+<span class="fn">print</span>(musician)
+
+musician = <span class="fn">get_formatted_name</span>(<span class="str">'john'</span>, <span class="str">'hooker'</span>, <span class="str">'lee'</span>)
+<span class="fn">print</span>(musician)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>لجعل مُعامل <strong>اختيارياً (optional)</strong>، أعطه قيمة افتراضية مثل <code>''</code> (نص فارغ) ثم اختبره داخل الدالة باستخدام <code>if</code>. إذا كانت القيمة غير فارغة/صحيحة، استخدمها؛ وإلا تجاهلها. هذه تقنية شائعة لجعل الدوال مرنة وقابلة للتكيف مع حالات مختلفة.</p></div>
+
+      <p>
+        هذه تقنية شائعة جداً لجعل الدوال مرنة — تستقبل القدر الذي تريده من المعلومات
+        وتتعامل مع الحالات الناقصة بذكاء.
+      </p>
+
+      <h3 class="subsection-title">إرجاع قاموس</h3>
+
+      <p>
+        يمكن للدالة إرجاع أي نوع من البيانات، بما في ذلك القواميس. هذا يسمح لك ببناء
+        هياكل بيانات معقدة داخل الدالة:
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">build_person</span>(first_name, last_name, age=<span class="kw">None</span>):
+    <span class="cm">"""Return a dictionary of information about a person."""</span>
+    person = {<span class="str">'first'</span>: first_name, <span class="str">'last'</span>: last_name}
+    <span class="kw">if</span> age:
+        person[<span class="str">'age'</span>] = age
+    <span class="kw">return</span> person
+
+musician = <span class="fn">build_person</span>(<span class="str">'jimi'</span>, <span class="str">'hendrix'</span>, age=<span class="num">27</span>)
+<span class="fn">print</span>(musician)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>الدوال يمكنها إرجاع أي نوع من البيانات، بما في ذلك القواميس. هنا تُعيد الدالة قاموساً بمعلومات عن شخص. <code>None</code> قيمة خاصة في بايثون تعني "لا قيمة"، وتُستخدم غالباً كقيمة افتراضية للمُعاملات الاختيارية.</p></div>
+
+      <p>
+        هنا نستخدم <span class="inline-code">None</span> كقيمة افتراضية للمعامل
+        <span class="inline-code">age</span>. <span class="inline-code">None</span> هي
+        قيمة خاصة في بايثون تعني "لا قيمة". نتحقق منها داخل الدالة ونضيف المفتاح
+        <span class="inline-code">'age'</span> فقط إذا تم تمرير قيمة.
+      </p>
+
+      <h3 class="subsection-title">استخدام دالة مع حلقة while</h3>
+
+      <p>
+        يمكنك دمج الدوال مع حلقات <span class="inline-code">while</span> لبناء برامج تفاعلية
+        قوية. المثال التالي يجمع الأسماء بشكل متكرر حتى يريد المستخدم التوقف:
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">get_formatted_name</span>(first_name, last_name):
+    <span class="cm">"""Return a full name, neatly formatted."""</span>
+    full_name = <span class="str">f"{first_name} {last_name}"</span>
+    <span class="kw">return</span> full_name.title()
+
+<span class="cm"># هذه حلقة لا نهائية!</span>
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="fn">print</span>(<span class="str">"\nPlease tell me your name:"</span>)
+    <span class="fn">print</span>(<span class="str">"(enter 'q' at any time to quit)"</span>)
+
+    f_name = <span class="fn">input</span>(<span class="str">"First name: "</span>)
+    <span class="kw">if</span> f_name == <span class="str">'q'</span>:
+        <span class="kw">break</span>
+
+    l_name = <span class="fn">input</span>(<span class="str">"Last name: "</span>)
+    <span class="kw">if</span> l_name == <span class="str">'q'</span>:
+        <span class="kw">break</span>
+
+    formatted_name = <span class="fn">get_formatted_name</span>(f_name, l_name)
+    <span class="fn">print</span>(<span class="str">f"\nHello, {formatted_name}!"</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>يمكنك دمج الدوال مع حلقات <code>while</code> لبناء برامج تفاعلية. الحلقة تستمر في طلب الإدخال من المستخدم حتى يكتب <code>'q'</code> للخروج. هذا يجمع بين تنظيم الدوال وقوة حلقات التكرار.</p></div>
+
+      <!-- ========== 8.4 ========== -->
+      <h2 class="section-title">تمرير قائمة</h2>
+
+      <p>
+        عندما تمرر قائمة إلى دالة، تحصل الدالة على إشارة (reference) إلى القائمة الأصلية،
+        مما يعني أن أي تعديل تجريه على القائمة داخل الدالة سيؤثر على القائمة الأصلية خارجها.
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">greet_users</span>(names):
+    <span class="cm">"""Print a simple greeting to each user in the list."""</span>
+    <span class="kw">for</span> name <span class="kw">in</span> names:
+        msg = <span class="str">f"Hello, {name.title()}!"</span>
+        <span class="fn">print</span>(msg)
+
+usernames = [<span class="str">'hannah'</span>, <span class="str">'ty'</span>, <span class="str">'margot'</span>]
+<span class="fn">greet_users</span>(usernames)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>يمكنك تمرير <strong>قائمة (list)</strong> كوسيط إلى دالة. الدالة تستقبل إشارة (reference) إلى القائمة الأصلية، ويمكنها التكرار عليها والتعامل مع كل عنصر. هذا يسمح بمعالجة مجموعات كبيرة من البيانات بكفاءة.</p></div>
+
+      <h3 class="subsection-title">تعديل قائمة داخل دالة</h3>
+
+      <p>
+        بعد تعريف دالة لتعديل قائمة، تبقى التعديلات دائمة. المثال التالي يحاكي طباعة
+        نماذج ثلاثية الأبعاد: يأخذ التصاميم غير المطبوعة وينقلها إلى قائمة التصاميم المطبوعة:
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">print_models</span>(unprinted_designs, completed_models):
+    <span class="cm">"""Simulate printing each design."""</span>
+    <span class="kw">while</span> unprinted_designs:
+        current_design = unprinted_designs.pop()
+        <span class="fn">print</span>(<span class="str">f"Printing model: {current_design}"</span>)
+        completed_models.append(current_design)
+
+<span class="kw">def</span> <span class="fn">show_completed_models</span>(completed_models):
+    <span class="cm">"""Show all the models that were printed."""</span>
+    <span class="fn">print</span>(<span class="str">"\nThe following models have been printed:"</span>)
+    <span class="kw">for</span> completed_model <span class="kw">in</span> completed_models:
+        <span class="fn">print</span>(completed_model)
+
+unprinted = [<span class="str">'phone case'</span>, <span class="str">'robot pendant'</span>, <span class="str">'dodecahedron'</span>]
+completed = []
+
+<span class="fn">print_models</span>(unprinted, completed)
+<span class="fn">show_completed_models</span>(completed)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>عندما تُمرر قائمة إلى دالة، أي تعديل تجريه عليها يؤثر في القائمة الأصلية. هنا تستخدم <code>pop()</code> لإزالة عناصر من قائمة التصاميم غير المطبوعة و <code>append()</code> لإضافتها إلى قائمة التصاميم المطبوعة. هذا التقسيم — كل دالة تقوم بمهمة واحدة — هو أسلوب برمجي ممتاز.</p></div>
+
+      <p>
+        هذا مثال ممتاز على تنظيم الكود — كل دالة تقوم بمهمة واحدة محددة.
+        <span class="inline-code">print_models()</span> تتولى الطباعة، و
+        <span class="inline-code">show_completed_models()</span> تتولى العرض.
+      </p>
+
+      <h3 class="subsection-title">منع الدالة من تعديل القائمة</h3>
+
+      <p>
+        إذا أردت منع الدالة من تعديل القائمة الأصلية، مرر نسخة من القائمة باستخدام
+        تقنية الشريحة <span class="inline-code">[:]</span>:
+      </p>
+
+      <div class="code-block"><span class="fn">print_models</span>(unprinted[:], completed)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>لمنع الدالة من تعديل القائمة الأصلية، مرر <strong>نسخة</strong> منها باستخدام تقنية الشريحة <code>[:]</code>. هذا ينشئ قائمة جديدة تحتوي على نفس العناصر. استخدم هذه الطريقة عندما تريد الحفاظ على البيانات الأصلية دون تغيير.</p></div>
+
+      <p>
+        هذا يُمرر نسخة جديدة من القائمة بدلاً من القائمة الأصلية. لكن في معظم الحالات،
+        من الأفضل أن تمرر القائمة الأصلية وتوثق في اسم الدالة أنها ستُعدل القائمة
+        (مثل تسميتها <span class="inline-code">print_models</span>) بدلاً من إنشاء نسخ
+        تستهلك الذاكرة دون داعٍ.
+      </p>
+
+      <!-- ========== 8.5 ========== -->
+      <h2 class="section-title">تمرير عدد عشوائي من الوسائط</h2>
+
+      <p>
+        في بعض الأحيان لا تعرف مسبقاً عدد الوسائط التي ستمررها إلى الدالة. بايثون تسمح لك
+        بجمع أي عدد من الوسائط الموضعية في مُعامل واحد باستخدام العلامة <span class="inline-code">*</span>:
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">make_pizza</span>(*toppings):
+    <span class="cm">"""Print the list of toppings that have been requested."""</span>
+    <span class="fn">print</span>(toppings)
+
+<span class="fn">make_pizza</span>(<span class="str">'pepperoni'</span>)
+<span class="fn">make_pizza</span>(<span class="str">'mushrooms'</span>, <span class="str">'green peppers'</span>, <span class="str">'extra cheese'</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>العلامة <code>*</code> تسمح للدالة باستقبال <strong>عدد عشوائي من الوسائط الموضعية</strong> (يُسمى تقليدياً <code>*args</code>). بايثون تجمع كل هذه القيم في <strong>tuple</strong> (مجموعة). هذا مفيد عندما لا تعرف عدد الوسائط التي ستمررها مسبقاً.</p></div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>يمكن <strong>دمج المُعاملات العادية مع <code>*args</code></strong>، بشرط وضع المُعاملات العادية أولاً. بايثون ستخصص القيم الأولى للمُعاملات العادية، ثم تجمع الباقي في tuple. هذا يسمح بدوال تجمع بين الوسائط الإجبارية والاختيارية.</p></div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>لاستخدام دالة من وحدة أخرى، استخدم <code>import</code> متبوعاً باسم الوحدة (بدون <code>.py</code>). ثم استدعِ الدالة باستعمال اسم الوحدة نقطة اسم الدالة: <code>pizza.make_pizza()</code>. هذا يحافظ على مساحة الأسماء (namespace) نظيفة.</p></div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>باستخدام <code>from module import function</code>، يمكنك استيراد دوال محددة واستخدامها مباشرة بدون اسم الوحدة. هذا يقلل من الكتابة لكنه قد يسبب تضارباً في الأسماء إذا كانت هناك دوال بنفس الاسم في برنامجك.</p></div>
+
+      <p>
+        علامة النجمة <span class="inline-code">*</span> في تعريف الدالة تجعل بايثون تنشئ
+        <strong>tuple</strong> (مجموعة) تحمل جميع القيم الممررة. يمكنك التكرار عليها
+        كما تفعل مع أي مجموعة:
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">make_pizza</span>(*toppings):
+    <span class="cm">"""Summarize the pizza we are about to make."""</span>
+    <span class="fn">print</span>(<span class="str">"\nMaking a pizza with the following toppings:"</span>)
+    <span class="kw">for</span> topping <span class="kw">in</span> toppings:
+        <span class="fn">print</span>(<span class="str">f"- {topping}"</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>نظراً لأن <code>*toppings</code> هو tuple، يمكنك <strong>التكرار عليه</strong> بحلقة <code>for</code> للوصول إلى كل قيمة على حدة. هذا يتيح معالجة مرنة لعدد غير محدد من العناصر — مثلاً قائمة الإضافات على البيتزا.</p></div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><strong>الوحدة (module)</strong> هي ملف بايثون بامتداد <code>.py</code> يحتوي على دوال يمكن إعادة استخدامها. بوضع الدوال في ملف منفصل، يمكنك تنظيم مشاريع كبيرة وتجنب تكرار الكود.</p></div>
+
+      <h3 class="subsection-title">دمج الوسائط الموضعية مع الوسائط العشوائية</h3>
+
+      <p>
+        يمكنك دمج مُعاملات محددة مع المُعامل <span class="inline-code">*args</span>.
+        يجب وضع المُعاملات المحددة أولاً:
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">make_pizza</span>(size, *toppings):
+    <span class="cm">"""Summarize the pizza we are about to make."""</span>
+    <span class="fn">print</span>(<span class="str">f"\nMaking a {size}-inch pizza with the following toppings:"</span>)
+    <span class="kw">for</span> topping <span class="kw">in</span> toppings:
+        <span class="fn">print</span>(<span class="str">f"- {topping}"</span>)
+
+<span class="fn">make_pizza</span>(<span class="num">16</span>, <span class="str">'pepperoni'</span>)
+<span class="fn">make_pizza</span>(<span class="num">12</span>, <span class="str">'mushrooms'</span>, <span class="str">'green peppers'</span>, <span class="str">'extra cheese'</span>)</div>
+
+      <h3 class="subsection-title">استخدام الوسائط المفتاحية العشوائية (<span class="inline-code" style="background:#333;color:#cdd6f4;">**kwargs</span>)</h3>
+
+      <p>
+        أحياناً تحتاج إلى تمرير عدد عشوائي من أزواج المفتاح-القيمة. استخدم
+        <span class="inline-code">**</span> لإنشاء قاموس من الوسائط المفتاحية:
+      </p>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">build_profile</span>(first, last, **user_info):
+    <span class="cm">"""Build a dictionary containing everything we know about a user."""</span>
+    user_info[<span class="str">'first_name'</span>] = first
+    user_info[<span class="str">'last_name'</span>] = last
+    <span class="kw">return</span> user_info
+
+user_profile = <span class="fn">build_profile</span>(<span class="str">'albert'</span>, <span class="str">'einstein'</span>,
+                                 location=<span class="str">'princeton'</span>,
+                                 field=<span class="str">'physics'</span>)
+<span class="fn">print</span>(user_profile)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>العلامة <code>**</code> تسمح باستقبال <strong>عدد عشوائي من الوسائط المفتاحية</strong> (يُسمى تقليدياً <code>**kwargs</code>). بايثون تجمعها في <strong>قاموس (dictionary)</strong>. هذا مثالي لبناء دوال مرنة تحتاج لاستقبال أزواج مفتاح-قيمة غير محددة مسبقاً.</p></div>
+
+      <p>
+        العلامة <span class="inline-code">**</span> تجمع أي وسائط مفتاحية إضافية في قاموس.
+        لاحظ أننا نضيف <span class="inline-code">'first_name'</span> و
+        <span class="inline-code">'last_name'</span> إلى القاموس بعد معالجتها كوسائط إجبارية.
+      </p>
+
+      <!-- ========== 8.6 ========== -->
+      <h2 class="section-title">تخزين الدوال في وحدات (Modules)</h2>
+
+      <p>
+        مع نمو برامجك، سترغب في تنظيم الدوال في ملفات منفصلة تسمى وحدات (modules).
+        الوحدة هي ملف بايثون <span class="inline-code">.py</span> يحتوي على دوال.
+        يمكنك استيراد الدوال التي تحتاجها باستخدام <span class="inline-code">import</span>.
+      </p>
+
+      <p>لنقم بإنشاء ملف باسم <span class="inline-code">pizza.py</span> يحتوي على الدالة التالية:</p>
+
+      <div class="code-block"><span class="cm"># pizza.py</span>
+<span class="kw">def</span> <span class="fn">make_pizza</span>(size, *toppings):
+    <span class="cm">"""Summarize the pizza we are about to make."""</span>
+    <span class="fn">print</span>(<span class="str">f"\nMaking a {size}-inch pizza with the following toppings:"</span>)
+    <span class="kw">for</span> topping <span class="kw">in</span> toppings:
+        <span class="fn">print</span>(<span class="str">f"- {topping}"</span>)</div>
+
+      <p>ثم في ملف آخر <span class="inline-code">making_pizzas.py</span> نستورد ونستخدم الدالة:</p>
+
+      <div class="code-block"><span class="cm"># making_pizzas.py</span>
+<span class="kw">import</span> pizza
+
+pizza.make_pizza(<span class="num">16</span>, <span class="str">'pepperoni'</span>)
+pizza.make_pizza(<span class="num">12</span>, <span class="str">'mushrooms'</span>, <span class="str">'green peppers'</span>, <span class="str">'extra cheese'</span>)</div>
+
+      <h3 class="subsection-title">استيراد دوال محددة</h3>
+
+      <p>
+        يمكنك استيراد دوال محددة بدلاً من الوحدة بأكملها باستخدام الصيغة:
+        <span class="inline-code">from module_name import function_name</span>:
+      </p>
+
+      <div class="code-block"><span class="kw">from</span> pizza <span class="kw">import</span> make_pizza
+
+make_pizza(<span class="num">16</span>, <span class="str">'pepperoni'</span>)
+make_pizza(<span class="num">12</span>, <span class="str">'mushrooms'</span>, <span class="str">'green peppers'</span>, <span class="str">'extra cheese'</span>)</div>
+
+      <p>هنا لا نحتاج إلى كتابة <span class="inline-code">pizza.make_pizza()</span> — بل نستخدم
+      اسم الدالة مباشرة.</p>
+
+      <h3 class="subsection-title">استخدام <span class="inline-code" style="background:#333;color:#cdd6f4;">as</span> لإعطاء اسم مستعار</h3>
+
+      <p>يمكنك إعطاء اسم مستعار (alias) للدالة أو الوحدة لتجنب تعارض الأسماء:</p>
+
+      <div class="code-block"><span class="cm"># اسم مستعار للدالة</span>
+<span class="kw">from</span> pizza <span class="kw">import</span> make_pizza <span class="kw">as</span> mp
+
+mp(<span class="num">16</span>, <span class="str">'pepperoni'</span>)
+
+<span class="cm"># اسم مستعار للوحدة</span>
+<span class="kw">import</span> pizza <span class="kw">as</span> p
+
+p.make_pizza(<span class="num">16</span>, <span class="str">'pepperoni'</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>الكلمة <code>as</code> تسمح بإعطاء <strong>اسم مستعار (alias)</strong> للدالة أو الوحدة. هذا مفيد لتجنب تضارب الأسماء أو لتقصير الأسماء الطويلة. يمكنك استخدامه مع <code>import</code> أو <code>from ... import</code>.</p></div>
+
+      <h3 class="subsection-title">استيراد كل الدوال من وحدة</h3>
+
+      <p>يمكنك استيراد كل الدوال من وحدة باستخدام <span class="inline-code">*</span>:</p>
+
+      <div class="code-block"><span class="kw">from</span> pizza <span class="kw">import</span> *
+
+make_pizza(<span class="num">16</span>, <span class="str">'pepperoni'</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>العلامة <code>*</code> تستورد <strong>جميع الدوال</strong> من الوحدة إلى مساحة الأسماء الحالية. هذا غير مستحسن لأنه قد يستورد دوالاً بأسماء متضاربة عن غير قصد. الأفضل استيراد ما تحتاجه فقط.</p></div>
+
+      <div class="warning">
+        <strong>تحذير:</strong> عند استيراد كل الدوال باستخدام <span class="inline-code">*</span>،
+        قد تستورد عن غير قصد دوالاً تحمل أسماء مشابهة لدوال في برنامجك. الأفضل استيراد
+        ما تحتاجه فقط أو استخدام اسم الوحدة (مثل <span class="inline-code">pizza.make_pizza()</span>).
+      </div>
+
+      <!-- ========== 8.7 ========== -->
+      <h2 class="section-title">تنسيق الدوال (Styling Functions)</h2>
+
+      <p>
+        اتباع أسلوب تنسيق ثابت للدوال يجعل الكود أكثر قابلية للقراءة. إليك أهم الإرشادات
+        وفقاً لدليل أسلوب بايثون (PEP 8):
+      </p>
+
+      <ul>
+        <li>استخدم أسماء وصفية بالحروف الصغيرة مع شرطات سفلية: <span class="inline-code">function_name()</span></li>
+        <li>كل دالة يجب أن تحتوي على docstring يشرح ما تفعله (بين <span class="inline-code">"""</span>)</li>
+        <li>اترك سطراً فارغاً قبل وبعد كل دالة</li>
+        <li>المُعاملات الافتراضية لا تترك مسافات حول علامة <span class="inline-code">=</span>:
+          <span class="inline-code">def function(param=value)</span></li>
+        <li>في استدعاء الدالة، استخدم مسافات حول <span class="inline-code">=</span> في الوسائط المفتاحية:
+          <span class="inline-code">function(param=value)</span></li>
+        <li>إذا كانت وسائط الدالة طويلة جداً، ضع كل وسيط في سطر منفصل مع مسافة بادئة</li>
+      </ul>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">function_name</span>(
+        parameter_0, parameter_1, parameter_2,
+        parameter_3, parameter_4, parameter_5):
+    <span class="kw">def</span> <span class="fn">function_name</span>(
+        parameter_0, parameter_1, parameter_2,
+        parameter_3, parameter_4, parameter_5):
+    <span class="fn">print</span>(<span class="str">"Hello"</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>اتباع <strong>إرشادات تنسيق الدوال</strong> وفقاً لـ PEP 8 يجعل الكود مقروءاً ومنظماً. استخدم أسماء وصفية بالحروف الصغيرة وشرطات سفلية، وأضف docstring لكل دالة، واترك سطراً فارغاً بين الدوال.</p></div>
+
+      <!-- ========== EXERCISES 8 ========== -->
+      <h2 class="section-title">تمارين الفصل الثامن</h2>
+
+      <div class="exercise">
+        <strong>تمرين 8-1: رسالة</strong><br>
+        أنشئ دالة باسم <span class="inline-code">display_message()</span> تطبع جملة تخبر الجميع
+        بما تتعلمه في هذا الفصل. استدعِ الدالة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-2: الكتاب المفضل</strong><br>
+        أنشئ دالة باسم <span class="inline-code">favorite_book()</span> تقبل مُعامل واحد
+        باسم <span class="inline-code">title</span>. اطبع رسالة مثل
+        "One of my favorite books is Alice in Wonderland." استدعِ الدالة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-3: قميص</strong><br>
+        أنشئ دالة باسم <span class="inline-code">make_shirt()</span> تقبل حجم القميص والنص
+        المطبوع عليه. اطبع جملة تلخص المقاس والنص. استخدم وسائط موضعية أولاً، ثم وسائط مفتاحية.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-4: قمصان كبيرة</strong><br>
+        عدّل الدالة <span class="inline-code">make_shirt()</span> بحيث يكون المقاس الافتراضي
+        'large' والنص الافتراضي 'I love Python'. أنشئ قميصاً كبيراً ومتوسطاً وأي مقاس آخر.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-5: مدن</strong><br>
+        أنشئ دالة باسم <span class="inline-code">describe_city()</span> تقبل اسم مدينة
+        ودولتها (القيمة الافتراضية 'USA'). اطبع جملة عن المدينة. استدعِها لثلاث مدن.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-6: أسماء المدن</strong><br>
+        أنشئ دالة باسم <span class="inline-code">city_country()</span> تأخذ اسم مدينة ودولة
+        وتُرجِع نصاً مثل "Santiago, Chile". استدعِ الدالة لثلاث مدن واطبع القيم المرجعة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-7: الألبوم</strong><br>
+        أنشئ دالة <span class="inline-code">make_album()</span> تبني قاموساً يصف ألبوماً موسيقياً.
+        تأخذ اسم الفنان وعنوان الألبوم، وتُرجِع قاموساً. أضف مُعامل اختياري لعدد الأغاني.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-8: ألبومات المستخدمين</strong><br>
+        استخدم حلقة <span class="inline-code">while</span> للسماح للمستخدم بإدخال معلومات
+        الألبوم. استدعِ <span class="inline-code">make_album()</span> واطبع القاموس.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-9: الرسائل</strong><br>
+        أنشئ قائمة بأسماء الرسائل النصية. أنشئ دالة <span class="inline-code">show_messages()</span>
+        تطبع كل رسالة في القائمة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-10: إرسال الرسائل</strong><br>
+        أنشئ دالة <span class="inline-code">send_messages()</span> تطبع كل رسالة وتنقلها إلى
+        قائمة جديدة (رسائل مرسلة). بعد الاستدعاء، اطبع كلا القائمتين.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-11: الرسائل المؤرشفة</strong><br>
+        استدعِ <span class="inline-code">send_messages()</span> بنسخة من القائمة الأصلية حتى
+        تبقى القائمة الأصلية دون تغيير.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-12: سندويشات</strong><br>
+        أنشئ دالة تقبل عدداً عشوائياً من العناصر المطلوبة في سندويش. اجعلها تطبع ملخصاً
+        للسندويش المطلوب. استدعِها ثلاث مرات بعدد مختلف من العناصر.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-13: نبذة عني</strong><br>
+        استخدم <span class="inline-code">build_profile()</span> لإنشاء نبذة عن نفسك.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-14: السيارات</strong><br>
+        أنشئ دالة تخزّن معلومات عن سيارة في قاموس. تقبل الشركة والطراز ووسائط مفتاحية عشوائية.
+        استدعِها بمعلومات عن سيارة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-15: طباعة النماذج</strong><br>
+        انقل دوال تمرين طباعة النماذج إلى ملف منفصل <span class="inline-code">printing_functions.py</span>.
+        استخدم <span class="inline-code">import</span> في ملف رئيسي.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-16: الاستيراد</strong><br>
+        استخدم جميع طرق الاستيراد الأربع (import, from...import, as, *) لاستيراد دالة
+        من وحدة وأظهر استخدامها.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 8-17: تنسيق الدوال</strong><br>
+        راجع أي دالة كتبتها وتأكد من اتباع إرشادات تنسيق الدوال المذكورة في هذا القسم.
+      </div>
+
+      <!-- ========== 8.7 ========== -->
+      <h2 class="section-title">8.7 دوال الدرجة الأولى و functools</h2>
+      <p>في بايثون، الدوال هي <strong>كائنات من الدرجة الأولى (First-Class Citizens)</strong> — يمكن تخزينها في متغيرات، تمريرها كوسائط، وإرجاعها من دوال أخرى. هذا يفتح أبواباً قوية:</p>
+
+      <h3 class="subsection-title">Lambda - دوال مجهولة</h3>
+      <div class="code-block">
+<span class="cm"># دالة عادية</span>
+<span class="kw">def</span> <span class="fn">square</span>(x): <span class="kw">return</span> x ** <span class="num">2</span>
+
+<span class="cm"># نفس الدالة كـ lambda</span>
+square = <span class="kw">lambda</span> x: x ** <span class="num">2</span>
+
+<span class="cm"># lambda مع sorted</span>
+students = [(<span class="str">'Ahmed'</span>, <span class="num">22</span>), (<span class="str">'Sara'</span>, <span class="num">20</span>), (<span class="str">'Khaled'</span>, <span class="num">25</span>)]
+sorted(students, key=<span class="kw">lambda</span> s: s[<span class="num">1</span>])  <span class="cm"># ترتيب حسب العمر</span>
+
+<span class="cm"># lambda مع filter و map</span>
+nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>]
+evens = <span class="bu">list</span>(<span class="bu">filter</span>(<span class="kw">lambda</span> x: x % <span class="num">2</span> == <span class="num">0</span>, nums))
+squares = <span class="bu">list</span>(<span class="bu">map</span>(<span class="kw">lambda</span> x: x**<span class="num">2</span>, nums))
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><strong>دوال lambda</strong> هي دوال مجهولة صغيرة تُكتب في سطر واحد بصيغة <code>lambda arguments: expression</code>. تُستخدم غالباً مع دوال مثل <code>sorted()</code> و <code>filter()</code> و <code>map()</code> لكتابة كود مختصر. لا تحتاج إلى <code>return</code> — التعبير يُرجع تلقائياً.</p></div>
+
+      <h3 class="subsection-title">functools.partial - تجميد الوسائط</h3>
+      <div class="code-block">
+<span class="kw">from</span> functools <span class="kw">import</span> partial
+
+<span class="kw">def</span> <span class="fn">power</span>(base, exponent):
+    <span class="kw">return</span> base ** exponent
+
+<span class="cm"># إنشاء دوال جديدة بتجميد بعض الوسائط</span>
+square = <span class="bu">partial</span>(power, exponent=<span class="num">2</span>)
+cube = <span class="bu">partial</span>(power, exponent=<span class="num">3</span>)
+
+<span class="bu">print</span>(<span class="fn">square</span>(<span class="num">5</span>))  <span class="cm"># 25</span>
+<span class="bu">print</span>(<span class="fn">cube</span>(<span class="num">3</span>))    <span class="cm"># 27</span>
+
+<span class="cm"># مثال واقعي: تحويل عملة</span>
+<span class="kw">def</span> <span class="fn">convert</span>(rate, amount):
+    <span class="kw">return</span> amount * rate
+
+usd_to_eur = <span class="bu">partial</span>(convert, <span class="num">0.85</span>)
+usd_to_gbp = <span class="bu">partial</span>(convert, <span class="num">0.73</span>)
+
+<span class="bu">print</span>(<span class="fn">usd_to_eur</span>(<span class="num">100</span>))  <span class="cm"># 85.0</span>
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><code>functools.partial</code> تسمح بـ"تجميد" بعض وسائط دالة معينة لإنشاء نسخة جديدة منها بقيم افتراضية. هذا مفيد جداً لإنشاء دوال مخصصة من دوال عامة — مثلاً إنشاء دالة <code>square</code> و <code>cube</code> من دالة <code>power</code>.</p></div>
+
+      <h3 class="subsection-title">operator module - دوال جاهزة للعمليات</h3>
+      <div class="code-block">
+<span class="kw">from</span> operator <span class="kw">import</span> itemgetter, attrgetter, methodcaller
+
+<span class="cm"># itemgetter - بديل لـ lambda للوصول للعناصر</span>
+data = [(<span class="str">'Ahmed'</span>, <span class="num">22</span>), (<span class="str">'Sara'</span>, <span class="num">20</span>), (<span class="str">'Khaled'</span>, <span class="num">25</span>)]
+sorted(data, key=itemgetter(<span class="num">1</span>))  <span class="cm"># أسرع من lambda</span>
+
+<span class="cm"># attrgetter - للوصول لخصائص الكائنات</span>
+<span class="kw">class</span> <span class="fn">User</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, age):
+        <span class="kw">self</span>.name = name; <span class="kw">self</span>.age = age
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="str">f'{self.name}({self.age})'</span>
+
+users = [User(<span class="str">'Ahmed'</span>, <span class="num">22</span>), User(<span class="str">'Sara'</span>, <span class="num">20</span>)]
+sorted(users, key=attrgetter(<span class="str">'age'</span>))
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><strong>وحدة <code>operator</code></strong> توفر دوال جاهزة للعمليات الشائعة مثل الوصول إلى العناصر (<code>itemgetter</code>) أو الخصائص (<code>attrgetter</code>). هذه الدوال أسرع من <code>lambda</code> لأنها منفذة بلغة C، وتجعل الكود أكثر وضوحاً.</p></div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> <span class="inline-code">itemgetter</span> أسرع من <span class="inline-code">lambda</span> لأنها منفذة بلغة C. استخدم <span class="inline-code">lambda</span> للعمليات البسيطة جداً، و <span class="inline-code">operator</span> للعمليات المتكررة. <span class="inline-code">partial</span> ممتاز لإنشاء APIs مخصصة من دوال عامة.</div>
+
+      <!-- ========== 8.8 ========== -->
+      <h2 class="section-title">8.8 دوال المولّدات - Generator Functions</h2>
+      <p>دوال المولّدات تستخدم <span class="inline-code">yield</span> بدلاً من <span class="inline-code">return</span>. كل استدعاء لـ <span class="inline-code">next()</span> يستأنف التنفيذ من آخر <span class="inline-code">yield</span>. هذا يوفّر الذاكرة ويسمح بمعالجة البيانات اللانهائية:</p>
+
+      <div class="code-block">
+<span class="kw">def</span> <span class="fn">fibonacci</span>():
+    <span class="cm"># توليد أرقام فيبوناتشي إلى ما لا نهاية</span>
+    a, b = <span class="num">0</span>, <span class="num">1</span>
+    <span class="kw">while</span> <span class="kw">True</span>:
+        <span class="kw">yield</span> a
+        a, b = b, a + b
+
+<span class="cm"># أخذ أول 10 أرقام فقط</span>
+fib = <span class="fn">fibonacci</span>()
+<span class="bu">print</span>([<span class="bu">next</span>(fib) <span class="kw">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="num">10</span>)])  <span class="cm"># [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</span>
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><strong>دوال المولّدات (generator functions)</strong> تستخدم <code>yield</code> بدلاً من <code>return</code> لإرجاع قيمة دون إنهاء الدالة. كل استدعاء لـ <code>next()</code> يستأنف التنفيذ من آخر <code>yield</code>. هذا يوفّر الذاكرة لأنه يُنتج القيم عند الطلب، ويمكنه التعامل مع تسلسلات لا نهائية.</p></div>
+
+      <div class="code-block">
+<span class="cm"># Generator expression = دالة مولّد مختصرة</span>
+gen = (x**<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="num">5</span>))
+<span class="bu">print</span>(<span class="bu">list</span>(gen))  <span class="cm"># [0, 1, 4, 9, 16]</span>
+
+<span class="cm"># مولّد لا نهائي مع itertools</span>
+<span class="kw">def</span> <span class="fn">starts_from</span>(n):
+    <span class="kw">while</span> <span class="kw">True</span>:
+        <span class="kw">yield</span> n
+        n += <span class="num">1</span>
+
+<span class="cm"># yield from - تفويض لمولّد آخر</span>
+<span class="kw">def</span> <span class="fn">chain</span>(*iterables):
+    <span class="kw">for</span> it <span class="kw">in</span> iterables:
+        <span class="kw">yield from</span> it
+
+<span class="bu">print</span>(<span class="bu">list</span>(<span class="fn">chain</span>([<span class="num">1</span>, <span class="num">2</span>], [<span class="num">3</span>, <span class="num">4</span>])))  <span class="cm"># [1, 2, 3, 4]</span>
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><strong>تعبير المولّد (generator expression)</strong> هو اختصار لدالة المولّد، ويُكتب بأقواس <code>()</code> بدلاً من <code>[]</code>. وهو كسول (lazy) — لا يُنشئ كل القيم دفعة واحدة. <code>yield from</code> يُفوض التنفيذ إلى مولّد آخر، مما يبسط دمج عدة تسلسلات.</p></div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> دوال المولّدات تبني lazy pipelines. <span class="inline-code">yield from</span> يبسط التفويض لمولّدات فرعية. المولّدات لا تنهي (مقابل list comprehension يبني القائمة كلها في الذاكرة). استخدم <span class="inline-code">itertools.islice</span> لأخذ عناصر محدودة من مولّد لا نهائي.</div>
+
+      <!-- ========== 8.9 ========== -->
+      <h2 class="section-title">8.9 Type Hints - كتابة آمنة وأنيقة</h2>
+      <p>منذ Python 3.5، يمكنك إضافة <strong>تلميحات الأنواع (Type Hints)</strong> لتوثيق أنواع المتغيرات والدوال. الأدوات مثل <span class="inline-code">mypy</span> تستخدمها للتحقق من الأخطاء قبل التشغيل:</p>
+
+      <div class="code-block">
+<span class="kw">from</span> typing <span class="kw">import</span> List, Tuple, Optional, Union
+
+<span class="cm"># Type hints للدوال</span>
+<span class="kw">def</span> <span class="fn">greet</span>(name: <span class="bu">str</span>, age: <span class="bu">int</span> = <span class="num">0</span>) -> <span class="bu">str</span>:
+    <span class="kw">return</span> <span class="str">f'Hello {name}, age {age}'</span>
+
+<span class="cm"># collections المعقدة</span>
+<span class="kw">def</span> <span class="fn">process_data</span>(items: <span class="bu">list</span>[<span class="bu">int</span>]) -> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">float</span>]:
+    ...
+
+<span class="cm"># Optional = يمكن أن يكون None</span>
+<span class="kw">def</span> <span class="fn">find_user</span>(uid: <span class="bu">int</span>) -> Optional[<span class="bu">str</span>]:
+    <span class="kw">if</span> uid == <span class="num">1</span>:
+        <span class="kw">return</span> <span class="str">'Ahmed'</span>
+    <span class="kw">return</span> <span class="kw">None</span>
+
+<span class="cm"># Union = أحد الأنواع المحددة</span>
+<span class="kw">def</span> <span class="fn">parse_id</span>(uid: <span class="bu">int</span> | <span class="bu">str</span>) -> <span class="bu">int</span>:  <span class="cm"># Python 3.10+</span>
+    <span class="kw">return</span> <span class="bu">int</span>(uid)
+
+<span class="cm"># Aliases - أنواع مخصصة</span>
+Vector = <span class="bu">list</span>[<span class="bu">float</span>]
+<span class="kw">def</span> <span class="fn">scale</span>(v: Vector, factor: <span class="bu">float</span>) -> Vector:
+    <span class="kw">return</span> [x * factor <span class="kw">for</span> x <span class="kw">in</span> v]
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><strong>تلميحات الأنواع (Type Hints)</strong> تُضاف باستخدام <code>:</code> بعد المُعامل و <code>-></code> قبل نوع القيمة المرجعة. <code>Optional</code> تعني أن القيمة يمكن أن تكون <code>None</code>، و <code>Union</code> (أو <code>|</code> في Python 3.10+) تعني أحد الأنواع المحددة. الأدوات مثل <code>mypy</code> تستخدمها للتحقق من الأخطاء دون تشغيل البرنامج.</p></div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> Type hints لا تؤثر على سرعة التشغيل — تُهمل في runtime. استخدم <span class="inline-code">mypy</span> أو <span class="inline-code">pyright</span> للتحقق. من Python 3.9، يمكنك استخدام <span class="inline-code">list[int]</span> بدلاً من <span class="inline-code">List[int]</span>. من 3.10، <span class="inline-code">X | Y</span> بدلاً من <span class="inline-code">Union[X, Y]</span>.</div>
+
+      <!-- ========== 8.10 ========== -->
+      <h2 class="section-title">8.10 Decorators - زينة الدوال</h2>
+      <p>الديكوريتور (Decorator) هو دالة تستقبل دالة وتُعيد دالة جديدة مضيفة سلوكاً إضافياً. الصيغة <span class="inline-code">@decorator</span> هي اختصار لـ <span class="inline-code">func = decorator(func)</span>:</p>
+
+      <div class="code-block">
+<span class="cm"># ديكوريتور بسيط — يحسب وقت التنفيذ</span>
+<span class="kw">import</span> time
+
+<span class="kw">def</span> <span class="fn">timer</span>(func):
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+        start = time.perf_counter()
+        result = <span class="fn">func</span>(*args, **kwargs)
+        elapsed = time.perf_counter() - start
+        <span class="bu">print</span>(<span class="str">f'{func.__name__} took {elapsed:.4f}s'</span>)
+        <span class="kw">return</span> result
+    <span class="kw">return</span> wrapper
+
+<span class="nd">@timer</span>
+<span class="kw">def</span> <span class="fn">slow_sum</span>(n):
+    <span class="kw">return</span> <span class="bu">sum</span>(<span class="bu">range</span>(n))
+
+<span class="bu">print</span>(<span class="fn">slow_sum</span>(<span class="num">10_000_000</span>))  <span class="cm"># slow_sum took 0.2345s</span>
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><strong>الديكوريتور (decorator)</strong> هو دالة تستقبل دالة وتُعيد دالة جديدة مضيفة سلوكاً إضافياً. <code>@timer</code> هو اختصار لـ <code>slow_sum = timer(slow_sum)</code>. الديكوريتور يستخدم <code>*args</code> و <code>**kwargs</code> لتمرير أي وسائط للدالة الأصلية، مما يجعله عاملاً لأي دالة.</p></div>
+
+      <div class="code-block">
+<span class="cm"># functools.wraps — يحافظ على اسم وتوثيق الدالة الأصلية</span>
+<span class="kw">from</span> functools <span class="kw">import</span> wraps
+
+<span class="kw">def</span> <span class="fn">log_calls</span>(func):
+    <span class="nd">@wraps</span>(func)  <span class="cm"># بدونها، func.__name__ = 'wrapper'</span>
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+        <span class="bu">print</span>(<span class="str">f'Calling {func.__name__}'</span>)
+        <span class="kw">return</span> <span class="fn">func</span>(*args, **kwargs)
+    <span class="kw">return</span> wrapper
+
+<span class="nd">@log_calls</span>
+<span class="kw">def</span> <span class="fn">add</span>(a, b):
+    <span class="kw">return</span> a + b
+
+<span class="bu">print</span>(<span class="fn">add</span>(<span class="num">2</span>, <span class="num">3</span>))  <span class="cm"># Calling add \n 5</span>
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><code>@wraps</code> من <code>functools</code> تحافظ على اسم (<code>__name__</code>) وتوثيق (<code>__doc__</code>) الدالة الأصلية بعد تزيينها. بدونها، ستفقد الدالة هويتها وتصبح <code>wrapper</code>. استخدم <code>@wraps</code> دائماً عند كتابة decorators للحفاظ على البيانات الوصفية للدالة.</p></div>
+
+      <div class="code-block">
+<span class="cm"># functools.cache — تذكّر نتائج الدوال تلقائياً (memoization)</span>
+<span class="kw">from</span> functools <span class="kw">import</span> cache
+
+<span class="nd">@cache</span>
+<span class="kw">def</span> <span class="fn">fib</span>(n):
+    <span class="kw">if</span> n < <span class="num">2</span>:
+        <span class="kw">return</span> n
+    <span class="kw">return</span> <span class="fn">fib</span>(n<span class="num">-1</span>) + <span class="fn">fib</span>(n<span class="num">-2</span>)
+
+<span class="bu">print</span>(<span class="fn">fib</span>(<span class="num">100</span>))  <span class="cm"># 354224848179261915075 — فوري!</span>
+
+<span class="cm"># functools.singledispatch — تعدد أشكال حسب النوع</span>
+<span class="kw">from</span> functools <span class="kw">import</span> singledispatch
+
+<span class="nd">@singledispatch</span>
+<span class="kw">def</span> <span class="fn">htmlize</span>(obj):
+    <span class="kw">return</span> <span class="bu">str</span>(obj)
+
+<span class="nd">@htmlize.register</span>(<span class="bu">int</span>)
+<span class="kw">def</span> <span class="fn">_</span>(obj):
+    <span class="kw">return</span> <span class="str">f'&lt;pre&gt;{obj}&lt;/pre&gt;'</span>
+
+<span class="nd">@htmlize.register</span>(<span class="bu">str</span>)
+<span class="kw">def</span> <span class="fn">_</span>(obj):
+    <span class="kw">return</span> <span class="str">f'&lt;i&gt;{obj}&lt;/i&gt;'</span>
+
+<span class="bu">print</span>(<span class="fn">htmlize</span>(<span class="num">42</span>))   <span class="cm"># <pre>42</pre></span>
+<span class="bu">print</span>(<span class="fn">htmlize</span>(<span class="str">'hello'</span>))  <span class="cm"># <i>hello</i></span>
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><code>@cache</code> يحفظ نتائج الدوال تلقائياً — إذا استُدعيت بنفس الوسائط مرة أخرى، تُعاد النتيجة المحفوظة فوراً (memoization). <code>@singledispatch</code> يتيح تعدد أشكال (polymorphism) بناءً على نوع الوسيط الأول، مما يلغي الحاجة لسلسلة <code>isinstance()</code>.</p></div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> استخدم <span class="inline-code">@wraps</span> دائماً في decorators لتحافظ على <span class="inline-code">__name__</span> و <span class="inline-code">__doc__</span>. <span class="inline-code">@cache</span> مثالي للدوال الخالصة (pure functions) — نفس المُدخلات تعطي نفس المُخرجات. <span class="inline-code">@singledispatch</span> أفضل من سلسلة <span class="inline-code">isinstance()</span> لمعالجة أنواع متعددة.</div>
+
+      <!-- ========== 8.11 ========== -->
+      <h2 class="section-title">8.11 functools.reduce - تجميع التسلسلات</h2>
+      <p><span class="inline-code">functools.reduce</span> يطبق دالة ذات مُعاملَين تراكمياً على عناصر التسلسل من اليسار لليمين، مختزلاً إياه إلى قيمة واحدة:</p>
+
+      <div class="code-block">
+<span class="kw">from</span> functools <span class="kw">import</span> reduce
+<span class="kw">import</span> operator
+
+<span class="cm"># جمع كل العناصر — نفس sum()</span>
+total = <span class="bu">reduce</span>(operator.add, [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>])
+<span class="bu">print</span>(total)  <span class="cm"># 15</span>
+
+<span class="cm"># إيجاد أكبر عنصر — نفس max()</span>
+maximum = <span class="bu">reduce</span>(<span class="kw">lambda</span> a, b: a <span class="kw">if</span> a > b <span class="kw">else</span> b, [<span class="num">3</span>, <span class="num">7</span>, <span class="num">2</span>, <span class="num">9</span>, <span class="num">1</span>])
+<span class="bu">print</span>(maximum)  <span class="cm"># 9</span>
+
+<span class="cm"># ضرب كل العناصر</span>
+factorial = <span class="bu">reduce</span>(operator.mul, <span class="bu">range</span>(<span class="num">1</span>, <span class="num">6</span>))
+<span class="bu">print</span>(factorial)  <span class="cm"># 120 (5!)</span>
+
+<span class="cm"># reduce مع قيمة أوّلية</span>
+total = <span class="bu">reduce</span>(operator.add, [], <span class="num">0</span>)  <span class="cm"># 0 — لا يرمي خطأ للقوائم الفارغة</span>
+      </div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><code>reduce</code> يطبّق دالة ذات مُعاملَين تراكمياً على عناصر التسلسل من اليسار لليمين، مختزلاً إياه إلى قيمة واحدة. يمكن تحديد قيمة أوّلية (initial value) للحالات التي قد يكون فيها التسلسل فارغاً. رغم قوته، إلا أن استخدامه محدود لأن بايثون توفر دوالاً مدمجة مثل <code>sum()</code> و <code>max()</code> لمعظم الحالات.</p></div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> <span class="inline-code">reduce</span> ليس ضرورياً غالباً — <span class="inline-code">sum()</span>, <span class="inline-code">any()</span>, <span class="inline-code">all()</span> تغطي معظم الحالات. استخدم <span class="inline-code">reduce</span> للعمليات التي ليس لها دالة مدمجة (مثل ضرب كل العناصر). Guido van Rossum كره <span class="inline-code">reduce</span> لدرجة نقله إلى <span class="inline-code">functools</span>!</div>
+
+      <!-- ========== SUMMARY ========== -->
+      <div class="summary-box">
+        <h3>📝 ملخص الفصل الثامن</h3>
+        <p>في هذا الفصل تعلمت:</p>
+        <ul>
+          <li>كيف تُعرِّف دالة باستخدام <span class="inline-code">def</span></li>
+          <li>الفرق بين المُعاملات (parameters) والوسائط (arguments)</li>
+          <li>كيف تمرر الوسائط الموضعية والوسائط المفتاحية</li>
+          <li>كيف تستخدم القيم الافتراضية للمُعاملات</li>
+          <li>كيف تُرجِع قيمة من دالة باستخدام <span class="inline-code">return</span></li>
+          <li>كيف تجعل وسيطاً اختيارياً باستخدام قيمة افتراضية</li>
+          <li>كيف تُرجِع قاموساً من دالة</li>
+          <li>كيف تستخدم دالة مع حلقة <span class="inline-code">while</span></li>
+          <li>كيف تمرر قائمة إلى دالة وتُعدّلها</li>
+          <li>كيف تمرر نسخة من قائمة لمنع التعديل</li>
+          <li>كيف تستخدم <span class="inline-code">*args</span> لعدد عشوائي من الوسائط الموضعية</li>
+          <li>كيف تستخدم <span class="inline-code">**kwargs</span> لعدد عشوائي من الوسائط المفتاحية</li>
+          <li>كيف تخزّن الدوال في وحدات منفصلة وتستوردها</li>
+          <li>طرق الاستيراد المختلفة: <span class="inline-code">import</span>, <span class="inline-code">from...import</span>, <span class="inline-code">as</span>, <span class="inline-code">*</span></li>
+          <li>إرشادات تنسيق الدوال وفقاً لـ PEP 8</li>
+        </ul>
+      </div>
+
+    <div class="note"><strong>💡 نصيحة ذهبية:</strong> استخدم <span class="inline-code">*args</span> و <span class="inline-code">**kwargs</span> لجعل دوالك مرنة: <span class="inline-code">def func(*args, **kwargs):</span>. أضف type hints لتحسين قابلية القراءة واكتشاف الأخطاء: <span class="inline-code">def greet(name: str) -> str:</span>. استخدم <span class="inline-code">lambda</span> للدوال البسيطة المكونة من تعبير واحد: <span class="inline-code">lambda x: x * 2</span>.</div>
+
+    <div class="warning"><strong>⚠️ خطأ شائع:</strong> استخدام قائمة أو dict كقيمة افتراضية (<span class="inline-code">def func(items=[])</span>). القيمة الافتراضية تُنشأ مرة واحدة فقط وتُشارك بين كل الاستدعاءات! استخدم <span class="inline-code">None</span> بدلاً من ذلك: <span class="inline-code">def func(items=None): if items is None: items = []</span>. أيضاً، تعديل mutable argument داخل الدالة يؤثر على المتغير الأصلي — انسخه أولاً إذا لزم الأمر.</div>
+
+    <div class="exercise"><strong>🏋️ تمرين:</strong> اكتب دالة <span class="inline-code">timer_decorator</span> تطبع الوقت الذي استغرقته الدالة للتنفيذ. استخدم <span class="inline-code">import time</span> و <span class="inline-code">time.perf_counter()</span>. زيّن بها دالة <span class="inline-code">slow_sum</span> التي تجمع الأرقام من 1 إلى 1,000,000 باستخدام <span class="inline-code">range()</span>. شغلها وشاهد الوقت المستغرق.</div>
+
+    <div class="footer">
+        <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+        <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+    }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

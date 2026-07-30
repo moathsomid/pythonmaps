@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux - سطر الأوامر للمبرمج</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <div class="part-badge">⚙️ Core Engineering</div>
+      <h1>Linux - سطر الأوامر للمبرمج</h1>
+      <p>دليل شامل لأوامر Linux الأساسية لمطوري بايثون — من navigation إلى networking</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        سطر أوامر Linux (الـ Terminal) هو واجهة قوية تمنحك تحكماً كاملاً بالنظام. كمبرمج بايثون،
+        ستستخدمه يومياً — تشغيل السكريبتات، إدارة الملفات، مراقبة العمليات، والاتصال بالخوادم.
+        هذا الدليل يغطي كل ما تحتاجه لتصبح proficient في CLI.
+      </p>
+
+      <!-- ========== 1. Terminal ========== -->
+      <h2 class="section-title">1. Terminal - الواجهة الطرفية</h2>
+
+      <p>
+        الـ Terminal هو برنامج يفسر الأوامر التي تكتبها وينفذها. عندما تفتحه، ترى
+        <strong>Shell Prompt</strong> — عادةً شيئاً مثل <span class="inline-code">user@host:~$</span>.
+        هذا يعني أن الـ Shell جاهز لاستقبال أمرك.
+      </p>
+
+      <p>التركيب العام للأمر في Linux:</p>
+
+      <div class="code-block"><span class="bu">command</span> <span class="op">[</span><span class="fn">options</span><span class="op">]</span> <span class="op">[</span><span class="str">arguments</span><span class="op">]</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>كل أمر في Linux يتكون من ثلاثة أجزاء: <strong>الأمر (command)</strong> نفسه مثل <code>ls</code> أو <code>cd</code>، متبوعاً بـ <strong>خيارات (options)</strong> تبدأ عادةً بشرطة <code>-</code> لتعديل سلوك الأمر، ثم <strong>الوسائط (arguments)</strong> مثل أسماء الملفات أو المسارات. الأقواس المربعة <code>[]</code> تعني أن الجزء اختياري.</p></div>
+
+      <p>
+        افتح الـ Terminal من قائمة التطبيقات أو باستخدام الاختصار <span class="inline-code">Ctrl+Alt+T</span>
+        على Ubuntu/Debian. غالباً ما ترى شيئاً مثل:
+      </p>
+
+      <div class="code-block"><span class="str">ahmed@ahmed-pc:~$</span> <span class="cm"># هذا هو الـ prompt</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الـ prompt يظهر اسم المستخدم (<code>ahmed</code>) بعدها <code>@</code> ثم اسم الجهاز (<code>ahmed-pc</code>)، ثم <code>:</code> والدليل الحالي (<code>~</code> يعني home)، وأخيراً <code>$</code> للمستخدم العادي أو <code>#</code> للمستخدم الجذر (root). كل ما تكتبه يظهر بعد الـ <code>$</code> وينفذ عند الضغط على Enter.</p></div>
+
+      <!-- ========== 2. Navigation ========== -->
+      <h2 class="section-title">2. Navigation - التنقل</h2>
+
+      <p>
+        التنقل في نظام الملفات هو أول مهارة يجب أن تتقنها. إليك الأوامر الأساسية:
+      </p>
+
+      <h3 class="subsection-title">pwd - أين أنا؟</h3>
+
+      <div class="code-block"><span class="bu">pwd</span>
+<span class="cm"># Output: /home/ahmed/projects</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الأمر <code>pwd</code> (اختصار Print Working Directory) يطبع المسار الكامل (absolute path) للدليل الذي أنت فيه حالياً. هذا مفيد جداً عندما تتنقل بين مجلدات متعددة وتريد التأكد من موقعك.</p></div>
+
+      <h3 class="subsection-title">ls - سرد الملفات</h3>
+
+      <div class="code-block"><span class="bu">ls</span>                <span class="cm"># سرد الملفات والمجلدات في الدليل الحالي</span>
+<span class="bu">ls</span> <span class="op">-</span><span class="fn">l</span>              <span class="cm"># عرض بتفصيل (permissions, size, date)</span>
+<span class="bu">ls</span> <span class="op">-</span><span class="fn">a</span>              <span class="cm"># عرض الملفات المخفية (التي تبدأ بـ .)</span>
+<span class="bu">ls</span> <span class="op">-</span><span class="fn">la</span>             <span class="cm"># دمج الخيارين — تفصيل مع ملفات مخفية</span>
+<span class="bu">ls</span> <span class="op">-</span><span class="fn">lh</span>             <span class="cm"># أحجام الملفات بشكل readable (K, M, G)</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الأمر <code>ls</code> (اختصار List) يسرد محتويات الدليل. الخيار <code>-l</code> يعرض تفاصيل مثل الصلاحيات وعدد الروابط والمالك والحجم والتاريخ. <code>-a</code> (all) يظهر الملفات المخفية (تبدأ بنقطة). يمكن دمج الخيارات: <code>-la</code> = <code>-l -a</code>. <code>-h</code> يجعل الأحجام مقروءة (K, M, G).</p></div>
+
+      <h3 class="subsection-title">cd - تغيير الدليل</h3>
+
+      <div class="code-block"><span class="bu">cd</span> <span class="str">/home/ahmed/projects</span>   <span class="cm"># الانتقال إلى مسار مطلق</span>
+<span class="bu">cd</span> <span class="str">Documents</span>                 <span class="cm"># الانتقال إلى مجلد فرعي (مسار نسبي)</span>
+<span class="bu">cd</span> <span class="str">..</span>                          <span class="cm"># الرجوع إلى المجلد الأب</span>
+<span class="bu">cd</span> <span class="str">../..</span>                        <span class="cm"># الرجوع مجلدين للأعلى</span>
+<span class="bu">cd</span> <span class="str">~</span>                            <span class="cm"># الذهاب إلى home directory</span>
+<span class="bu">cd</span> <span class="str">-</span>                            <span class="cm"># الرجوع إلى آخر دليل كنت فيه</span>
+<span class="bu">cd</span> <span class="str">.</span>                            <span class="cm"># يبقيك في نفس الدليل (عديم الفائدة)</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>cd</code> (Change Directory) هو أمر التنقل الأساسي. <strong>المسار المطلق (absolute path)</strong> يبدأ من الجذر <code>/</code>. <strong>المسار النسبي (relative path)</strong> يعتمد على موقعك الحالي. النقطة <code>.</code> تعني الدليل الحالي، و <code>..</code> تعني الدليل الأب. <code>~</code> اختصار لمجلد المستخدم الرئيسي (home). <code>cd -</code> يعود إلى آخر دليل.</p></div>
+
+      <h3 class="subsection-title">المسارات المطلقة والنسبية</h3>
+
+      <p>فهم الفرق بين المسار المطلق والنسبي أساسي:</p>
+
+      <div class="code-block"><span class="bu">pwd</span>
+<span class="cm"># /home/ahmed/projects/myapp</span>
+
+<span class="cm"># مسار مطلق — يبدأ من /</span>
+<span class="bu">cd</span> <span class="str">/home/ahmed/Documents</span>
+
+<span class="cm"># مسار نسبي — يعتمد على موقعك الحالي</span>
+<span class="bu">cd</span> <span class="str">../../../etc</span>  <span class="cm"># يصعد 3 مجلدات ثم يدخل etc</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><strong>المسار المطلق</strong> يبدأ من جذر النظام <code>/</code> ويعمل من أي مكان. <strong>المسار النسبي</strong> يعتمد على الدليل الحالي — يستخدم <code>..</code> للصعود للأعلى. مثلاً من <code>/home/ahmed/projects/myapp</code>، المسار <code>../../../etc</code> يصعد: myapp → projects → ahmed → home، ثم يدخل etc، أي <code>/etc</code>.</p></div>
+
+      <!-- ========== 3. File Operations ========== -->
+      <h2 class="section-title">3. File Operations - عمليات الملفات</h2>
+
+      <p>
+        إدارة الملفات والمجلدات هي صميم العمل على Linux. هذه الأوامر ستستخدمها يومياً:
+      </p>
+
+      <h3 class="subsection-title">touch - إنشاء ملف</h3>
+
+      <div class="code-block"><span class="bu">touch</span> <span class="str">main.py</span>                  <span class="cm"># إنشاء ملف فارغ</span>
+<span class="bu">touch</span> <span class="str">main.py</span> <span class="str">utils.py</span> <span class="str">config.py</span>  <span class="cm"># إنشاء عدة ملفات</span>
+<span class="bu">ls</span> <span class="op">-</span><span class="fn">l</span> <span class="str">main.py</span>                      <span class="cm"># التحقق من تاريخ التعديل</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>touch</code> ينشئ ملفاً فارغاً إذا لم يكن موجوداً، أو يُحدّث تاريخ التعديل (timestamp) إذا كان موجوداً. مفيد جداً لإنشاء ملفات سريعة — مثلاً ملفات Python جديدة لمشروعك. يمكن إنشاء عدة ملفات في أمر واحد بفصلها بمسافة.</p></div>
+
+      <h3 class="subsection-title">mkdir - إنشاء مجلدات</h3>
+
+      <div class="code-block"><span class="bu">mkdir</span> <span class="str">my_project</span>                      <span class="cm"># إنشاء مجلد واحد</span>
+<span class="bu">mkdir</span> <span class="op">-</span><span class="fn">p</span> <span class="str">my_project/src/utils</span>           <span class="cm"># إنشاء هيكل مجلدات متداخلة</span>
+<span class="bu">mkdir</span> <span class="op">-</span><span class="fn">p</span> <span class="str">{tests,docs,scripts}</span>         <span class="cm"># إنشاء عدة مجلدات مرة واحدة</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>mkdir</code> (Make Directory) ينشئ مجلدات. الخيار <code>-p</code> (parents) ينشئ المجلدات الوسيطة تلقائياً — إذا كان <code>src</code> غير موجود، سيُنشئه ثم ينشئ <code>utils</code> داخله. هذا يمنع أخطاء "No such file or directory".</p></div>
+
+      <h3 class="subsection-title">cp - نسخ</h3>
+
+      <div class="code-block"><span class="bu">cp</span> <span class="str">file.txt</span> <span class="str">backup.txt</span>              <span class="cm"># نسخ ملف</span>
+<span class="bu">cp</span> <span class="op">-</span><span class="fn">r</span> <span class="str">my_project/</span> <span class="str">my_project_backup/</span>  <span class="cm"># نسخ مجلد (r = recursive)</span>
+<span class="bu">cp</span> <span class="op">-</span><span class="fn">i</span> <span class="str">file.txt</span> <span class="str">dest/</span>                   <span class="cm"># تفعيل التأكيد قبل الكتابة</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>cp</code> (Copy) ينسخ الملفات والمجلدات. لنسخ مجلد، استخدم <code>-r</code> (recursive) لنسخ كل محتوياته. <code>-i</code> (interactive) يطلب تأكيداً قبل الكتابة فوق ملف موجود. الصيغة العامة: <code>cp [options] source destination</code>.</p></div>
+
+      <h3 class="subsection-title">mv - نقل/إعادة تسمية</h3>
+
+      <div class="code-block"><span class="bu">mv</span> <span class="str">file.txt</span> <span class="str">/tmp/</span>                    <span class="cm"># نقل ملف إلى مجلد آخر</span>
+<span class="bu">mv</span> <span class="str">old_name.py</span> <span class="str">new_name.py</span>            <span class="cm"># إعادة تسمية ملف</span>
+<span class="bu">mv</span> <span class="str">*.py</span> <span class="str">src/</span>                             <span class="cm"># نقل كل ملفات Python إلى src</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>mv</code> (Move) يقوم بوظيفتين: نقل ملف من مكان لآخر، وإعادة تسميته. نفس الأمر يُستخدم للحالتين — إذا كان الوجهة (destination) مجلداً موجوداً، يُنقل الملف إليه. إذا كان اسم ملف جديداً، يُعاد تسميته. <code>mv</code> أسرع من <code>cp</code> لأنه لا ينسخ البيانات بل يحرّر المؤشرات.</p></div>
+
+      <h3 class="subsection-title">rm - حذف</h3>
+
+      <div class="code-block"><span class="bu">rm</span> <span class="str">file.txt</span>                        <span class="cm"># حذف ملف</span>
+<span class="bu">rm</span> <span class="op">-</span><span class="fn">r</span> <span class="str">my_project/</span>                    <span class="cm"># حذف مجلد ومحتوياته</span>
+<span class="bu">rm</span> <span class="op">-</span><span class="fn">rf</span> <span class="str">my_project/</span>                   <span class="cm"># حذف قسري دون تأكيد (خطير!)</span>
+<span class="bu">rm</span> <span class="op">-</span><span class="fn">i</span> <span class="str">*.txt</span>                          <span class="cm"># حذف تفاعلي — يؤكد على كل ملف</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>rm</code> (Remove) يحذف الملفات. الخيار <code>-r</code> (recursive) يحذف مجلداً وكل ما فيه. <code>-f</code> (force) يمنع أي تأكيدات — خطير جداً! <code>-i</code> (interactive) يسألك قبل حذف كل ملف. <strong>تحذير:</strong> <code>rm -rf</code> لا يسأل ولا يبقي شيئاً — استخدمه بحذر شديد. Linux لا يضع الملفات في سلة المهملات.</p></div>
+
+      <h3 class="subsection-title">عرض الملفات</h3>
+
+      <div class="code-block"><span class="bu">cat</span> <span class="str">main.py</span>                    <span class="cm"># عرض محتوى الملف كاملاً</span>
+<span class="bu">less</span> <span class="str">main.py</span>                   <span class="cm"># عرض تفاعلي — تصفّح بالأسهم، q للخروج</span>
+<span class="bu">head</span> <span class="op">-</span><span class="fn">n</span> <span class="num">10</span> <span class="str">main.py</span>               <span class="cm"># أول 10 أسطر</span>
+<span class="bu">tail</span> <span class="op">-</span><span class="fn">n</span> <span class="num">20</span> <span class="str">main.py</span>               <span class="cm"># آخر 20 سطر</span>
+<span class="bu">tail</span> <span class="op">-</span><span class="fn">f</span> <span class="str">app.log</span>                  <span class="cm"># متابعة حية للملف (مثالي للـ logs)</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>cat</code> يطبع الملف كاملاً — مفيد للملفات الصغيرة. <code>less</code> يفتح الملف في وضع تفاعلي للتصفح (أسهم، PageUp/Down، <code>/</code> للبحث، <code>q</code> للخروج). <code>head</code> يعرض أول N سطر. <code>tail</code> يعرض آخر N سطر. الخيار <code>-f</code> (follow) مع <code>tail</code> يتابع الملف حيّاً — ضروري لمراقبة سجلات التطبيقات.</p></div>
+
+      <!-- ========== 4. Permissions ========== -->
+      <h2 class="section-title">4. Permissions - الصلاحيات</h2>
+
+      <p>
+        كل ملف ومجلد في Linux له صلاحيات تحدد من يمكنه القراءة والكتابة والتنفيذ.
+        فهم الصلاحيات أساسي لأمان النظام ولتشغيل السكريبتات.
+      </p>
+
+      <h3 class="subsection-title">فهم rwx</h3>
+
+      <div class="code-block"><span class="bu">ls</span> <span class="op">-</span><span class="fn">l</span> <span class="str">script.py</span>
+<span class="cm"># -rwxr-xr-- 1 ahmed dev 1024 Jul 8 10:00 script.py</span>
+<span class="cm">#  ^^^ ^^^ ^^^</span>
+<span class="cm">#  ||| ||| |||__ others (read only)</span>
+<span class="cm">#  ||| |||___ group (read + execute)</span>
+<span class="cm">#  |||________ user  (read + write + execute)</span>
+<span class="cm">#  |___________ type (- = file, d = directory)</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الصلاحيات مقسمة لثلاث مجموعات: <strong>user</strong> (المالك)، <strong>group</strong> (المجموعة)، <strong>others</strong> (الآخرون). الحرف <code>r</code> = قراءة (4)، <code>w</code> = كتابة (2)، <code>x</code> = تنفيذ (1). الشرطة <code>-</code> تعني عدم وجود صلاحية. أول حرف يحدد النوع: <code>-</code> ملف عادي، <code>d</code> مجلد. في المثال: المالك لديه كل الصلاحيات، المجموعة تقرأ وتنفذ، والآخرون يقرؤون فقط.</p></div>
+
+      <h3 class="subsection-title">chmod - تغيير الصلاحيات</h3>
+
+      <div class="code-block"><span class="cm"># Numeric mode — الأكثر شيوعاً</span>
+<span class="bu">chmod</span> <span class="num">755</span> <span class="str">script.py</span>    <span class="cm"># rwxr-xr-x — مالك كامل، الباقي قراءة+تنفيذ</span>
+<span class="bu">chmod</span> <span class="num">644</span> <span class="str">index.html</span>   <span class="cm"># rw-r--r-- — مالك يكتب، الباقي يقرؤون فقط</span>
+<span class="bu">chmod</span> <span class="num">600</span> <span class="str">id_rsa</span>       <span class="cm"># rw------- — فقط المالك يقرأ (للمفاتيح الخاصة)</span>
+<span class="bu">chmod</span> <span class="num">777</span> <span class="str">file</span>          <span class="cm"># rwxrwxrwx — كل الصلاحيات للجميع (غير آمن!)</span>
+
+<span class="cm"># Symbolic mode</span>
+<span class="bu">chmod</span> <span class="fn">u+x</span> <span class="str">script.py</span>     <span class="cm"># أضف تنفيذ للمالك (user + execute)</span>
+<span class="bu">chmod</span> <span class="fn">g-w</span> <span class="str">file.txt</span>     <span class="cm"># احذف كتابة من المجموعة (group - write)</span>
+<span class="bu">chmod</span> <span class="fn">a+x</span> <span class="str">script.py</span>     <span class="cm"># أضف تنفيذ للكل (all + execute)</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الأمر <code>chmod</code> (Change Mode) يغير صلاحيات الملف. <strong>الوضع الرقمي (numeric)</strong> يستخدم ثلاثة أرقام (0-7): الأول للمالك، الثاني للمجموعة، الثالث للآخرين. كل رقم هو مجموع: 4 (قراءة) + 2 (كتابة) + 1 (تنفيذ). <code>755</code> يعني المالك: 4+2+1=7، المجموعة: 4+1=5، الآخرون: 4+1=5. <strong>الوضع الرمزي (symbolic)</strong> يستخدم <code>u</code> (user) و <code>g</code> (group) و <code>o</code> (others) و <code>a</code> (all) مع <code>+</code> أو <code>-</code>.</p></div>
+
+      <h3 class="subsection-title">chown - تغيير المالك</h3>
+
+      <div class="code-block"><span class="bu">sudo</span> <span class="bu">chown</span> <span class="str">ahmed:dev</span> <span class="str">file.txt</span>     <span class="cm"># غيّر المالك والمجموعة</span>
+<span class="bu">sudo</span> <span class="bu">chown</span> <span class="str">ahmed</span> <span class="str">file.txt</span>           <span class="cm"># غيّر المالك فقط</span>
+<span class="bu">sudo</span> <span class="bu">chown</span> <span class="op">-</span><span class="fn">R</span> <span class="str">ahmed:dev</span> <span class="str">folder/</span>     <span class="cm"># غيّر لكل المحتويات (recursive)</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>chown</code> (Change Owner) يغير مالك الملف و/أو مجموعته. يتطلب صلاحيات الجذر (<code>sudo</code>). الصيغة <code>user:group</code> تغير كليهما. الخيار <code>-R</code> يطبق التغيير على كل المجلدات الفرعية والملفات داخلها.</p></div>
+
+      <!-- ========== 5. Processes ========== -->
+      <h2 class="section-title">5. Processes - العمليات</h2>
+
+      <p>
+        إدارة العمليات (processes) ضرورية لمراقبة أداء التطبيقات وإيقافها عند الحاجة.
+      </p>
+
+      <h3 class="subsection-title">ps - عرض العمليات</h3>
+
+      <div class="code-block"><span class="bu">ps</span>                           <span class="cm"># عمليات المستخدم الحالي</span>
+<span class="bu">ps</span> <span class="fn">aux</span>                        <span class="cm"># كل العمليات لكل المستخدمين</span>
+<span class="bu">ps</span> <span class="fn">aux</span> | <span class="bu">grep</span> <span class="str">python</span>          <span class="cm"># ابحث عن عمليات بايثون</span>
+<span class="bu">ps</span> <span class="op">-</span><span class="fn">ef</span>                          <span class="cm"># تنسيق كامل مع PID و PPID</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>ps</code> (Process Status) يعرض العمليات الجارية. <code>ps aux</code> يعرض كل العمليات (a=all, u=user format, x=include daemons). <code>ps -ef</code> يعرض تنسيقاً كاملاً مع PID (رقم العملية) و PPID (رقم العملية الأب). مدمج مع <code>grep</code> لفلترة نتائج البحث.</p></div>
+
+      <h3 class="subsection-title">top/htop - مراقبة حية</h3>
+
+      <div class="code-block"><span class="bu">top</span>                  <span class="cm"># مراقبة العمليات في الوقت الحقيقي</span>
+<span class="bu">htop</span>                 <span class="cm"># نسخة مطورة وأجمل من top (ثبّتها أولاً)</span>
+<span class="cm"># داخل top: q = خروج, k = إنهاء عملية (أدخل PID), u = فلترة بمستخدم</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>top</code> يعرض لوحة حية للعمليات مرتبة حسب استخدام CPU. اضغط <code>q</code> للخروج، <code>k</code> لإنهاء عملية (يطلب PID)، <code>u</code> لفلترة حسب مستخدم. <code>htop</code> بديل أفضل بألوان وواجهة تفاعلية وأزرار تحكم — ثبّته مع <code>sudo apt install htop</code>.</p></div>
+
+      <h3 class="subsection-title">kill - إنهاء العمليات</h3>
+
+      <div class="code-block"><span class="bu">kill</span> <span class="num">1234</span>              <span class="cm"># إنهاء عملية برقم PID 1234 (SIGTERM = طلب إنهاء)</span>
+<span class="bu">kill</span> <span class="op">-</span><span class="fn">9</span> <span class="num">1234</span>             <span class="cm"># SIGKILL — إنهاء قسري (لا يمكن للعملية تجاهله)</span>
+<span class="bu">kill</span> <span class="op">-</span><span class="fn">15</span> <span class="num">1234</span>            <span class="cm"># SIGTERM — إنهاء أنيق (يسمح بتنظيف الموارد)</span>
+<span class="bu">pkill</span> <span class="op">-</span><span class="fn">f</span> <span class="str">python</span>          <span class="cm"># إنهاء كل العمليات التي اسمها يحتوي python</span>
+<span class="bu">killall</span> <span class="str">python</span>          <span class="cm"># إنهاء كل عمليات python</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>kill</code> يرسل إشارة (signal) لعملية ما. <code>SIGTERM</code> (15) هو الافتراضي — يطلب من العملية إنهاء نفسها بأناقة. <code>SIGKILL</code> (9) هو إنهاء قسري — نظام التشغيل يوقف العملية فوراً. <code>pkill</code> ينهي عمليات حسب الاسم. <code>killall</code> ينهي كل العمليات بهذا الاسم. استخدم <code>SIGTERM</code> أولاً، و <code>SIGKILL</code> كحل أخير.</p></div>
+
+      <h3 class="subsection-title">التحكم بالعمليات في Terminal</h3>
+
+      <div class="code-block"><span class="bu">python</span> <span class="str">long_task.py</span>
+<span class="cm"># اضغط Ctrl+C    — SIGINT, يوقف العملية فوراً</span>
+<span class="cm"># اضغط Ctrl+Z    — SIGTSTP, يعلق العملية (مؤقتاً)</span>
+<span class="bu">bg</span>                  <span class="cm"># استئناف العملية المعلقة في الخلفية (background)</span>
+<span class="bu">fg</span>                  <span class="cm"># إعادة العملية للواجهة (foreground)</span>
+<span class="bu">jobs</span>                <span class="cm"># عرض العمليات المعلقة والخلفية</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>Ctrl+C</code> يرسل SIGINT — يوقف العملية. <code>Ctrl+Z</code> يرسل SIGTSTP — يعلق العملية (لا يوقفها). بعد تعليقها، <code>bg</code> يستأنفها في الخلفية (تستمر بالعمل دون أن تتحكم بالطرفية). <code>fg</code> يعيدها للواجهة. <code>jobs</code> يعرض قائمة بالعمليات المعلقة والخلفية مع أرقامها.</p></div>
+
+      <h3 class="subsection-title">تشغيل عمليات في الخلفية</h3>
+
+      <div class="code-block"><span class="bu">python</span> <span class="str">app.py</span> <span class="op">&</span>            <span class="cm"># تشغيل في الخلفية مباشرة</span>
+<span class="bu">nohup</span> <span class="bu">python</span> <span class="str">app.py</span> <span class="op">&</span>      <span class="cm"># تشغيل يقاوم إغلاق الطرفية</span>
+<span class="bu">nohup</span> <span class="bu">python</span> <span class="str">app.py</span> <span class="op">></span> <span class="str">app.log</span> <span class="num">2</span><span class="op">&1</span> <span class="op">&</span>  <span class="cm"># مع تسجيل المخرجات</span>
+<span class="bu">disown</span> <span class="op">%</span><span class="num">1</span>                    <span class="cm"># افصل العملية عن الطرفية الحالية</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>علامة <code>&</code> في نهاية الأمر تشغّله في الخلفية — يظهر PID ثم يعود لك التحكم بالطرفية. <code>nohup</code> (No Hang Up) يجعل العملية تتجاهل إشارة SIGHUP التي ترسل عند إغلاق الطرفية. <code>2>&1</code> يدمج الخطأ المعياري (stderr) مع المخرجات المعيارية (stdout). <code>disown</code> يفصل العملية عن الطرفية الحالية.</p></div>
+
+      <!-- ========== 6. Pipes and Redirection ========== -->
+      <h2 class="section-title">6. Pipes and Redirection - الأنابيب وإعادة التوجيه</h2>
+
+      <p>
+        الأنابيب (pipes) وإعادة التوجيه (redirection) هي أقوى أدوات Linux — تسمح بدمج الأوامر
+        بطرق إبداعية لمعالجة البيانات.
+      </p>
+
+      <h3 class="subsection-title">إعادة التوجيه (> و >> و 2>)</h3>
+
+      <div class="code-block"><span class="bu">echo</span> <span class="str">"print('hello')"</span> <span class="op">></span> <span class="str">hello.py</span>     <span class="cm"># اكتب النص في ملف (يكتب فوقه)</span>
+<span class="bu">echo</span> <span class="str">"print('world')"</span> <span class="op">>></span> <span class="str">hello.py</span>     <span class="cm"># أضف النص لنهاية الملف</span>
+<span class="bu">python</span> <span class="str">script.py</span> <span class="num">2</span><span class="op">></span> <span class="str">errors.log</span>           <span class="cm"># أعد توجيه stderr إلى ملف</span>
+<span class="bu">python</span> <span class="str">script.py</span> <span class="op">></span> <span class="str">output.log</span> <span class="num">2</span><span class="op">&1</span>       <span class="cm"># ادمج stdout و stderr بنفس الملف</span>
+<span class="bu">python</span> <span class="str">script.py</span> <span class="op">></span> <span class="str">/dev/null</span> <span class="num">2</span><span class="op">&1</span>        <span class="cm"># تجاهل كل المخرجات (الثقب الأسود)</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>></code> يكتب المخرجات إلى ملف (يكتب فوق الملف). <code>>></code> يضيف إلى نهاية الملف. الأرقام: <code>1</code> = stdout (المخرجات العادية)، <code>2</code> = stderr (الأخطاء). <code>2>&1</code> يوجه stderr إلى نفس وجهة stdout. <code>/dev/null</code> هو "الثقب الأسود" — أي شيء يُرسل إليه يُتجاهل.</p></div>
+
+      <h3 class="subsection-title">الأنابيب (|)</h3>
+
+      <div class="code-block"><span class="bu">ls</span> <span class="op">-</span><span class="fn">la</span> | <span class="bu">grep</span> <span class="str">".py"</span>               <span class="cm"># ابحث عن ملفات Python</span>
+<span class="bu">ps</span> <span class="fn">aux</span> | <span class="bu">grep</span> <span class="str">python</span> | <span class="bu">grep</span> <span class="op">-</span><span class="fn">v</span> <span class="str">grep</span>  <span class="cm"># عمليات بايثون بدون grep نفسه</span>
+<span class="bu">cat</span> <span class="str">file.txt</span> | <span class="bu">sort</span> | <span class="bu">uniq</span>           <span class="cm"># رتّب وأزل التكرارات</span>
+<span class="bu">history</span> | <span class="bu">awk</span> <span class="str">'{print $2}'</span> | <span class="bu">sort</span> | <span class="bu">uniq</span> <span class="op">-</span><span class="fn">c</span> | <span class="bu">sort</span> <span class="op">-</span><span class="fn">rn</span> | <span class="bu">head</span>  <span class="cm"># أكثر أوامرك استخداماً</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>علامة <code>|</code> (pipe) تأخذ مخرجات الأمر الأيسر وتغذيها كمدخل للأمر الأيمن. مثلاً <code>ls -la | grep ".py"</code>: <code>ls</code> يسرد الملفات، ثم <code>grep</code> يفلتر فقط التي تحتوي ".py". يمكن ربط عدة أوامر — <code>history | awk '{print $2}' | sort | uniq -c | sort -rn | head</code> يعرض أكثر 10 أوامر استخداماً.</p></div>
+
+      <h3 class="subsection-title">الإدخال من ملف (<)</h3>
+
+      <div class="code-block"><span class="bu">python</span> <span class="str">script.py</span> <span class="op"><</span> <span class="str">input.txt</span>       <span class="cm"># استخدم input.txt كمدخل للسكريبت</span>
+<span class="bu">sort</span> <span class="op"><</span> <span class="str">unsorted.txt</span> <span class="op">></span> <span class="str">sorted.txt</span>     <span class="cm"># اقرأ من ملف واكتب النتيجة لآخر</span>
+<span class="bu">wc</span> <span class="op">-</span><span class="fn">l</span> <span class="op"><</span> <span class="str">data.csv</span>                   <span class="cm"># عد أسطر ملف CSV</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code><</code> يوجه محتوى ملف كمدخل للأمر. مثلاً <code>python script.py < input.txt</code> يجعل محتوى <code>input.txt</code> متاحاً عبر <code>sys.stdin</code>. <code>sort < unsorted.txt > sorted.txt</code> يقرأ من ملف، يرتبه، ويكتب النتيجة لملف آخر — كل ذلك دون لمس الملف الأصلي.</p></div>
+
+      <!-- ========== 7. Text Processing ========== -->
+      <h2 class="section-title">7. Text Processing - معالجة النصوص</h2>
+
+      <p>
+        كمبرمج بايثون، غالباً ما تحتاج لتحليل ومعالجة النصوص مباشرة من CLI. هذه الأدوات
+        تغني عن كتابة سكريبت بايثون للحالات البسيطة.
+      </p>
+
+      <h3 class="subsection-title">grep - البحث</h3>
+
+      <div class="code-block"><span class="bu">grep</span> <span class="str">"def"</span> <span class="str">main.py</span>                    <span class="cm"># ابحث عن "def" في ملف</span>
+<span class="bu">grep</span> <span class="op">-</span><span class="fn">r</span> <span class="str">"TODO"</span> <span class="str">src/</span>                      <span class="cm"># ابحث recursively في مجلد</span>
+<span class="bu">grep</span> <span class="op">-</span><span class="fn">i</span> <span class="str">"error"</span> <span class="str">app.log</span>                  <span class="cm"># بحث غير حساس لحالة الأحرف</span>
+<span class="bu">grep</span> <span class="op">-</span><span class="fn">n</span> <span class="str">"import"</span> <span class="str">*.py</span>                    <span class="cm"># أظهر رقم السطر مع النتيجة</span>
+<span class="bu">grep</span> <span class="op">-</span><span class="fn">c</span> <span class="str">"def"</span> <span class="str">*.py</span>                       <span class="cm"># عد مرات التكرار فقط</span>
+<span class="bu">grep</span> <span class="op">-</span><span class="fn">v</span> <span class="str">"#</span><span class="str">"</span> <span class="str">config.py</span>                    <span class="cm"># اعكس — أظهر الأسطر التي لا تحتوي #</span>
+<span class="bu">grep</span> <span class="op">-</span><span class="fn">l</span> <span class="str">"class"</span> <span class="str">*.py</span>                      <span class="cm"># أظهر أسماء الملفات فقط</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>grep</code> (Global Regular Expression Print) يبحث عن نمط داخل ملف أو مخرجات أمر. الخيارات المهمة: <code>-r</code> بحث متكرر في مجلدات، <code>-i</code> تجاهل حالة الأحرف، <code>-n</code> إظهار رقم السطر، <code>-c</code> عد التكرارات، <code>-v</code> عكس النتيجة (عدم احتواء)، <code>-l</code> إظهار أسماء الملفات فقط. <code>grep</code> يقبل الـ regex — استخدمه للبحث عن أنماط معقدة.</p></div>
+
+      <h3 class="subsection-title">sed - تحرير النص</h3>
+
+      <div class="code-block"><span class="bu">sed</span> <span class="str">'s/old/new/g'</span> <span class="str">file.txt</span>                     <span class="cm"># استبدل old بـ new في كل الملف</span>
+<span class="bu">sed</span> <span class="op">-</span><span class="fn">i</span> <span class="str">'s/foo/bar/g'</span> <span class="str">file.txt</span>                    <span class="cm"># استبدل في نفس الملف (تعديل مباشر)</span>
+<span class="bu">sed</span> <span class="str">'/^$/d'</span> <span class="str">file.txt</span>                              <span class="cm"># احذف كل الأسطر الفارغة</span>
+<span class="bu">sed</span> <span class="str">'3,10d'</span> <span class="str">file.txt</span>                              <span class="cm"># احذف الأسطر من 3 إلى 10</span>
+<span class="bu">sed</span> <span class="str">'s/print(/logger.info(/g'</span> <span class="str">app.py</span>                <span class="cm"># استبدل print بـ logger.info</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>sed</code> (Stream Editor) هو محرر نصوص غير تفاعلي. الصيغة الأساسية: <code>s/pattern/replacement/flags</code>. <code>g</code> (global) يعني استبدال كل التكرارات في السطر، ليس فقط الأولى. <code>-i</code> (in-place) يعدل الملف مباشرة (بدون نسخة احتياطية). <code>/^$/d</code> هو pattern: <code>^$</code> يعني سطر فارغ (بداية ثم نهاية)، <code>d</code> يعني delete.</p></div>
+
+      <h3 class="subsection-title">awk - معالجة متقدمة</h3>
+
+      <div class="code-block"><span class="bu">awk</span> <span class="str">'{print $1, $3}'</span> <span class="str">data.txt</span>            <span class="cm"># اطبع العمود الأول والثالث</span>
+<span class="bu">awk</span> <span class="str">'{print NR, $0}'</span> <span class="str">file.txt</span>              <span class="cm"># أضف رقم السطر قبل كل سطر</span>
+<span class="bu">awk</span> <span class="str">'{sum += $1} END {print sum}'</span> <span class="str">nums.txt</span>  <span class="cm"># اجمع قيم العمود الأول</span>
+<span class="bu">awk</span> <span class="str">'$3 > 50 {print $1, $3}'</span> <span class="str">scores.txt</span>     <span class="cm"># فلترة: اطبع إذا كان العمود 3 > 50</span>
+<span class="bu">awk</span> <span class="str">'{print $NF}'</span> <span class="str">file.txt</span>                  <span class="cm"># اطبع آخر عمود</span>
+<span class="bu">awk</span> <span class="op">-</span><span class="fn">F</span> <span class="str">','</span> <span class="str">'{print $1, $2}'</span> <span class="str">data.csv</span>         <span class="cm"># حدد فاصل الفواصل (مثلاً CSV)</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>awk</code> هي لغة معالجة نصوص كاملة. تقسم كل سطر إلى أعمدة (<code>$1</code>, <code>$2</code>, ... <code>$NF</code> = آخر عمود). <code>NR</code> = رقم السطر. <code>$0</code> = السطر كاملاً. <code>END</code> تُنفذ بعد معالجة كل الأسطر. <code>-F</code> يحدد فاصل الأعمدة (افتراضياً: space/tab). مفيد جداً لتحليل ملفات CSV والسجلات.</p></div>
+
+      <h3 class="subsection-title">wc, sort, uniq, cut</h3>
+
+      <div class="code-block"><span class="bu">wc</span> <span class="op">-</span><span class="fn">l</span> <span class="str">file.txt</span>                      <span class="cm"># عدد الأسطر</span>
+<span class="bu">wc</span> <span class="op">-</span><span class="fn">w</span> <span class="str">file.txt</span>                      <span class="cm"># عدد الكلمات</span>
+<span class="bu">sort</span> <span class="str">names.txt</span>                      <span class="cm"># ترتيب أبجدي</span>
+<span class="bu">sort</span> <span class="op">-</span><span class="fn">n</span> <span class="str">numbers.txt</span>                   <span class="cm"># ترتيب عددي</span>
+<span class="bu">sort</span> <span class="op">-</span><span class="fn">rn</span> <span class="str">numbers.txt</span>                  <span class="cm"># ترتيب عددي تنازلي</span>
+<span class="bu">uniq</span> <span class="str">sorted.txt</span>                      <span class="cm"># إزالة الأسطر المتكررة (يحتاج sort أولاً)</span>
+<span class="bu">uniq</span> <span class="op">-</span><span class="fn">c</span> <span class="str">sorted.txt</span>                    <span class="cm"># عد التكرارات</span>
+<span class="bu">cut</span> <span class="op">-</span><span class="fn">d</span><span class="str">','</span> <span class="op">-</span><span class="fn">f</span><span class="num">1,3</span> <span class="str">data.csv</span>              <span class="cm"># استخرج العمودين 1 و 3 من CSV</span>
+<span class="bu">cut</span> <span class="op">-</span><span class="fn">c</span><span class="num">1</span><span class="op">-</span><span class="num">10</span> <span class="str">file.txt</span>                    <span class="cm"># استخرج أول 10 أحرف من كل سطر</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>wc</code> (Word Count) يحسب: <code>-l</code> أسطر، <code>-w</code> كلمات، <code>-c</code> بايتات. <code>sort</code> يرتب الأسطر: <code>-n</code> ترتيب عددي، <code>-r</code> عكس الترتيب. <code>uniq</code> يزيل التكرارات — لكنه يعمل فقط على الأسطر المتجاورة، لذا استخدم <code>sort</code> قبله. <code>uniq -c</code> يعد التكرارات. <code>cut</code> يستخرج أعمدة: <code>-d</code> فاصل، <code>-f</code> رقم العمود، <code>-c</code> أحرف.</p></div>
+
+      <!-- ========== 8. SSH ========== -->
+      <h2 class="section-title">8. SSH - الاتصال عن بعد</h2>
+
+      <p>
+        SSH (Secure Shell) يتيح لك الاتصال بأجهزة أخرى بشكل آمن — خوادم الإنتاج،
+        GitHub، Raspberry Pi، وغيرها.
+      </p>
+
+      <h3 class="subsection-title">الاتصال الأساسي</h3>
+
+      <div class="code-block"><span class="bu">ssh</span> <span class="str">ahmed@192.168.1.100</span>            <span class="cm"># اتصل بخادم باسم مستخدم وعنوان IP</span>
+<span class="bu">ssh</span> <span class="op">-</span><span class="fn">p</span> <span class="num">2222</span> <span class="str">ahmed@server.com</span>          <span class="cm"># استخدم منفذ مخصص (ليس 22 الافتراضي)</span>
+<span class="bu">ssh</span> <span class="str">ahmed@server.com</span> <span class="str">"ls -la"</span>         <span class="cm"># نفذ أمراً عن بعد ثم اخرج</span>
+<span class="bu">ssh</span> <span class="str">ahmed@server.com</span> <span class="str">"python app.py"</span>   <span class="cm"># شغّل سكريبت على الخادم</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>ssh user@host</code> يفتح جلسة آمنة على الجهاز البعيد. يمكنك تحديد منفذ مختلف <code>-p</code> إذا كان الخادم يستخدم منفذاً غير 22. إذا أضفت أمراً بين علامتي اقتباس في النهاية، ينفذه ssh على الجهاز البعيد ثم يخرج — مثالي لأتمتة المهام عبر السكريبتات.</p></div>
+
+      <h3 class="subsection-title">المفاتيح العمومية (SSH Keys)</h3>
+
+      <div class="code-block"><span class="bu">ssh-keygen</span> <span class="op">-</span><span class="fn">t</span> <span class="str">ed25519</span>                <span class="cm"># أنشئ زوج مفاتيح (الأفضل حالياً)</span>
+<span class="bu">ssh-keygen</span> <span class="op">-</span><span class="fn">t</span> <span class="str">rsa</span> <span class="op">-</span><span class="fn">b</span> <span class="num">4096</span>             <span class="cm"># أو RSA 4096-bit</span>
+<span class="bu">cat</span> <span class="str">~/.ssh/id_ed25519.pub</span>              <span class="cm"># اعرض المفتاح العمومي</span>
+<span class="bu">ssh-copy-id</span> <span class="str">ahmed@server.com</span>            <span class="cm"># انسخ المفتاح للخادم (للدخول بدون كلمة سر)</span>
+<span class="bu">ssh</span> <span class="op">-</span><span class="fn">i</span> <span class="str">~/.ssh/my_key</span> <span class="str">ahmed@server.com</span>   <span class="cm"># استخدم مفتاحاً محدداً</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>ssh-keygen</code> ينشئ زوج مفاتيح — مفتاح خاص (<code>id_ed25519</code>) لا تشاركه أبداً، ومفتاح عمومي (<code>id_ed25519.pub</code>) تنسخه للخوادم. <code>ssh-copy-id</code> يضيف مفتاحك العمومي تلقائياً لملف <code>~/.ssh/authorized_keys</code> على الخادم — بعدها تدخل بدون كلمة سر. <code>ed25519</code> أكثر أماناً وأسرع من RSA.</p></div>
+
+      <h3 class="subsection-title">scp - نقل الملفات</h3>
+
+      <div class="code-block"><span class="bu">scp</span> <span class="str">app.py</span> <span class="str">ahmed@server.com:/home/ahmed/</span>        <span class="cm"># انسخ ملفاً للخادم</span>
+<span class="bu">scp</span> <span class="op">-</span><span class="fn">r</span> <span class="str">project/</span> <span class="str">ahmed@server.com:/home/ahmed/</span>     <span class="cm"># انسخ مجلد كامل</span>
+<span class="bu">scp</span> <span class="str">ahmed@server.com:/home/ahmed/data.csv</span> <span class="str">.</span>       <span class="cm"># اسحب ملفاً من الخادم</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>scp</code> (Secure Copy) ينقل الملفات بين جهازك والخادم عبر SSH. الصيغة: <code>scp [options] source destination</code>. للملفات البعيدة استخدم <code>user@host:path</code>. <code>-r</code> للمجلدات. يمكنك النسخ من والى الخادم — ترتيب المصدر والوجهة يحدد الاتجاه.</p></div>
+
+      <!-- ========== 9. Networking ========== -->
+      <h2 class="section-title">9. Networking - الشبكات</h2>
+
+      <p>
+        أدوات الشبكات تسمح لك بتنزيل الملفات، اختبار الاتصالات، وفحص إعدادات الشبكة.
+      </p>
+
+      <h3 class="subsection-title">curl و wget - تنزيل البيانات</h3>
+
+      <div class="code-block"><span class="bu">curl</span> <span class="str">https://api.github.com/users/ahmed</span>          <span class="cm"># GET request, يطبع النتيجة</span>
+<span class="bu">curl</span> <span class="op">-</span><span class="fn">o</span> <span class="str">output.json</span> <span class="str">https://api.example.com/data</span>  <span class="cm"># احفظ الناتج بملف</span>
+<span class="bu">curl</span> <span class="op">-</span><span class="fn">s</span> <span class="str">https://api.example.com</span>                     <span class="cm"># silent mode — بدون تقدم</span>
+<span class="bu">curl</span> <span class="op">-</span><span class="fn">I</span> <span class="str">https://example.com</span>                         <span class="cm"># اعرض الهيدرز فقط (HEAD request)</span>
+<span class="bu">curl</span> <span class="op">-</span><span class="fn">X</span> <span class="str">POST</span> <span class="op">-</span><span class="fn">d</span> <span class="str">'{"name":"ahmed"}'</span> <span class="op">-</span><span class="fn">H</span> <span class="str">"Content-Type: application/json"</span> <span class="str">https://api.example.com/users</span>
+
+<span class="bu">wget</span> <span class="str">https://example.com/file.zip</span>                    <span class="cm"># تنزيل ملف</span>
+<span class="bu">wget</span> <span class="op">-</span><span class="fn">c</span> <span class="str">https://example.com/large.zip</span>                 <span class="cm"># استئناف تنزيل متقطع</span>
+<span class="bu">wget</span> <span class="op">-</span><span class="fn">r</span> <span class="op">-</span><span class="fn">l</span><span class="num">2</span> <span class="str">https://example.com/docs/</span>                <span class="cm"># تنزيل موقع كامل (عمق 2)</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>curl</code> أداة قوية لنقل البيانات تدعم البروتوكولات المختلفة — ممتاز لاختبار APIs. <code>-o</code> يحفظ الناتج، <code>-s</code> silent، <code>-I</code> هيدرز فقط، <code>-X</code> يحدد نوع الطلب، <code>-d</code> يرسل بيانات. <code>wget</code> أبسط — ينزل الملفات بسرعة. <code>-c</code> يستأنف التنزيل، <code>-r</code> تنزيل متكرر للموقع.</p></div>
+
+      <h3 class="subsection-title">ping - اختبار الاتصال</h3>
+
+      <div class="code-block"><span class="bu">ping</span> <span class="str">google.com</span>                          <span class="cm"># اختبر الاتصال بالإنترنت</span>
+<span class="bu">ping</span> <span class="op">-</span><span class="fn">c</span> <span class="num">4</span> <span class="str">8.8.8.8</span>                         <span class="cm"># أرسل 4 حزم فقط ثم توقف</span>
+<span class="bu">ping</span> <span class="op">-</span><span class="fn">i</span> <span class="num">2</span> <span class="str">server.local</span>                      <span class="cm"># أرسل حزمة كل ثانيتين</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>ping</code> يرسل حزم ICMP للجهاز المستهدف ويقيس زمن الاستجابة (latency). <code>-c</code> يحدد عدد الحزم التي سترسل. استخدمه لاختبار: هل الجهاز متصل؟ ما سرعة الاستجابة؟ هل هناك فقدان في الحزم؟ <code>Ctrl+C</code> يوقف ping.</p></div>
+
+      <h3 class="subsection-title">netstat/ss و ip a</h3>
+
+      <div class="code-block"><span class="bu">ss</span> <span class="op">-</span><span class="fn">tlnp</span>                           <span class="cm"># اعرض المنافذ المفتوحة (TCP, Listening, Numeric, PID)</span>
+<span class="bu">ss</span> <span class="op">-</span><span class="fn">tun</span>                             <span class="cm"># اتصالات TCP و UDP النشطة</span>
+<span class="bu">ss</span> <span class="op">-</span><span class="fn">tlnp</span> | <span class="bu">grep</span> <span class="str">:8000</span>                <span class="cm"># هل المنفذ 8000 مشغول؟</span>
+<span class="bu">ip</span> <span class="fn">a</span>                                 <span class="cm"># اعرض جميع الواجهات وعناوين IP</span>
+<span class="bu">ip</span> <span class="fn">r</span>                                 <span class="cm"># اعرض جدول التوجيه (routing)</span>
+<span class="bu">ip</span> <span class="fn">link</span>                              <span class="cm"># اعرض حالة الواجهات الشبكية</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>ss</code> (Socket Statistics) هو البديل الحديث لـ <code>netstat</code>. <code>-t</code> TCP، <code>-l</code> المنافذ المنتظرة (listening)، <code>-n</code> إظهار الأرقام فقط (بدون أسماء)، <code>-p</code> إظهار الـ PID. <code>ip a</code> يعرض كل واجهات الشبكة مع عناوين IPv4 و IPv6 — استخدمه لمعرفة IP جهازك.</p></div>
+
+      <!-- ========== 10. Bash Scripting ========== -->
+      <h2 class="section-title">10. Bash Scripting Basics</h2>
+
+      <p>
+        كتابة سكريبتات Bash تسمح بأتمتة المهام المتكررة. كمبرمج بايثون، ستجد Bash
+        مفيداً لتشغيل بايبلاينز سريعة دون كتابة سكريبت بايثون كامل.
+      </p>
+
+      <h3 class="subsection-title">الهيكل الأساسي (Shebang)</h3>
+
+      <div class="code-block"><span class="cm">#!/bin/bash</span>
+<span class="cm"># هذا السكريبت يطبع "Hello World"</span>
+<span class="bu">echo</span> <span class="str">"Hello World"</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>السطر الأول <code>#!/bin/bash</code> يُسمى <strong>shebang</strong> — يخبر النظام أي مفسر (interpreter) يستخدم لتنفيذ السكريبت. <code>#!</code> يتبعه مسار المفسر. <code>/bin/bash</code> هو Bash shell. بعد الحفظ، اجعل السكريبت executable: <code>chmod +x script.sh</code>، ثم شغّله: <code>./script.sh</code>.</p></div>
+
+      <h3 class="subsection-title">المتغيرات</h3>
+
+      <div class="code-block"><span class="cm">#!/bin/bash</span>
+<span class="cm"># المتغيرات في Bash — بدون مسافات حول =</span>
+name=<span class="str">"Ahmed"</span>
+<span class="bu">echo</span> <span class="str">"Hello, $name"</span>
+
+<span class="cm"># المتغيرات العددية والحساب</span>
+count=<span class="num">10</span>
+count=$((count + <span class="num">1</span>))
+<span class="bu">echo</span> <span class="str">"Count: $count"</span>
+
+<span class="cm"># وسائط السكريبت</span>
+<span class="bu">echo</span> <span class="str">"Script: $0"</span>         <span class="cm"># اسم السكريبت</span>
+<span class="bu">echo</span> <span class="str">"First arg: $1"</span>       <span class="cm"># أول وسيط ($2 = ثاني, $3 = ثالث)</span>
+<span class="bu">echo</span> <span class="str">"All args: $@"</span>        <span class="cm"># كل الوسائط</span>
+<span class="bu">echo</span> <span class="str">"Number of args: $#"</span>  <span class="cm"># عدد الوسائط</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>المتغيرات في Bash: اسم المتغير بدون مسافات حول <code>=</code>. استخدم <code>$variable</code> أو <code>${variable}</code> للوصول للقيمة. العمليات الحسابية: <code>$((expression))</code>. <code>$0</code> اسم السكريبت، <code>$1</code> إلى <code>$9</code> الوسائط، <code>$@</code> كل الوسائط، <code>$#</code> عددها. اقتبس المتغيرات دائماً (<code>"$var"</code>) لتجنب مشاكل المسافات.</p></div>
+
+      <h3 class="subsection-title">حلقات for</h3>
+
+      <div class="code-block"><span class="cm">#!/bin/bash</span>
+<span class="cm"># التكرار على قائمة</span>
+<span class="kw">for</span> file <span class="kw">in</span> <span class="str">*.py</span>; <span class="kw">do</span>
+    <span class="bu">echo</span> <span class="str">"Processing $file"</span>
+    <span class="bu">wc</span> <span class="op">-</span><span class="fn">l</span> <span class="str">"$file"</span>
+<span class="kw">done</span>
+
+<span class="cm"># تكرار عددي</span>
+<span class="kw">for</span> i <span class="kw">in</span> {<span class="num">1</span>..<span class="num">5</span>}; <span class="kw">do</span>
+    <span class="bu">echo</span> <span class="str">"Iteration $i"</span>
+<span class="kw">done</span>
+
+<span class="cm"># تكرار على ملفات</span>
+<span class="kw">for</span> name <span class="kw">in</span> <span class="str">ahmed</span> <span class="str">sara</span> <span class="str">khaled</span>; <span class="kw">do</span>
+    <span class="bu">mkdir</span> <span class="op">-</span><span class="fn">p</span> <span class="str">"projects/$name"</span>
+<span class="kw">done</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>حلقة <code>for</code> في Bash: <code>for var in list; do ... done</code>. <code>*.py</code> يتوسع إلى قائمة ملفات Python. <code>{1..5}</code> يولد الأرقام من 1 إلى 5. يمكنك التكرار على ملفات، أرقام، كلمات، أو مخرجات أمر (مثلاً: <code>for file in $(ls *.txt)</code>).</p></div>
+
+      <h3 class="subsection-title">جمل if الشرطية</h3>
+
+      <div class="code-block"><span class="cm">#!/bin/bash</span>
+<span class="kw">if</span> [ <span class="op">-</span><span class="fn">f</span> <span class="str">"$1"</span> ]; <span class="kw">then</span>
+    <span class="bu">echo</span> <span class="str">"الملف $1 موجود"</span>
+<span class="kw">else</span>
+    <span class="bu">echo</span> <span class="str">"الملف $1 غير موجود"</span>
+<span class="kw">fi</span>
+
+<span class="cm"># شروط شائعة:</span>
+<span class="cm"># [-f file] — هل الملف موجود؟</span>
+<span class="cm"># [-d dir]  — هل المجلد موجود؟</span>
+<span class="cm"># [-z str]  — هل النص فارغ؟</span>
+<span class="cm"># [a = b]   — هل النصان متساويان؟</span>
+<span class="cm"># [a != b]  — هل النصان مختلفان؟</span>
+<span class="cm"># [num1 -eq num2] — المساواة العددية</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>جمل <code>if</code> في Bash تختلف عن بايثون — الشرط بين قوسين مربعين <code>[ ]</code> مع مسافات حولهما. <code>-f</code> يختبر وجود ملف، <code>-d</code> يختبر وجود مجلد. المقارنة النصية: <code>=</code> و <code>!=</code>. المقارنة العددية: <code>-eq</code> (equal), <code>-ne</code>, <code>-lt</code>, <code>-gt</code>. <code>fi</code> تغلق if (if معكوسة).</p></div>
+
+      <h3 class="subsection-title">جعل السكريبت executable</h3>
+
+      <div class="code-block"><span class="bu">chmod</span> <span class="fn">+x</span> <span class="str">script.sh</span>          <span class="cm"># أضف صلاحية التنفيذ</span>
+<span class="bu">./script.sh</span>                    <span class="cm"># شغّل السكريبت</span>
+<span class="bu">./script.sh</span> <span class="str">arg1</span> <span class="str">arg2</span>         <span class="cm"># مع وسائط</span>
+<span class="bu">python</span> <span class="str">script.py</span>                <span class="cm"># تشغيل بايثون — نفس المبدأ</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>chmod +x</code> يضيف صلاحية التنفيذ (execute) للملف. <code>./script.sh</code> يشغّله من الدليل الحالي — النقطة <code>.</code> تعني الدليل الحالي. إذا لم يكن الملف executable، سترى <code>Permission denied</code>. <code>script.sh</code> بدون <code>./</code> لن يعمل لأن الدليل الحالي ليس في PATH عادةً.</p></div>
+
+      <!-- ========== 11. Environment Variables ========== -->
+      <h2 class="section-title">11. Environment Variables</h2>
+
+      <p>
+        متغيرات البيئة (Environment Variables) تخزن إعدادات النظام والتطبيقات —
+        مثل مسارات Python، مفاتيح API، وإعدادات قاعدة البيانات.
+      </p>
+
+      <h3 class="subsection-title">export - تعريف متغيرات البيئة</h3>
+
+      <div class="code-block"><span class="bu">export</span> <span class="str">DB_HOST=localhost</span>              <span class="cm"># عرّف متغير بيئة مؤقت</span>
+<span class="bu">export</span> <span class="str">DB_USER=ahmed</span>
+<span class="bu">export</span> <span class="str">DB_PASS=secret123</span>
+<span class="bu">env</span> | <span class="bu">grep</span> <span class="str">DB_</span>                          <span class="cm"># تأكد من تعريف المتغيرات</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>export VAR=value</code> يعرّف متغير بيئة متاحاً للعمليات الابنة (child processes) — أي السكريبتات والبرامج التي تشغلها من هذه الطرفية. بدون <code>export</code>، المتغير يكون محلياً فقط. <code>env</code> يعرض كل متغيرات البيئة الحالية.</p></div>
+
+      <h3 class="subsection-title">استخدام متغيرات البيئة في بايثون</h3>
+
+      <div class="code-block"><span class="cm">#!/usr/bin/env python</span>
+<span class="kw">import</span> os
+
+db_host = os.environ.get(<span class="str">'DB_HOST'</span>, <span class="str">'localhost'</span>)
+db_user = os.environ.get(<span class="str">'DB_USER'</span>)
+db_pass = os.environ.get(<span class="str">'DB_PASS'</span>)
+
+<span class="fn">print</span>(<span class="str">f"Connecting to {db_host} as {db_user}"</span>)</div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>في بايثون، <code>os.environ</code> هو قاموس يحتوي كل متغيرات البيئة. استخدم <code>.get('KEY', default)</code> لقراءة متغير — الثاني هو القيمة الافتراضية إذا لم يكن المتغير موجوداً. هذا النمط (قراءة الإعدادات من البيئة) هو الـ 12-Factor App methodology لتطبيقات قابلة للنقل.</p></div>
+
+      <h3 class="subsection-title">PATH - أين يبحث النظام عن الأوامر؟</h3>
+
+      <div class="code-block"><span class="bu">echo</span> <span class="str">$PATH</span>                            <span class="cm"># اعرض مسارات البحث عن الأوامر</span>
+<span class="cm"># /usr/local/bin:/usr/bin:/bin:/usr/games</span>
+
+<span class="cm"># أضف مجلداً لـ PATH (مثلاً لمشاريعك)</span>
+<span class="bu">export</span> <span class="str">PATH=$PATH:/home/ahmed/my_scripts</span>
+
+<span class="cm"># أي أمر executable في هذا المجلد سيكون متاحاً من أي مكان</span>
+<span class="bu">which</span> <span class="str">python3</span>                         <span class="cm"># أين يوجد python3؟</span>
+<span class="bu">which</span> <span class="str">pip</span>                             <span class="cm"># أين يوجد pip؟</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>PATH</code> هو متغير بيئة خاص — قائمة من المسارات يفصلها <code>:</code>. عندما تكتب أمراً مثل <code>python3</code>، يبحث النظام في كل مسار في PATH من اليسار لليمين حتى يجد الملف. <code>which</code> يخبرك أي مسار سيستخدم. أضف مجلد سكريبتاتك لـ PATH عشان تشغّلهم من أي مكان.</p></div>
+
+      <h3 class="subsection-title">~/.bashrc و ~/.bash_profile</h3>
+
+      <div class="code-block"><span class="cm"># افتح ملف bashrc للتحرير</span>
+<span class="bu">nano</span> <span class="str">~/.bashrc</span>
+
+<span class="cm"># أضف هذه الأسطر في النهاية ثم احفظ واخرج</span>
+<span class="bu">export</span> <span class="str">EDITOR=nano</span>
+<span class="bu">export</span> <span class="str">PYTHONSTARTUP=~/.pythonrc</span>
+<span class="bu">alias</span> <span class="str">ll='ls -la'</span>
+<span class="bu">alias</span> <span class="str">gs='git status'</span>
+<span class="bu">alias</span> <span class="str">gp='git pull'</span>
+<span class="bu">alias</span> <span class="str">venv='python -m venv venv && source venv/bin/activate'</span>
+
+<span class="cm"># طبّق التغييرات دون إعادة تشغيل الطرفية</span>
+<span class="bu">source</span> <span class="str">~/.bashrc</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>ملف <code>~/.bashrc</code> يُنفذ في كل مرة تفتح فيها terminal جديد. أضف فيه: <code>export</code> لمتغيرات البيئة الدائمة، <code>alias</code> لاختصارات الأوامر. <code>alias ll='ls -la'</code> يعني أن كتابة <code>ll</code> تنفذ <code>ls -la</code>. <code>source ~/.bashrc</code> يعيد تحميل الملف في الجلسة الحالية. <code>~/.bash_profile</code> يُنفذ مرة واحدة عند الدخول (login shell).</p></div>
+
+      <h3 class="subsection-title">أمثلة على Aliases مفيدة لمطور بايثون</h3>
+
+      <div class="code-block"><span class="cm"># أضفها في ~/.bashrc</span>
+<span class="bu">alias</span> <span class="str">py=python3</span>
+<span class="bu">alias</span> <span class="str">pir='pip install -r requirements.txt'</span>
+<span class="bu">alias</span> <span class="str">pyt='pytest -v'</span>
+<span class="bu">alias</span> <span class="str">act='source venv/bin/activate'</span>
+<span class="bu">alias</span> <span class="str">djs='python manage.py runserver'</span>
+<span class="bu">alias</span> <span class="str">his='history | grep'</span></div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الـ aliases توفر وقتاً كبيراً. <code>py=python3</code> — اختصار لتشغيل بايثون. <code>pir</code> ينصب المتطلبات. <code>pyt</code> يشغل الاختبارات. <code>act</code> ينشط البيئة الافتراضية. <code>djs</code> يشغل خادم Django. <code>his</code> يبحث في التاريخ — مثلاً <code>his docker</code> يعرض كل أوامر docker التي كتبتها.</p></div>
+
+      <div class="note"><strong>💡 نصيحة:</strong> استخدم <span class="inline-code">export SECRET_KEY=$(cat /path/to/secret)</span> لقراءة المفاتيح من ملفات بدلاً من كتابتها مباشرة في bashrc. ولا تشارك أبداً ملف bashrc الذي يحتوي مفاتيح حقيقية على GitHub — استخدم ملف <span class="inline-code">.env</span> مع <span class="inline-code">python-dotenv</span> بدلاً من ذلك.</div>
+
+      <!-- ========== SUMMARY ========== -->
+      <div class="summary-box">
+        <h3>📝 ملخص أوامر Linux</h3>
+        <p>في هذا الدليل تعلمت:</p>
+        <ul>
+          <li>التنقل: <span class="inline-code">pwd</span>, <span class="inline-code">ls</span>, <span class="inline-code">cd</span></li>
+          <li>الملفات: <span class="inline-code">touch</span>, <span class="inline-code">mkdir</span>, <span class="inline-code">cp</span>, <span class="inline-code">mv</span>, <span class="inline-code">rm</span></li>
+          <li>الصلاحيات: <span class="inline-code">chmod 755</span>, <span class="inline-code">chmod u+x</span>, <span class="inline-code">chown</span></li>
+          <li>العمليات: <span class="inline-code">ps</span>, <span class="inline-code">top</span>, <span class="inline-code">kill</span>, <span class="inline-code">&</span>, <span class="inline-code">nohup</span></li>
+          <li>الأنابيب: <span class="inline-code">|</span>, <span class="inline-code">></span>, <span class="inline-code">>></span>, <span class="inline-code">2>&1</span>, <span class="inline-code">/dev/null</span></li>
+          <li>النصوص: <span class="inline-code">grep</span>, <span class="inline-code">sed</span>, <span class="inline-code">awk</span>, <span class="inline-code">sort</span>, <span class="inline-code">uniq</span></li>
+          <li>الاتصال: <span class="inline-code">ssh</span>, <span class="inline-code">ssh-keygen</span>, <span class="inline-code">scp</span></li>
+          <li>الشبكات: <span class="inline-code">curl</span>, <span class="inline-code">wget</span>, <span class="inline-code">ping</span>, <span class="inline-code">ss</span>, <span class="inline-code">ip a</span></li>
+          <li>السكريبتات: <span class="inline-code">#!/bin/bash</span>, المتغيرات، <span class="inline-code">for</span>, <span class="inline-code">if</span></li>
+          <li>متغيرات البيئة: <span class="inline-code">export</span>, <span class="inline-code">PATH</span>, <span class="inline-code">alias</span>, <span class="inline-code">~/.bashrc</span></li>
+        </ul>
+      </div>
+
+      <div class="warning"><strong>⚠️ تحذيرات مهمة:</strong> <code>rm -rf /</code> بدون <code>sudo</code> لن تعمل، لكن <code>rm -rf ~</code> أو <code>rm -rf .</code> في المكان الخطأ كارثية. دائماً تحقق من الدليل الحالي (<code>pwd</code>) قبل حذف مجلد. استخدم <code>-i</code> (interactive) مع <code>rm</code> و <code>cp</code> و <code>mv</code> إذا كنت غير متأكد. لا تشغل <code>sudo</code> مع أوامر لا تفهمها تماماً.</div>
+
+      <div class="exercise"><strong>🏋️ تمرين شامل:</strong> اكتب سكريبت Bash باسم <code>project_setup.sh</code> ينشئ مشروع بايثون كاملاً: ينشئ مجلدات <code>src</code> و <code>tests</code> و <code>docs</code>، ينشئ ملف <code>main.py</code> و <code>test_main.py</code> و <code>README.md</code>، يشغّل <code>python -m venv venv</code>، وينشئ ملف <code>.gitignore</code>. استخدم <code>mkdir -p</code>، <code>touch</code>، <code>echo</code>، و <code>chmod +x</code>.</div>
+
+      <div class="footer">
+        <p>دليل Linux لسطر الأوامر — لمطوري بايثون | جميع الحقوق محفوظة &copy; 2026</p>
+        <p style="margin-top:5px;">أعدت وصُممت خصيصاً للمبرمجين العرب</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+    }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

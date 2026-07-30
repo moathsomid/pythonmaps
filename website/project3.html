@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المشروع 3: تطبيقات الويب - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .project-card {
+    background: var(--card-bg);
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 20px 25px;
+    margin: 15px 0;
+    box-shadow: var(--shadow);
+  }
+  .project-card h3 { color: var(--primary); margin-bottom: 8px; font-size: 17px; }
+  .project-card p { font-size: 14px; color: var(--text-light); margin: 0; }
+  .chapter-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    padding: 3px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-left: 10px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">🚀 المشروع 3</span>
+      <h1>تطبيقات الويب</h1>
+      <p>بناء تطبيق ويب متكامل باستخدام إطار Django — الفصول 18 - 19 - 20</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>تهانينا! وصلت إلى المشروع الأخير والأكثر شمولاً في الكتاب. في هذا المشروع، سنبني تطبيق ويب كامل باستخدام <strong>Django</strong>، أحد أقوى أطر العمل (frameworks) لتطوير الويب بلغة بايثون. تطبيقنا سيُسمى "Learning Log" (سجل التعلم) — وهو تطبيق يتيح للمستخدمين تسجيل الموضوعات التي يتعلمونها وإنشاء إدخالات لها.</p>
+
+      <p>هذا المشروع يدمج كل ما تعلمته سابقاً: الكلاسات لبناء النماذج (models)، الدوال للمناظرات (views)، والقوالب (templates) لعرض HTML. ستتعلم أيضاً إدارة المستخدمين، وتأمين التطبيق، ونشره على الإنترنت ليكون متاحاً للجميع.</p>
+
+      <h2 class="section-title">نظرة عامة على الفصول</h2>
+
+      <div class="project-card">
+        <h3>الفصل 18: البدء مع Django <span class="chapter-badge">الفصل 18</span></h3>
+        <p>تثبيت Django وإنشاء المشروع الأول. ستتعلم إنشاء النماذج (Models)، لوحة التحكم (Admin)، المناظرات (Views)، والقوالب (Templates).</p>
+      </div>
+
+      <div class="project-card">
+        <h3>الفصل 19: حسابات المستخدمين <span class="chapter-badge">الفصل 19</span></h3>
+        <p>إضافة نظام مستخدمين كامل: تسجيل جديد، تسجيل دخول، تسجيل خروج، وتقييد الوصول بحيث يرى كل مستخدم بياناته فقط.</p>
+      </div>
+
+      <div class="project-card">
+        <h3>الفصل 20: التنسيق والنشر <span class="chapter-badge">الفصل 20</span></h3>
+        <p>تحسين مظهر التطبيق باستخدام Bootstrap ونشر التطبيق على Heroku (أو أي منصة استضافة) ليكون متاحاً على الإنترنت.</p>
+      </div>
+
+      <h2 class="section-title">الفصل 18: البدء مع Django</h2>
+
+      <h3 class="subsection-title">18.1 تثبيت Django وإنشاء المشروع</h3>
+      <p>Django هو إطار عمل (framework) لتطوير تطبيقات الويب بلغة بايثون. يتبع نمط MVT (Model-View-Template).</p>
+      <div class="code-block">
+<span class="cm"># تثبيت Django</span>
+python3 -m pip install django
+
+<span class="cm"># إنشاء مشروع جديد</span>
+django-admin startproject learning_log .
+      </div>
+      <p>الأمر <span class="inline-code">startproject</span> ينشئ هيكل المشروع الأساسي. النقطة ( <span class="inline-code">.</span> ) في النهاية تعني إنشاء المشروع في المجلد الحالي.</p>
+
+      <h3 class="subsection-title">18.2 هيكل مشروع Django</h3>
+      <p>بعد إنشاء المشروع، سترى الملفات التالية:</p>
+      <div class="code-block">
+learning_log/
+├── manage.py           <span class="cm"># أداة سطر الأوامر لإدارة المشروع</span>
+└── learning_log/
+    ├── __init__.py      <span class="cm"># يجعل المجلد حزمة Python</span>
+    ├── settings.py      <span class="cm"># إعدادات المشروع الرئيسية</span>
+    ├── urls.py          <span class="cm"># تعريف مسارات URL</span>
+    ├── asgi.py          <span class="cm"># لتشغيل التطبيق بخوادم ASGI</span>
+    └── wsgi.py          <span class="cm"># لتشغيل التطبيق بخوادم WSGI</span>
+      </div>
+
+      <h3 class="subsection-title">18.3 إنشاء تطبيق (App) داخل المشروع</h3>
+      <p>مشروع Django يتكون من تطبيقات متعددة. كل تطبيق يؤدي وظيفة محددة. لننشئ تطبيقاً باسم <span class="inline-code">learning_logs</span>:</p>
+      <div class="code-block">
+python3 manage.py startapp learning_logs
+      </div>
+
+      <h3 class="subsection-title">18.4 تعريف النماذج (Models)</h3>
+      <p>النماذج تمثل هيكل البيانات في قاعدة البيانات. كل <span class="inline-code">Model</span> يُترجم إلى جدول في قاعدة البيانات. لتطبيقنا نموذجان: <span class="inline-code">Topic</span> (الموضوع) و <span class="inline-code">Entry</span> (الإدخال):</p>
+      <div class="code-block">
+<span class="kw">from</span> django.db <span class="kw">import</span> models
+
+<span class="kw">class</span> <span class="fn">Topic</span>(models.Model):
+    text = models.CharField(max_length=200)
+    date_added = models.DateTimeField(auto_now_add=<span class="kw">True</span>)
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="kw">self</span>.text
+
+<span class="kw">class</span> <span class="fn">Entry</span>(models.Model):
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    text = models.TextField()
+    date_added = models.DateTimeField(auto_now_add=<span class="kw">True</span>)
+
+    <span class="kw">class</span> <span class="fn">Meta</span>:
+        verbose_name_plural = <span class="str">'entries'</span>
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="kw">self</span>.text[:50] + <span class="str">"..."</span>
+      </div>
+      <p><span class="inline-code">CharField</span> لحقول النص القصير، <span class="inline-code">TextField</span> للنص الطويل، <span class="inline-code">ForeignKey</span> لعلاقة "واحد إلى متعدد" بين Topic و Entry. <span class="inline-code">on_delete=models.CASCADE</span> يعني: إذا حُذف الموضوع، احذف جميع الإدخالات المرتبطة به.</p>
+
+      <h3 class="subsection-title">18.5 ترحيل قاعدة البيانات (Migrations)</h3>
+      <p>بعد تعريف النماذج، نحتاج إلى إنشاء جداولها في قاعدة البيانات:</p>
+      <div class="code-block">
+python3 manage.py makemigrations
+python3 manage.py migrate
+      </div>
+      <p><span class="inline-code">makemigrations</span> ينشئ ملفات الترحيل استناداً إلى تغييرات النماذج. <span class="inline-code">migrate</span> يطبق هذه التغييرات على قاعدة البيانات.</p>
+
+      <h3 class="subsection-title">18.6 لوحة التحكم (Admin)</h3>
+      <p>Django يوفر لوحة تحكم مدمجة لإدارة البيانات. أولاً، أنشئ مستخدم مشرف (superuser):</p>
+      <div class="code-block">
+python3 manage.py createsuperuser
+      </div>
+      <p>ثم سجّل النماذج في ملف <span class="inline-code">admin.py</span>:</p>
+      <div class="code-block">
+<span class="kw">from</span> django.contrib <span class="kw">import</span> admin
+<span class="kw">from</span> .models <span class="kw">import</span> Topic, Entry
+
+admin.site.register(Topic)
+admin.site.register(Entry)
+      </div>
+      <p>الآن يمكنك الدخول إلى <span class="inline-code">http://localhost:8000/admin/</span> وإدارة بياناتك.</p>
+
+      <h3 class="subsection-title">18.7 المناظرات (Views) والمسارات (URLs)</h3>
+      <p>المناظرات هي دوال بايثون تستقبل طلب HTTP وتعيد استجابة HTTP. غالباً ما تكون استجابة HTML. نستخدم <span class="inline-code">render()</span> لعرض قالب HTML:</p>
+      <div class="code-block">
+<span class="kw">from</span> django.shortcuts <span class="kw">import</span> render
+
+<span class="kw">def</span> <span class="fn">index</span>(request):
+    <span class="kw">return</span> render(request, <span class="str">'learning_logs/index.html'</span>)
+
+<span class="kw">def</span> <span class="fn">topics</span>(request):
+    topics = Topic.objects.order_by(<span class="str">'date_added'</span>)
+    context = {<span class="str">'topics'</span>: topics}
+    <span class="kw">return</span> render(request, <span class="str">'learning_logs/topics.html'</span>, context)
+
+<span class="kw">def</span> <span class="fn">topic</span>(request, topic_id):
+    topic = Topic.objects.get(id=topic_id)
+    entries = topic.entry_set.order_by(<span class="str">'-date_added'</span>)
+    context = {<span class="str">'topic'</span>: topic, <span class="str">'entries'</span>: entries}
+    <span class="kw">return</span> render(request, <span class="str">'learning_logs/topic.html'</span>, context)
+      </div>
+      <p>نربط هذه المناظرات بعناوين URL عبر ملف <span class="inline-code">urls.py</span>:</p>
+      <div class="code-block">
+<span class="kw">from</span> django.urls <span class="kw">import</span> path
+<span class="kw">from</span> . <span class="kw">import</span> views
+
+urlpatterns = [
+    path(<span class="str">''</span>, views.index, name=<span class="str">'index'</span>),
+    path(<span class="str">'topics/'</span>, views.topics, name=<span class="str">'topics'</span>),
+    path(<span class="str">'topics/&lt;int:topic_id&gt;/'</span>, views.topic, name=<span class="str">'topic'</span>),
+]
+      </div>
+
+      <h3 class="subsection-title">18.8 القوالب (Templates)</h3>
+      <p>القوالب هي ملفات HTML تحتوي على علامات Django الخاصة. مثال لقالب الموضوعات:</p>
+      <div class="code-block">
+{% <span class="kw">extends</span> <span class="str">'learning_logs/base.html'</span> %}
+
+{% <span class="kw">block</span> content %}
+  &lt;p&gt;Topics&lt;/p&gt;
+  &lt;ul&gt;
+    {% <span class="kw">for</span> topic <span class="kw">in</span> topics %}
+      &lt;li&gt;
+        &lt;a href=&quot;{% url <span class="str">'learning_logs:topic'</span> topic.id %}&quot;&gt;
+          {{ topic }}
+        &lt;/a&gt;
+      &lt;/li&gt;
+    {% <span class="kw">empty</span> %}
+      &lt;li&gt;No topics have been added yet.&lt;/li&gt;
+    {% <span class="kw">endfor</span> %}
+  &lt;/ul&gt;
+{% <span class="kw">endblock</span> content %}
+      </div>
+      <p><span class="inline-code">{% extends %}</span> يستخدم الوراثة في القوالب (template inheritance). <span class="inline-code">{{ }}</span> يعرض قيمة متغير. <span class="inline-code">{% url %}</span> يولّد رابطاً لمسار معين.</p>
+
+      <div class="note"><strong>ملاحظة:</strong> Django يفرض فصل الاهتمامات (separation of concerns): النماذج تتعامل مع البيانات، المناظرات تتعامل مع المنطق، القوالب تتعامل مع العرض. هذا يجعل الكود منظماً وسهل الصيانة.</div>
+
+      <h2 class="section-title">الفصل 19: حسابات المستخدمين</h2>
+
+      <h3 class="subsection-title">19.1 السماح للمستخدمين بتسجيل الدخول</h3>
+      <p>Django يأتي مع نظام مصادقة مدمج. أولاً، ننشئ تطبيقاً للمستخدمين:</p>
+      <div class="code-block">
+python3 manage.py startapp accounts
+      </div>
+      <p>نضيف المسارات الخاصة بتسجيل الدخول والخروج. نستخدم مناظرات Django المدمجة بدلاً من كتابتها من الصفر:</p>
+      <div class="code-block">
+<span class="cm"># urls.py لتطبيق accounts</span>
+<span class="kw">from</span> django.urls <span class="kw">import</span> path, include
+<span class="kw">from</span> django.contrib.auth <span class="kw">import</span> views <span class="kw">as</span> auth_views
+
+urlpatterns = [
+    path(<span class="str">'login/'</span>, auth_views.LoginView.as_view(
+        template_name=<span class="str">'registration/login.html'</span>),
+        name=<span class="str">'login'</span>),
+    path(<span class="str">'logout/'</span>, auth_views.LogoutView.as_view(), name=<span class="str">'logout'</span>),
+]
+      </div>
+
+      <h3 class="subsection-title">19.2 قالب تسجيل الدخول</h3>
+      <p>ننشئ قالب HTML بسيط لصفحة تسجيل الدخول:</p>
+      <div class="code-block">
+{% <span class="kw">extends</span> <span class="str">'learning_logs/base.html'</span> %}
+
+{% <span class="kw">block</span> content %}
+  {% <span class="kw">if</span> form.errors %}
+    &lt;p&gt;Your username and password didn't match. Try again.&lt;/p&gt;
+  {% <span class="kw">endif</span> %}
+
+  &lt;form method=&quot;post&quot; action=&quot;{% url <span class="str">'accounts:login'</span> %}&quot;&gt;
+    {% csrf_token %}
+    {{ form.as_div }}
+    &lt;button name=&quot;submit&quot;&gt;Log in&lt;/button&gt;
+  &lt;/form&gt;
+{% <span class="kw">endblock</span> content %}
+      </div>
+      <p><span class="inline-code">{% csrf_token %}</span> يحمي النموذج من هجمات CSRF (Cross-Site Request Forgery) — وهي حماية أمنية مدمجة في Django.</p>
+
+      <h3 class="subsection-title">19.3 تسجيل المستخدمين الجدد</h3>
+      <p>نحتاج إلى صفحة تسجيل جديدة. ننشئ مناظر <span class="inline-code">register</span> التي تعالج نموذج تسجيل:</p>
+      <div class="code-block">
+<span class="kw">from</span> django.shortcuts <span class="kw">import</span> render, redirect
+<span class="kw">from</span> django.contrib.auth <span class="kw">import</span> login <span class="kw">as</span> auth_login
+<span class="kw">from</span> django.contrib.auth.forms <span class="kw">import</span> UserCreationForm
+
+<span class="kw">def</span> <span class="fn">register</span>(request):
+    <span class="kw">if</span> request.method != <span class="str">'POST'</span>:
+        form = UserCreationForm()
+    <span class="kw">else</span>:
+        form = UserCreationForm(data=request.POST)
+        <span class="kw">if</span> form.is_valid():
+            new_user = form.save()
+            auth_login(request, new_user)
+            <span class="kw">return</span> redirect(<span class="str">'learning_logs:index'</span>)
+    context = {<span class="str">'form'</span>: form}
+    <span class="kw">return</span> render(request, <span class="str">'registration/register.html'</span>, context)
+      </div>
+
+      <h3 class="subsection-title">19.4 السماح للمستخدمين بامتلاك بياناتهم</h3>
+      <p>نحتاج إلى ربط كل موضوع بمستخدمه. نضيف حقل <span class="inline-code">owner</span> إلى نموذج Topic:</p>
+      <div class="code-block">
+<span class="kw">from</span> django.contrib.auth.models <span class="kw">import</span> User
+
+<span class="kw">class</span> <span class="fn">Topic</span>(models.Model):
+    text = models.CharField(max_length=200)
+    date_added = models.DateTimeField(auto_now_add=<span class="kw">True</span>)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+      </div>
+      <p>ثم نعدّل المناظر لترشيح الموضوعات حسب المستخدم الحالي:</p>
+      <div class="code-block">
+<span class="kw">from</span> django.contrib.auth.decorators <span class="kw">import</span> login_required
+
+@login_required
+<span class="kw">def</span> <span class="fn">topics</span>(request):
+    topics = Topic.objects.filter(owner=request.user).order_by(<span class="str">'date_added'</span>)
+    context = {<span class="str">'topics'</span>: topics}
+    <span class="kw">return</span> render(request, <span class="str">'learning_logs/topics.html'</span>, context)
+      </div>
+      <p><span class="inline-code">@login_required</span> يضمن أن المستخدم مسجل الدخول قبل الوصول إلى الصفحة. إذا لم يكن مسجلاً، سيُحوّل إلى صفحة تسجيل الدخول.</p>
+
+      <h2 class="section-title">الفصل 20: التنسيق والنشر</h2>
+
+      <h3 class="subsection-title">20.1 تنسيق التطبيق باستخدام Bootstrap</h3>
+      <p>Bootstrap هي مكتبة CSS جاهزة تجعل تطبيقك يبدو احترافياً دون كتابة CSS من الصفر. نثبّت حزمة <span class="inline-code">django-bootstrap5</span>:</p>
+      <div class="code-block">
+python3 -m pip install django-bootstrap5
+      </div>
+      <p>نضيفها إلى <span class="inline-code">INSTALLED_APPS</span> في ملف <span class="inline-code">settings.py</span>:</p>
+      <div class="code-block">
+INSTALLED_APPS = [
+    <span class="cm"># ... تطبيقات Django الافتراضية</span>
+    <span class="str">'learning_logs'</span>,
+    <span class="str">'accounts'</span>,
+    <span class="str">'django_bootstrap5'</span>,
+]
+      </div>
+      <p>ثم نستخدم علامات Bootstrap في قوالبنا:</p>
+      <div class="code-block">
+{% <span class="kw">load</span> django_bootstrap5 %}
+
+&lt;form method=&quot;post&quot; action=&quot;{% url <span class="str">'accounts:register'</span> %}&quot;&gt;
+  {% csrf_token %}
+  {% django_bootstrap5_form form %}
+  &lt;button name=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;Register&lt;/button&gt;
+&lt;/form&gt;
+      </div>
+
+      <h3 class="subsection-title">20.2 نشر التطبيق (Deployment)</h3>
+      <p>لجعل تطبيقك متاحاً على الإنترنت، تحتاج إلى نشره على خادم ويب. الإصدارات الحديثة من الكتاب تستخدم <strong>Platform.sh</strong> أو <strong>Railway</strong> أو <strong>PythonAnywhere</strong> بدلاً من Heroku (الذي لم يعد يقدم خطة مجانية). إليك الخطوات العامة:</p>
+
+      <p><strong>1. إنشاء ملف requirements.txt:</strong></p>
+      <div class="code-block">
+python3 -m pip freeze &gt; requirements.txt
+      </div>
+
+      <p><strong>2. إعداد متغيرات البيئة للإعدادات الحساسة:</strong></p>
+      <div class="code-block">
+<span class="cm"># learning_log/settings.py</span>
+<span class="kw">import</span> os
+
+SECRET_KEY = os.environ.get(<span class="str">'DJANGO_SECRET_KEY'</span>, <span class="str">'your-dev-key'</span>)
+DEBUG = os.environ.get(<span class="str">'DJANGO_DEBUG'</span>, <span class="str">'True'</span>) != <span class="str">'False'</span>
+ALLOWED_HOSTS = [<span class="str">'your-app-name.herokuapp.com'</span>, <span class="str">'localhost'</span>]
+      </div>
+
+      <p><strong>3. إعداد قاعدة البيانات:</strong> استخدم <span class="inline-code">dj-database-url</span> لتبديل قاعدة البيانات بسهولة بين SQLite (للتطوير) و PostgreSQL (للإنتاج).</p>
+
+      <p><strong>4. رفع الكود ونشره:</strong></p>
+      <div class="code-block">
+<span class="cm"># مثال لرفع الكود لـ Railway</span>
+railway login
+railway init
+railway up
+      </div>
+
+      <h3 class="subsection-title">20.3 الأمان في الإنتاج</h3>
+      <p>عند نشر التطبيق، هناك إعدادات أمان مهمة:</p>
+      <div class="code-block">
+<span class="cm"># learning_log/settings.py — إعدادات الإنتاج</span>
+DEBUG = <span class="kw">False</span>
+SECURE_SSL_REDIRECT = <span class="kw">True</span>
+SESSION_COOKIE_SECURE = <span class="kw">True</span>
+CSRF_COOKIE_SECURE = <span class="kw">True</span>
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = <span class="kw">True</span>
+SECURE_HSTS_PRELOAD = <span class="kw">True</span>
+      </div>
+
+      <p>هذه الإعدادات تضفر HTTPS (تشفير الاتصالات)، وتعطيل وضع التصحيح، وتفعيل HSTS (HTTP Strict Transport Security) لمنع هجمات الرجل في المنتصف.</p>
+
+      <h2 class="section-title">التمارين</h2>
+
+      <div class="exercise"><strong>تمرين 18-4: تطبيق Pizza</strong><br>
+      أنشئ تطبيق Django جديد باسم pizzeria يعرض قائمة البيتزا وطبقاتها. استخدم نموذجين: Pizza و Topping.</div>
+
+      <div class="exercise"><strong>تمرين 18-6: فهرسة الإدخالات</strong><br>
+      أضف صفحة فهرسة لجميع الإدخالات (entries) بحيث يمكنك رؤية جميع الإدخالات عبر جميع الموضوعات.</div>
+
+      <div class="exercise"><strong>تمرين 19-1: صفحة ملف المستخدم</strong><br>
+      أنشئ صفحة لكل مستخدم تعرض اسم المستخدم وكامل موضوعاته. استخدم <span class="inline-code">{% url %}</span> لإنشاء روابط لصفحات المستخدمين.</div>
+
+      <div class="exercise"><strong>تمرين 19-4: حماية الإدخال الجديد</strong><br>
+      تأكد من أن المستخدم لا يمكنه إضافة إدخالات لموضوع لا يملكه. اختبر ذلك يدوياً عبر تعديل عنوان URL في المتصفح.</div>
+
+      <div class="exercise"><strong>تمرين 20-2: تنسيق الصفحات</strong><br>
+      استخدم Bootstrap لتنسيق جميع صفحات التطبيق: الصفحة الرئيسية، صفحة الموضوعات، صفحة الإدخالات.</div>
+
+      <div class="exercise"><strong>تمرين 20-4: نشر أكثر أماناً</strong><br>
+      اقرأ عن <span class="inline-code">SECURE_SSL_REDIRECT</span> وإعدادات الأمان الأخرى في Django. أضف الإعدادات المناسبة لتطبيقك قبل النشر.</div>
+
+      <h2 class="section-title">المفاهيم الرئيسية</h2>
+      <div class="summary-box">
+        <h3>📝 المفاهيم التي تعلمتها في هذا المشروع</h3>
+        <ul>
+          <li><strong>Django:</strong> إطار عمل ويب قوي بلغة بايثون يتبع نمط MVT</li>
+          <li><strong>النماذج (Models):</strong> تعريف هيكل قاعدة البيانات باستخدام كلاسات بايثون</li>
+          <li><strong>الترحيلات (Migrations):</strong> تطبيق تغييرات النماذج على قاعدة البيانات</li>
+          <li><strong>لوحة التحكم (Admin):</strong> واجهة مدمجة لإدارة البيانات</li>
+          <li><strong>المناظرات (Views):</strong> دوال تعالج الطلبات وترجع الاستجابات</li>
+          <li><strong>القوالب (Templates):</strong> ملفات HTML مع علامات Django ديناميكية</li>
+          <li><strong>نظام المصادقة (Authentication):</strong> تسجيل الدخول والخروج باستخدام نظام Django المدمج</li>
+          <li><strong>الـ decorator @login_required:</strong> حماية الصفحات من المستخدمين غير المسجلين</li>
+          <li><strong>Bootstrap:</strong> مكتبة CSS لتحسين مظهر التطبيق بسرعة</li>
+          <li><strong>النشر (Deployment):</strong> رفع التطبيق إلى الإنترنت ليكون متاحاً للجميع</li>
+        </ul>
+      </div>
+
+      <div class="warning"><strong>تنبيه:</strong> عند نشر التطبيق، تأكد أبداً من عدم تضمين <span class="inline-code">SECRET_KEY</span> أو كلمات مرور قاعدة البيانات في الكود نفسه. استخدم متغيرات البيئة (environment variables) للمعلومات الحساسة.</div>
+
+      <div class="note"><strong>تهانينا!</strong> لقد أكملت المشروعات الثلاثة في الكتاب. الآن لديك المعرفة لبناء ألعاب فيديو، إنشاء تصورات بيانات تفاعلية، وتطوير تطبيقات ويب كاملة. استمر في التدريب وبناء مشاريعك الخاصة — الطريق أمامك مفتوح!</div>
+
+      <div style="text-align:center;margin:40px 0;">
+        <a href="../index.html" style="display:inline-block;background:var(--secondary);color:#fff;padding:12px 30px;border-radius:8px;text-decoration:none;font-size:16px;">العودة إلى الرئيسية</a>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+      <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) { link.classList.add('active'); }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

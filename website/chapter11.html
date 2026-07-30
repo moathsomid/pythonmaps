@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الفصل 11: اختبار الكود - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link active">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <div class="part-badge">📘 الجزء الأول: الأساسيات</div>
+      <h1>الفصل 11: اختبار الكود</h1>
+      <p>Testing Your Code</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>في هذا الفصل ستتعلم كيفية اختبار كود بايثون باستخدام مكتبة <span class="inline-code">unittest</span>. الاختبارات التلقائية تمنحك الثقة بأن الكود يعمل بشكل صحيح، وتسهل عليك اكتشاف الأخطاء عندما تُجري تغييرات على برنامجك. ستتعلم اختبار الدوال أولاً، ثم اختبار الكلاسات.</p>
+
+      <!-- ========================================================== -->
+      <h2 class="section-title">اختبار دالة</h2>
+      <p>قبل أن نتعلم كيفية كتابة الاختبارات، دعنا ننظر إلى دالة بسيطة ثم نكتب اختباراً لها. الهدف هو التأكد من أن الدالة تُعيد النتيجة المتوقعة.</p>
+
+      <h3 class="subsection-title">الدالة المراد اختبارها</h3>
+      <p>لنفترض أن لدينا دالة اسمها <span class="inline-code">get_formatted_name()</span> تأخذ الاسم الأول والأخير وتعيد الاسم بتنسيق أنيق:</p>
+
+      <div class="code-block">
+<span class="cm"># name_function.py</span>
+<span class="kw">def</span> <span class="fn">get_formatted_name</span>(first, last):
+    <span class="str">"""إرجاع اسم كامل منسق بشكل أنيق."""</span>
+    full_name = <span class="str">f"{first} {last}"</span>
+    <span class="kw">return</span> full_name.title()
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود — name_function.py</strong>
+        <p>هذا الكود يُعرِّف دالة بسيطة تُنسِّق الاسم الأول والأخير باستخدام <code>f-string</code>. الدالة <code>get_formatted_name()</code> تأخذ وسيطين — <code>first</code> و <code>last</code> — ثم تدمجهما في نص واحد وتُعيد النتيجة بعد تطبيق <code>.title()</code> الذي يرفع الحرف الأول من كل كلمة. هذا النمط من الدوال الخالصة (pure functions) — التي تعتمد فقط على مدخلاتها وتُعيد مخرجات ثابتة — هو الأنسب لاختبارات الوحدة لأن سلوكها يمكن التنبؤ به.</p>
+      </div>
+
+      <h3 class="subsection-title">اختبارات الوحدة وحالات الاختبار (Unit Tests & Test Cases)</h3>
+      <p>توفر مكتبة <span class="inline-code">unittest</span> أدوات لبناء واختبار الكود. إليك المصطلحات الأساسية:</p>
+
+      <ul>
+        <li><strong>اختبار وحدة (Unit Test):</strong> يتحقق من أن جزءاً معيناً من الكود — مثل دالة — يعمل بشكل صحيح.</li>
+        <li><strong>حالة اختبار (Test Case):</strong> مجموعة من اختبارات الوحدة التي تختبر سلوكاً معيناً في عدة مواقف.</li>
+      </ul>
+
+      <p>لكتابة حالة اختبار، عليك:</p>
+      <ol>
+        <li>استيراد <span class="inline-code">unittest</span> والدالة التي تريد اختبارها.</li>
+        <li>إنشاء كلاس يرث من <span class="inline-code">unittest.TestCase</span>.</li>
+        <li>كتابة دوال داخل الكلاس تبدأ أسماؤها بـ <span class="inline-code">test_</span>.</li>
+        <li>استخدام أحد دوال التأكيد (assert methods) الموروثة.</li>
+      </ol>
+
+      <div class="code-block">
+<span class="cm"># test_name_function.py</span>
+<span class="kw">import</span> unittest
+<span class="kw">from</span> name_function <span class="kw">import</span> get_formatted_name
+
+<span class="kw">class</span> <span class="fn">NamesTestCase</span>(unittest.TestCase):
+    <span class="str">"""اختبارات لـ name_function.py"""</span>
+
+    <span class="kw">def</span> <span class="fn">test_first_last_name</span>(self):
+        <span class="str">"""هل الأسماء مثل 'Janis Joplin' تعمل؟"""</span>
+        formatted_name = get_formatted_name(<span class="str">'janis'</span>, <span class="str">'joplin'</span>)
+        self.assertEqual(formatted_name, <span class="str">'Janis Joplin'</span>)
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    unittest.main()
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود — اختبار name_function.py</strong>
+        <p>هنا نرى أول اختبار وحدة باستخدام <code>unittest</code>. نستورد المكتبة والدالة المراد اختبارها، ثم ننشئ كلاساً <code>NamesTestCase</code> يرث من <code>unittest.TestCase</code> — وهذا التوريث يمنح الكلاس جميع دوال التأكيد (assert methods) مثل <code>assertEqual()</code>. داخل الكلاس، كل دالة يبدأ اسمها بـ <code>test_</code> يتم اكتشافها وتشغيلها تلقائياً بواسطة <code>unittest</code>. في <code>test_first_last_name</code> نستدعي الدالة ونتحقق من النتيجة باستخدام <code>assertEqual</code>، التي تقارن القيمة الفعلية بالقيمة المتوقعة. السطران الأخيران <code>if __name__ == '__main__'</code> يسمحان بتشغيل الاختبارات مباشرة من سطر الأوامر.</p>
+      </div>
+
+      <p>هذا المثال يختبر دالة <span class="inline-code">get_formatted_name</span> عن طريق إعطائها الاسمين 'janis' و 'joplin' وتوقع النتيجة 'Janis Joplin'. دالة <span class="inline-code">assertEqual()</span> تتحقق من أن القيمتين متساويتان.</p>
+
+      <h3 class="subsection-title">اختبار ناجح</h3>
+      <p>عند تشغيل الاختبار أعلاه، سترى مخرجات تشير إلى نجاحه:</p>
+
+      <div class="code-block">
+.
+----------------------------------------------------------------------
+Ran 1 test <span class="kw">in</span> 0.000s
+
+OK
+      </div>
+
+      <p>النقطة <span class="inline-code">.</span> في السطر الأول تعني أن اختباراً واحداً نجح. السطر <span class="inline-code">OK</span> يعني أن جميع الاختبارات نجحت. هذا شعور رائع — تأكدت أن دالتك تعمل كما هو متوقع.</p>
+
+      <h3 class="subsection-title">اختبار فاشل</h3>
+      <p>ماذا يحدث إذا غيرنا الدالة بطريقة تسبب خطأ؟ مثلاً، لنعدّل الدالة لتقبل اسماً وسطياً اختيارياً:</p>
+
+      <div class="code-block">
+<span class="kw">def</span> <span class="fn">get_formatted_name</span>(first, middle, last):
+    <span class="str">"""إرجاع اسم كامل منسق بشكل أنيق."""</span>
+    full_name = <span class="str">f"{first} {middle} {last}"</span>
+    <span class="kw">return</span> full_name.title()
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود — تعديل الدالة بوسيط إضافي</strong>
+        <p>هنا قمنا بتعديل <code>get_formatted_name()</code> لتقبل ثلاث وسائط — <code>first</code> و <code>middle</code> و <code>last</code> — بدلاً من اثنتين. هذا التعديل كسَر الاختبار القديم لأن الاختبار يمرر وسيطين فقط ('janis' و 'joplin') بينما الدالة الآن تتطلب ثلاثة. يوضح هذا أهمية اختبارات الوحدة: فهي تكتشف فوراً عندما يتغير توقيع الدالة (function signature) بطريقة لا تتوافق مع الاستدعاءات الحالية.</p>
+      </div>
+
+      <p>الآن الاختبار القديم <span class="inline-code">test_first_last_name</span> سيفشل لأنه يمرر وسيطين فقط بينما الدالة تتطلب ثلاثة. المخرجات:</p>
+
+      <div class="code-block">
+E
+======================================================================
+ERROR: test_first_last_name (__main__.NamesTestCase)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File <span class="str">"test_name_function.py"</span>, line 8, <span class="kw">in</span> test_first_last_name
+    formatted_name = get_formatted_name(<span class="str">'janis'</span>, <span class="str">'joplin'</span>)
+TypeError: get_formatted_name() missing 1 required positional argument: <span class="str">'last'</span>
+
+----------------------------------------------------------------------
+Ran 1 test <span class="kw">in</span> 0.001s
+
+FAILED (errors=1)
+      </div>
+
+      <p>الحرف <span class="inline-code">E</span> يخبرنا بوجود خطأ (Error). بعدها نرى تفاصيل الـ Traceback التي تشير إلى أن الدالة تنتظر وسيطاً ثالثاً. هذا مفيد جداً — الاختبار الفاشل يخبرك بالضبط أين المشكلة.</p>
+
+      <h3 class="subsection-title">الاستجابة للفشل</h3>
+      <p>عندما يفشل اختبار، يجب ألا تغير الاختبار — بل غير الكود الأصلي ليصبح متوافقاً مع الاختبارات. في حالتنا، الحل هو جعل الاسم الأوسط اختيارياً:</p>
+
+      <div class="code-block">
+<span class="kw">def</span> <span class="fn">get_formatted_name</span>(first, last, middle=<span class="str">''</span>):
+    <span class="str">"""إرجاع اسم كامل منسق بشكل أنيق."""</span>
+    <span class="kw">if</span> middle:
+        full_name = <span class="str">f"{first} {middle} {last}"</span>
+    <span class="kw">else</span>:
+        full_name = <span class="str">f"{first} {last}"</span>
+    <span class="kw">return</span> full_name.title()
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود — جعل الاسم الأوسط اختيارياً</strong>
+        <p>الحل الأمثل هو جعل الاسم الأوسط اختيارياً بوضع قيمة افتراضية <code>''</code> (نص فارغ) له في تعريف الدالة. داخل الدالة نستخدم <code>if middle:</code> للتحقق مما إذا كان المستخدم قد أدخل اسم أوسط — السلاسل النصية الفارغة تُعتبر <code>False</code> في بايثون، بينما غير الفارغة تُعتبر <code>True</code>. بهذه الطريقة عُدّلنا الكود الأصلي ليتوافق مع الاختبارات بدلاً من تعديل الاختبارات نفسها. هذا هو المبدأ الأساسي: الاختبارات تمثل العقد (contract) الذي يجب أن يلتزم به الكود.</p>
+      </div>
+
+      <p>الآن الاختبار القديم يعمل مرة أخرى لأن الاسم الأوسط اختياري. هذه هي فلسفة اختبارات الوحدة: الكود يجب أن يتكيف مع الاختبارات، وليس العكس.</p>
+
+      <h3 class="subsection-title">إضافة اختبارات جديدة</h3>
+      <p>بعد إصلاح المشكلة، يمكننا إضافة اختبار جديد يختبر اسم الوسط:</p>
+
+      <div class="code-block">
+<span class="kw">import</span> unittest
+<span class="kw">from</span> name_function <span class="kw">import</span> get_formatted_name
+
+<span class="kw">class</span> <span class="fn">NamesTestCase</span>(unittest.TestCase):
+
+    <span class="kw">def</span> <span class="fn">test_first_last_name</span>(self):
+        formatted_name = get_formatted_name(<span class="str">'janis'</span>, <span class="str">'joplin'</span>)
+        self.assertEqual(formatted_name, <span class="str">'Janis Joplin'</span>)
+
+    <span class="kw">def</span> <span class="fn">test_first_last_middle_name</span>(self):
+        formatted_name = get_formatted_name(
+            <span class="str">'wolfgang'</span>, <span class="str">'mozart'</span>, <span class="str">'amadeus'</span>)
+        self.assertEqual(formatted_name, <span class="str">'Wolfgang Amadeus Mozart'</span>)
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    unittest.main()
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود — إضافة اختبار للاسم الأوسط</strong>
+        <p>أضفنا اختباراً جديداً باسم <code>test_first_last_middle_name</code> يختبر حالة إدخال الاسم الأوسط الثلاثي 'Wolfgang Amadeus Mozart'. لاحظ أن تسمية الدوال يجب أن تكون واضحة ووصفية — فاسم <code>test_first_last_middle_name</code> يخبرنا بالضبط ماذا يختبر هذا الاختبار. في هذا الاختبار، نمرر ثلاث وسائط إلى الدالة ونتوقع النتيجة الكاملة مع الاسم الأوسط. عند تشغيل الاختبارين، نرى نقطتين (<code>..</code>) تعنيان نجاح كليهما. كلما أضفت ميزة جديدة إلى كودك، أضف اختباراً جديداً معها لضمان عدم كسر الوظائف الحالية.</p>
+      </div>
+
+      <p>لاحظ أن اسم الدالة الجديدة يبدأ بـ <span class="inline-code">test_</span> — هذا هو الاتفاق الذي تستخدمه مكتبة <span class="inline-code">unittest</span> لاكتشاف الاختبارات تلقائياً. أسماء الدوال يجب أن تكون وصفية حتى تعرف بالضبط ماذا يختبر كل اختبار.</p>
+
+      <div class="code-block">
+..
+----------------------------------------------------------------------
+Ran 2 tests <span class="kw">in</span> 0.000s
+
+OK
+      </div>
+
+      <p>نقطتان <span class="inline-code">..</span> تعنيان نجاح اختبارين. مع مرور الوقت، ستجمع مجموعة كبيرة من الاختبارات التي تمنحك ثقة كاملة في كودك.</p>
+
+      <!-- ========================================================== -->
+      <h2 class="section-title">اختبار كلاس</h2>
+      <p>الآن بعد أن تعلمت اختبار الدوال، دعنا ننتقل إلى اختبار الكلاسات. المبادئ نفسها، لكن الكلاسات تحتوي على دوال متعددة (ميثودات) وحالات (states) يجب اختبارها.</p>
+
+      <h3 class="subsection-title">دوال التأكيد (Assert Methods)</h3>
+      <p>توفر مكتبة <span class="inline-code">unittest</span> العديد من دوال التأكيد. إليك الأكثر استخداماً:</p>
+
+      <table style="width:100%;border-collapse:collapse;margin:15px 0;font-size:14px;">
+        <tr style="background:var(--primary);color:#fff;">
+          <th style="padding:8px 12px;border:1px solid var(--border);">الدالة</th>
+          <th style="padding:8px 12px;border:1px solid var(--border);">الاستخدام</th>
+        </tr>
+        <tr style="background:var(--card-bg);">
+          <td style="padding:8px 12px;border:1px solid var(--border);"><span class="inline-code">assertEqual(a, b)</span></td>
+          <td style="padding:8px 12px;border:1px solid var(--border);">يتحقق من أن a == b</td>
+        </tr>
+        <tr style="background:#1c2128;">
+          <td style="padding:8px 12px;border:1px solid var(--border);"><span class="inline-code">assertNotEqual(a, b)</span></td>
+          <td style="padding:8px 12px;border:1px solid var(--border);">يتحقق من أن a != b</td>
+        </tr>
+        <tr style="background:var(--card-bg);">
+          <td style="padding:8px 12px;border:1px solid var(--border);"><span class="inline-code">assertTrue(x)</span></td>
+          <td style="padding:8px 12px;border:1px solid var(--border);">يتحقق من أن x == True</td>
+        </tr>
+        <tr style="background:#1c2128;">
+          <td style="padding:8px 12px;border:1px solid var(--border);"><span class="inline-code">assertFalse(x)</span></td>
+          <td style="padding:8px 12px;border:1px solid var(--border);">يتحقق من أن x == False</td>
+        </tr>
+        <tr style="background:var(--card-bg);">
+          <td style="padding:8px 12px;border:1px solid var(--border);"><span class="inline-code">assertIn(item, list)</span></td>
+          <td style="padding:8px 12px;border:1px solid var(--border);">يتحقق من وجود العنصر في القائمة</td>
+        </tr>
+        <tr style="background:#1c2128;">
+          <td style="padding:8px 12px;border:1px solid var(--border);"><span class="inline-code">assertNotIn(item, list)</span></td>
+          <td style="padding:8px 12px;border:1px solid var(--border);">يتحقق من عدم وجود العنصر في القائمة</td>
+        </tr>
+      </table>
+
+      <h3 class="subsection-title">كلاس للاختبار</h3>
+      <p>لننظر إلى كلاس يساعدنا في جمع الإجابات في استطلاع:</p>
+
+      <div class="code-block">
+<span class="cm"># survey.py</span>
+<span class="kw">class</span> <span class="fn">AnonymousSurvey</span>:
+    <span class="str">"""جمع إجابات مجهولة لأسئلة الاستطلاع."""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, question):
+        self.question = question
+        self.responses = []
+
+    <span class="kw">def</span> <span class="fn">show_question</span>(self):
+        print(self.question)
+
+    <span class="kw">def</span> <span class="fn">store_response</span>(self, new_response):
+        self.responses.append(new_response)
+
+    <span class="kw">def</span> <span class="fn">show_results</span>(self):
+        print(<span class="str">"نتائج الاستطلاع:"</span>)
+        <span class="kw">for</span> response <span class="kw">in</span> self.responses:
+            print(<span class="str">f"- {response}"</span>)
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود — كلاس AnonymousSurvey</strong>
+        <p>هذا الكلاس <code>AnonymousSurvey</code> يُمثّل استطلاع رأي بسيط. في <code>__init__</code> نُخزّن سؤال الاستطلاع في <code>self.question</code> ونُهيئ قائمة فارغة <code>self.responses</code> للإجابات. الدالة <code>store_response()</code> تُضيف إجابة جديدة إلى القائمة باستخدام <code>append()</code>. الدالة <code>show_results()</code> تطبع جميع الإجابات المخزّنة. لاحظ أن الكلاس يحتفظ بحالة داخلية تتغير بمرور الوقت — حقل <code>responses</code> يبدأ فارغاً ويمتلئ تدريجياً. هذا النوع من الكلاسات يحتاج إلى اختبارات تتحقق من صحة الحالة الداخلية بعد تنفيذ العمليات، وليس فقط من القيم المُعادة.</p>
+      </div>
+
+      <p>هذا الكلاس يمثل استطلاعاً بسيطاً. له سؤال واحد <span class="inline-code">question</span> وقائمة إجابات <span class="inline-code">responses</span>. يمكن إضافة إجابات جديدة باستخدام <span class="inline-code">store_response()</span>. الآن لنكتب اختباراً:</p>
+
+      <h3 class="subsection-title">اختبار AnonymousSurvey</h3>
+
+      <div class="code-block">
+<span class="cm"># test_survey.py</span>
+<span class="kw">import</span> unittest
+<span class="kw">from</span> survey <span class="kw">import</span> AnonymousSurvey
+
+<span class="kw">class</span> <span class="fn">TestAnonymousSurvey</span>(unittest.TestCase):
+    <span class="str">"""اختبارات للكلاس AnonymousSurvey."""</span>
+
+    <span class="kw">def</span> <span class="fn">test_store_single_response</span>(self):
+        <span class="str">"""هل يتم تخزين إجابة واحدة بشكل صحيح؟"""</span>
+        question = <span class="str">"ما لغتك الأولى؟"</span>
+        my_survey = AnonymousSurvey(question)
+        my_survey.store_response(<span class="str">'English'</span>)
+        self.assertIn(<span class="str">'English'</span>, my_survey.responses)
+
+    <span class="kw">def</span> <span class="fn">test_store_three_responses</span>(self):
+        <span class="str">"""هل يتم تخزين ثلاث إجابات بشكل صحيح؟"""</span>
+        question = <span class="str">"ما لغتك الأولى؟"</span>
+        my_survey = AnonymousSurvey(question)
+        responses = [<span class="str">'English'</span>, <span class="str">'Spanish'</span>, <span class="str">'Mandarin'</span>]
+        <span class="kw">for</span> response <span class="kw">in</span> responses:
+            my_survey.store_response(response)
+        <span class="kw">for</span> response <span class="kw">in</span> responses:
+            self.assertIn(response, my_survey.responses)
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    unittest.main()
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود — اختبار AnonymousSurvey</strong>
+        <p>هذا الاختبار يتحقق من أن <code>AnonymousSurvey</code> يخزّن الإجابات بشكل صحيح. في <code>test_store_single_response</code> نُنشئ كائن استطلاع ونُخزّن إجابة واحدة '<code>English</code>' ثم نستخدم <code>assertIn</code> للتأكد من وجودها في القائمة. في <code>test_store_three_responses</code> نُخزّن ثلاث إجابات باستخدام حلقة <code>for</code> ونتحقق من وجود كل واحدة بحلقة أخرى. لاحظ أننا استخدّمنا <code>assertIn</code> بدلاً من <code>assertEqual</code> — لأننا نريد التحقق من أن الإجابة ضمن القائمة، وليس أن القائمة تساوي شيئاً محدداً. المشكلة الواضحة هنا هي تكرار إنشاء الكائن <code>AnonymousSurvey(question)</code> في كل اختبار، وهذا ما سيحلّه <code>setUp()</code> في القسم التالي.</p>
+      </div>
+
+      <p>هذا الاختبار يتحقق من أن الكلاس يخزّن الإجابات بشكل صحيح. <span class="inline-code">assertIn()</span> تتحقق من وجود كل إجابة في القائمة. لاحظ أننا كررنا إنشاء الكلاس في كل اختبار — هذا أمر متعب وسيتم حله في القسم التالي.</p>
+
+      <h3 class="subsection-title">استخدام setUp()</h3>
+      <p>إذا كان لديك عدة اختبارات تحتاج لنفس الإعدادات، يمكنك استخدام الدالة <span class="inline-code">setUp()</span>. يتم تنفيذها قبل كل اختبار. بهذه الطريقة تنشئ الكائن مرة واحدة وتستخدمه في كل الاختبارات:</p>
+
+      <div class="code-block">
+<span class="cm"># test_survey.py مع setUp()</span>
+<span class="kw">import</span> unittest
+<span class="kw">from</span> survey <span class="kw">import</span> AnonymousSurvey
+
+<span class="kw">class</span> <span class="fn">TestAnonymousSurvey</span>(unittest.TestCase):
+
+    <span class="kw">def</span> <span class="fn">setUp</span>(self):
+        <span class="str">"""إنشاء استطلاع ومجموعة من الإجابات لاستخدامها في كل الاختبارات."""</span>
+        question = <span class="str">"ما لغتك الأولى؟"</span>
+        self.my_survey = AnonymousSurvey(question)
+        self.responses = [<span class="str">'English'</span>, <span class="str">'Spanish'</span>, <span class="str">'Mandarin'</span>]
+
+    <span class="kw">def</span> <span class="fn">test_store_single_response</span>(self):
+        self.my_survey.store_response(self.responses[<span class="num">0</span>])
+        self.assertIn(self.responses[<span class="num">0</span>], self.my_survey.responses)
+
+    <span class="kw">def</span> <span class="fn">test_store_three_responses</span>(self):
+        <span class="kw">for</span> response <span class="kw">in</span> self.responses:
+            self.my_survey.store_response(response)
+        <span class="kw">for</span> response <span class="kw">in</span> self.responses:
+            self.assertIn(response, self.my_survey.responses)
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    unittest.main()
+      </div>
+
+      <div class="explanation-box">
+        <strong>🔍 شرح الكود — استخدام setUp() لتجنب التكرار</strong>
+        <p>الدالة <code>setUp()</code> هي إحدى مميزات <code>unittest.TestCase</code> التي تُنفّذ تلقائياً <strong>قبل</strong> كل اختبار في الكلاس. هنا نستخدمها لإنشاء كائن <code>AnonymousSurvey</code> جديد وقائمة إجابات جاهزة، مما يلغي الحاجة لتكرار هذا الكود في كل اختبار. لاحظ أن المتغيرات في <code>setUp()</code> يجب أن تسبقها <code>self.</code> (مثل <code>self.my_survey</code> و <code>self.responses</code>) حتى تكون متاحة لبقية دوال الكلاس. النتيجة أن كل اختبار يبدأ بحالة نظيفة تماماً — أي تغييرات يجريها اختبار على الكائن لا تؤثر على الاختبار التالي، لأن <code>setUp()</code> تُنشئ كائناً جديداً قبل كل تشغيل. هذا يجعل الكود أكثر نظافة ويقلل الأخطاء الناتجة عن تداخل حالات الاختبارات.</p>
+      </div>
+
+      <p>الدالة <span class="inline-code">setUp()</span> تُنشئ كائن <span class="inline-code">AnonymousSurvey</span> جديداً وقائمة الإجابات قبل كل اختبار. هذا يعني أن كل اختبار يبدأ بحالة نظيفة — أي تغييرات يجريها اختبار على الكائن لا تؤثر على الاختبار التالي. المتغيرات التي تُنشأ في <span class="inline-code">setUp()</span> يجب أن تبدأ بـ <span class="inline-code">self.</span> حتى تكون متاحة في باقي دوال الكلاس.</p>
+
+      <div class="note">
+        <strong>ملاحظة:</strong> استخدام <span class="inline-code">setUp()</span> يجعل الكود أكثر نظافة وتنظيماً. عندما تكتب مشاريع كبيرة تحتوي على عشرات الاختبارات، ستجد <span class="inline-code">setUp()</span> أداة لا تقدر بثمن لتجنب تكرار الكود.
+      </div>
+
+      <!-- ========================================================== -->
+      <h2 class="section-title">تمارين الفصل الحادي عشر</h2>
+
+      <div class="exercise">
+        <strong>تمرين 11-1: المدينة، الدولة</strong>
+        <p>اكتب دالة تقبل معاملين: اسم مدينة واسم دولة. يجب أن تعيد <span class="inline-code">'Santiago, Chile'</span>. خزّن الدالة في ملف <span class="inline-code">city_functions.py</span>. ثم أنشئ ملف <span class="inline-code">test_cities.py</span> يختبر الدالة باستخدام <span class="inline-code">unittest</span>. تأكد من أن الاختبار ينجح.</p>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 11-2: عدد السكان</strong>
+        <p>عدّل الدالة السابقة لتقبل معامل ثالث اختياري <span class="inline-code">population</span> وتعيد <span class="inline-code">'Santiago, Chile — population 5000000'</span>. تأكد من أن الاختبار القديم ما زال يعمل. اكتب اختباراً ثانياً يختبر إضافة عدد السكان.</p>
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 11-3: فئة الموظف</strong>
+        <p>اكتب كلاساً اسمه <span class="inline-code">Employee</span> يأخذ <span class="inline-code">first_name</span> و <span class="inline-code">last_name</span> و <span class="inline-code">annual_salary</span>. اكتب ميثود <span class="inline-code">give_raise()</span> تضيف <span class="inline-code">5000</span> إلى الراتب (أو قيمة مخصصة إذا مررت معامل). اكتب اختبارات لـ <span class="inline-code">Employee</span> باستخدام <span class="inline-code">setUp()</span> لاختبار كلتا حالتَي رفع الراتب.</p>
+      </div>
+
+      <!-- ========================================================== -->
+      <h2 class="section-title">ملخص الفصل</h2>
+
+      <div class="summary-box">
+        <h3>📋 ما تعلمناه في هذا الفصل</h3>
+        <ul>
+          <li>كيفية كتابة اختبارات وحدة باستخدام مكتبة <span class="inline-code">unittest</span>.</li>
+          <li>إنشاء كلاس اختبار يرث من <span class="inline-code">unittest.TestCase</span> وكتابة دوال تبدأ بـ <span class="inline-code">test_</span>.</li>
+          <li>استخدام دوال التأكيد مثل <span class="inline-code">assertEqual()</span> و <span class="inline-code">assertIn()</span> للتحقق من النتائج.</li>
+          <li>قراءة مخرجات الاختبارات الناجحة (النقطة <span class="inline-code">.</span> و <span class="inline-code">OK</span>) والفاشلة (الخطأ <span class="inline-code">E</span> أو الفشل <span class="inline-code">F</span>).</li>
+          <li>الاستجابة لفشل الاختبار بتعديل الكود الأصلي، وليس الاختبار.</li>
+          <li>إضافة اختبارات جديدة مع تطور الكود لضمان عدم كسر الوظائف القديمة.</li>
+          <li>اختبار الكلاسات والتحقق من الحالة الداخلية للكائنات.</li>
+          <li>استخدام <span class="inline-code">setUp()</span> لإنشاء كائنات وإعدادات مشتركة بين عدة اختبارات.</li>
+        </ul>
+      </div>
+
+    <div class="note"><strong>💡 نصيحة ذهبية:</strong> جرب <span class="inline-code">pytest</span> بدلاً من <span class="inline-code">unittest</span>— أبسط وأقوى. اختبر السلوك (ماذا تفعل الدالة) وليس التنفيذ (كيف تفعلها). استخدم <span class="inline-code">@pytest.fixture</span> بدلاً من <span class="inline-code">setUp()</span>. استخدم <span class="inline-code">@pytest.mark.parametrize</span> لاختبار حالات متعددة بنفس الدالة.</div>
+
+    <div class="warning"><strong>⚠️ خطأ شائع:</strong> اختبار implementation details بدلاً من behavior. إذا غيرت طريقة التنفيذ لاحقاً، ستفشل الاختبارات رغم أن الكود يعمل! اختبر الواجهة العامة (public API) فقط. أيضاً، لا تختبر أشياء بديهية مثل أن <span class="inline-code">3 == 3</span> — ركز على المنطق الخاص بتطبيقك.</div>
+
+    <div class="exercise"><strong>🏋️ تمرين:</strong> اكتب كلاس <span class="inline-code">Calculator</span> بدوال: <span class="inline-code">add</span>، <span class="inline-code">subtract</span>، <span class="inline-code">multiply</span>، <span class="inline-code">divide</span> (تتعامل مع القسمة على صفر). اكتب اختبارات لكل دالة تغطي: الحالة الطبيعية، الحالة الحدية (مثل القسمة على صفر)، والأعداد السالبة. استخدم <span class="inline-code">unittest.TestCase</span> أو <span class="inline-code">pytest</span>.</div>
+
+    <div class="footer">
+        <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+        <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+    }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

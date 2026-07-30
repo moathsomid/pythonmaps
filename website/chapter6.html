@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الفصل 6: القواميس - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .back-link:hover { text-decoration: underline; }
+  @media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">📘 الجزء الأول: الأساسيات</span>
+      <h1>6. القواميس</h1>
+      <p>تخزين البيانات في أزواج key-value، التكرار، والتداخل في القواميس</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        في هذا الفصل، ستتعلم عن <strong>القواميس (Dictionaries)</strong> — وهي بنية بيانات قوية في بايثون تسمح لك بتخزين البيانات في أزواج <strong>مفتاح-قيمة (key-value)</strong>. تخيل قاموساً حقيقياً: كل كلمة (مفتاح) يقابلها معنى (قيمة). في بايثون، القواميس تمكنك من ربط البيانات ببعضها البعض بطريقة مرنة وفعالة.
+      </p>
+
+      <h2 class="section-title">قاموس بسيط</h2>
+
+      <p>
+        لنلقِ نظرة على قاموس بسيط يخزن معلومات عن شخص:
+      </p>
+
+      <div class="code-block">
+alien_0 = {<span class="str">'color'</span>: <span class="str">'green'</span>, <span class="str">'points'</span>: <span class="num">5</span>}
+<span class="bu">print</span>(alien_0[<span class="str">'color'</span>])
+<span class="bu">print</span>(alien_0[<span class="str">'points'</span>])
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هذا الكود ينشئ قاموساً باسم <code>alien_0</code> يحتوي على مفتاحين: <code>'color'</code> بقيمة <code>'green'</code> و <code>'points'</code> بقيمة <code>5</code>. القواميس في بايثون تُحاط بأقواس معقوفة <code>{}</code> وتستخدم النقطتين <code>:</code> لفصل كل مفتاح عن قيمته. بعد ذلك نستخدم الأقواس المربعة <code>[]</code> للوصول إلى قيمة كل مفتاح وطباعتها. المخرجات ستكون <code>green</code> في السطر الأول ثم <code>5</code> في السطر الثاني.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+green
+5
+      </div>
+
+      <p>
+        القاموس <span class="inline-code">alien_0</span> يخزن لون الفضائي ونقاطه. كل مفتاح (<span class="inline-code">'color'</span> و <span class="inline-code">'points'</span>) يرتبط بقيمة محددة. القواميس محاطة بأقواس معقوفة <span class="inline-code">{}</span> وتستخدم النقطتين <span class="inline-code">:</span> لفصل المفتاح عن قيمته.
+      </p>
+
+      <h2 class="section-title">التعامل مع القواميس</h2>
+
+      <p>
+        القواميس ديناميكية — يمكنك إضافة أزواج جديدة، تعديل القيم الموجودة، وحذف أزواج غير مرغوب فيها.
+      </p>
+
+      <h3 class="subsection-title">الوصول إلى القيم</h3>
+
+      <p>
+        للوصول إلى قيمة مرتبطة بمفتاح معين، اكتب اسم القاموس ثم المفتاح بين قوسين مربعين:
+      </p>
+
+      <div class="code-block">
+alien_0 = {<span class="str">'color'</span>: <span class="str">'green'</span>}
+<span class="bu">print</span>(alien_0[<span class="str">'color'</span>])    <span class="cm"># green</span>
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>نصل هنا إلى قيمة مفتاح معين في القاموس باستخدام الصيغة <code>اسم_القاموس[اسم_المفتاح]</code>. عندما نكتب <code>alien_0['color']</code>، تبحث بايثون عن المفتاح <code>'color'</code> في قاموس <code>alien_0</code> وتُرجِع القيمة المقابلة <code>'green'</code>. هذا هو الأسلوب الأساسي للوصول إلى القيم في القواميس، لكنه يسبب خطأ <code>KeyError</code> إذا كان المفتاح غير موجود — لذا يُفضّل استخدام <code>get()</code> في الحالات غير المؤكدة.</p></div>
+
+      <p>
+        إذا كنت غير متأكد من وجود المفتاح، استخدم الدالة <span class="inline-code">get()</span> لتجنب الأخطاء:
+      </p>
+
+      <div class="code-block">
+alien_0 = {<span class="str">'color'</span>: <span class="str">'green'</span>, <span class="str">'points'</span>: <span class="num">5</span>}
+point_value = alien_0.get(<span class="str">'points'</span>, <span class="str">'No point value assigned.'</span>)
+<span class="bu">print</span>(point_value)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الدالة <code>get()</code> هي طريقة آمنة للوصول إلى قيم القاموس دون خطر توقف البرنامج. تأخذ وسيطين: الأول هو المفتاح الذي تبحث عنه، والثاني هو قيمة افتراضية تُرجَع إذا لم يُعثر على المفتاح. هنا، استخدمنا <code>alien_0.get('points', 'No point value assigned.')</code>، وبما أن المفتاح <code>'points'</code> موجود بقيمة <code>5</code>، فإن الدالة تُرجِع <code>5</code>. لو كان المفتاح غير موجود، لكانت أعادت رسالة الخطأ التي حددناها بدلاً من إيقاف البرنامج.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+5
+      </div>
+
+      <p>
+        دالة <span class="inline-code">get()</span> تأخذ وسيطين: المفتاح الذي تبحث عنه، وقيمة افتراضية لتُرجِعها إذا لم يوجد المفتاح. إذا لم تحدد قيمة افتراضية، سترجع <span class="inline-code">None</span> عند عدم وجود المفتاح.
+      </p>
+
+      <h3 class="subsection-title">إضافة أزواج جديدة</h3>
+
+      <p>
+        لإضافة زوج مفتاح-قيمة جديد، اكتب اسم القاموس متبوعاً بالمفتاح الجديد بين قوسين مربعين وقم بتعيين قيمة له:
+      </p>
+
+      <div class="code-block">
+alien_0 = {<span class="str">'color'</span>: <span class="str">'green'</span>, <span class="str">'points'</span>: <span class="num">5</span>}
+<span class="bu">print</span>(alien_0)
+
+alien_0[<span class="str">'x_position'</span>] = <span class="num">0</span>
+alien_0[<span class="str">'y_position'</span>] = <span class="num">25</span>
+<span class="bu">print</span>(alien_0)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>القواميس ديناميكية — يمكنك إضافة أزواج جديدة ببساطة عن طريق تعيين قيمة لمفتاح جديد. هنا نطبع القاموس الأصلي أولاً (مفتاحان فقط)، ثم نضيف مفتاح <code>'x_position'</code> بقيمة <code>0</code> ومفتاح <code>'y_position'</code> بقيمة <code>25</code> باستخدام صيغة <code>alien_0[المفتاح] = القيمة</code>. بعد الإضافة نطبع القاموس مرة أخرى فنرى المفتاحين الجديدين في النهاية. تحتفظ بايثون بترتيب الإضافة منذ الإصدار 3.7، لذا يظهر المفتاحان الجديدان بالترتيب الذي أُضيفا به.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+{'color': 'green', 'points': 5}
+{'color': 'green', 'points': 5, 'x_position': 0, 'y_position': 25}
+      </div>
+
+      <p>
+        القواميس تحافظ على الترتيب الذي أُضيفت به الأزواج (منذ Python 3.7). هذا يعني أن ترتيب الأزواج في القاموس هو نفس الترتيب الذي أدخلتها به.
+      </p>
+
+      <h3 class="subsection-title">تعديل القيم</h3>
+
+      <p>
+        لتعديل قيمة موجودة، استخدم نفس الصيغة المستخدمة في الإضافة:
+      </p>
+
+      <div class="code-block">
+alien_0 = {<span class="str">'color'</span>: <span class="str">'green'</span>}
+<span class="bu">print</span>(f<span class="str">"الفضائي لونه {alien_0['color']}."</span>)
+
+alien_0[<span class="str">'color'</span>] = <span class="str">'yellow'</span>
+<span class="bu">print</span>(f<span class="str">"الفضائي الآن لونه {alien_0['color']}."</span>)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>لتعديل قيمة موجودة نستخدم نفس صيغة الإضافة: <code>اسم_القاموس[المفتاح] = القيمة_الجديدة</code>. في البداية لون الفضائي <code>'green'</code>، ثم نغيّره إلى <code>'yellow'</code> عن طريق تعيين قيمة جديدة للمفتاح <code>'color'</code>. لاحظ استخدام f-string لعرض النص المنسّق مع تضمين قيمة المفتاح مباشرة داخل النص العربي. هذا يوضح كيف يمكن تحديث بيانات القاموس بسهولة — القيمة القديمة تُستبدل بالجديدة تلقائياً دون أي خطوات إضافية.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+الفضائي لونه green.
+الفضائي الآن لونه yellow.
+      </div>
+
+      <p>
+        إليك مثال أكثر تعقيداً لتتبع حركة الفضائي:
+      </p>
+
+      <div class="code-block">
+alien_0 = {<span class="str">'x_position'</span>: <span class="num">0</span>, <span class="str">'y_position'</span>: <span class="num">25</span>, <span class="str">'speed'</span>: <span class="str">'medium'</span>}
+<span class="bu">print</span>(f<span class="str">"الموضع الأصلي: {alien_0['x_position']}."</span>)
+
+<span class="cm"># حرك الفضائي لليمين بناءً على سرعته</span>
+<span class="kw">if</span> alien_0[<span class="str">'speed'</span>] == <span class="str">'slow'</span>:
+    x_increment = <span class="num">1</span>
+<span class="kw">elif</span> alien_0[<span class="str">'speed'</span>] == <span class="str">'medium'</span>:
+    x_increment = <span class="num">2</span>
+<span class="kw">else</span>:
+    x_increment = <span class="num">3</span>
+
+alien_0[<span class="str">'x_position'</span>] = alien_0[<span class="str">'x_position'</span>] + x_increment
+<span class="bu">print</span>(f<span class="str">"الموضع الجديد: {alien_0['x_position']}."</span>)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هذا المثال يدمج القواميس مع جمل الشرط لبناء منطق حركة متكامل. قاموس <code>alien_0</code> يخزن موقع الفضائي وسرعته. بناءً على قيمة <code>'speed'</code>، نحدد عدد وحدات الحركة <code>x_increment</code>: السرعة البطيئة (<code>'slow'</code>) تعني <code>1</code>، المتوسطة (<code>'medium'</code>) تعني <code>2</code>، والسريعة (<code>'fast'</code>) تعني <code>3</code>. ثم نضيف <code>x_increment</code> إلى الموضع الحالي. بما أن السرعة <code>'medium'</code> والموضع الأصلي <code>0</code>، فإن النتيجة ستكون <code>0 + 2 = 2</code>. هذا النمط شائع في تطوير الألعاب والمحاكاة.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+الموضع الأصلي: 0.
+الموضع الجديد: 2.
+      </div>
+
+      <h3 class="subsection-title">حذف أزواج</h3>
+
+      <p>
+        استخدم جملة <span class="inline-code">del</span> لحذف زوج مفتاح-قيمة بشكل دائم:
+      </p>
+
+      <div class="code-block">
+alien_0 = {<span class="str">'color'</span>: <span class="str">'green'</span>, <span class="str">'points'</span>: <span class="num">5</span>}
+<span class="bu">print</span>(alien_0)
+
+<span class="kw">del</span> alien_0[<span class="str">'points'</span>]
+<span class="bu">print</span>(alien_0)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الكلمة المفتاحية <code>del</code> تحذف زوج مفتاح-قيمة من القاموس بشكل دائم. هنا نحذف المفتاح <code>'points'</code> من قاموس <code>alien_0</code>. بعد الحذف، نطبع القاموس فنجد أن المفتاح <code>'points'</code> وقيمته <code>5</code> قد اختفيا تماماً، ولم يبق إلا <code>'color': 'green'</code>. الحذف نهائي — لا يمكن استعادة المحذوف إلا بإعادة إضافته يدوياً. هذه العملية مفيدة لتنظيف القواميس من البيانات غير المرغوب فيها.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+{'color': 'green', 'points': 5}
+{'color': 'green'}
+      </div>
+
+      <div class="note">
+        <strong>💡 ملاحظة:</strong> الزوج المحذوف يختفي بشكل دائم من القاموس. لا يمكنك استعادته إلا بإعادة إضافته يدوياً.
+      </div>
+
+      <h2 class="section-title">قاموس لأشياء متشابهة</h2>
+
+      <p>
+        يمكنك استخدام قاموس لتخزين نوع واحد من المعلومات عن عدة عناصر. على سبيل المثال، قاموس يخزن أسماء الأشخاص ولغات البرمجة المفضلة لديهم:
+      </p>
+
+      <div class="code-block">
+favorite_languages = {
+    <span class="str">'ahmed'</span>: <span class="str">'python'</span>,
+    <span class="str">'sara'</span>: <span class="str">'javascript'</span>,
+    <span class="str">'khaled'</span>: <span class="str">'python'</span>,
+    <span class="str">'nora'</span>: <span class="str">'rust'</span>,
+}
+
+language = favorite_languages[<span class="str">'sara'</span>]
+<span class="bu">print</span>(f<span class="str">"لغة سارة المفضلة هي {language.title()}."</span>)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هنا نستخدم قاموساً واحداً لتخزين اللغة المفضلة لكل شخص — كل مفتاح هو اسم شخص وكل قيمة هي لغته المفضلة. هذا أنظف من إنشاء قاموس منفصل لكل شخص. نصل إلى لغة سارة باستخدام <code>favorite_languages['sara']</code> ونخزّنها في متغير <code>language</code>، ثم نطبعها باستخدام f-string مع دالة <code>title()</code> لجعل الحرف الأول كبيراً. المخرجات ستكون: <code>لغة سارة المفضلة هي Javascript.</code>.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+لغة سارة المفضلة هي Javascript.
+      </div>
+
+      <p>
+        استخدام قاموس واحد لمجموعة من الكائنات المتشابهة يجعل الكود أكثر تنظيماً وقراءة.
+      </p>
+
+      <h2 class="section-title">التكرار عبر القاموس</h2>
+
+      <p>
+        يمكنك التكرار عبر القاموس بعدة طرق — عبر أزواج المفتاح-القيمة، عبر المفاتيح فقط، أو عبر القيم فقط.
+      </p>
+
+      <h3 class="subsection-title">التكرار عبر جميع أزواج المفتاح-القيمة</h3>
+
+      <p>
+        استخدم الدالة <span class="inline-code">items()</span> داخل حلقة <span class="inline-code">for</span>:
+      </p>
+
+      <div class="code-block">
+favorite_languages = {
+    <span class="str">'ahmed'</span>: <span class="str">'python'</span>,
+    <span class="str">'sara'</span>: <span class="str">'javascript'</span>,
+    <span class="str">'khaled'</span>: <span class="str">'python'</span>,
+}
+
+<span class="kw">for</span> name, language <span class="kw">in</span> favorite_languages.items():
+    <span class="bu">print</span>(f<span class="str">"لغة {name.title()} المفضلة هي {language.title()}."</span>)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الدالة <code>items()</code> تُرجِع كافة أزواج المفتاح-القيمة في القاموس، ويمكننا فكّها إلى متغيرين في حلقة <code>for</code>. هنا <code>name</code> يخزن المفتاح (الاسم) و <code>language</code> يخزن القيمة (اللغة) في كل دورة. هذا يسمح بطباعة جملة كاملة عن كل شخص. القواميس تحافظ على ترتيب الإضافة، لذا ستظهر المخرجات بنفس ترتيب تعريف القاموس: أحمد، سارة، ثم خالد — كلٌ بلغته المفضلة.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+لغة Ahmed المفضلة هي Python.
+لغة Sara المفضلة هي Javascript.
+لغة Khaled المفضلة هي Python.
+      </div>
+
+      <p>
+        الدالة <span class="inline-code">items()</span> ترجع قائمة من الأزواج (مفتاح، قيمة). في كل دورة من الحلقة، يتم تخزين المفتاح في المتغير الأول والقيمة في المتغير الثاني.
+      </p>
+
+      <h3 class="subsection-title">التكرار عبر المفاتيح فقط</h3>
+
+      <p>
+        استخدم الدالة <span class="inline-code">keys()</span> للتكرار عبر المفاتيح فقط:
+      </p>
+
+      <div class="code-block">
+favorite_languages = {
+    <span class="str">'ahmed'</span>: <span class="str">'python'</span>,
+    <span class="str">'sara'</span>: <span class="str">'javascript'</span>,
+    <span class="str">'khaled'</span>: <span class="str">'python'</span>,
+}
+
+<span class="kw">for</span> name <span class="kw">in</span> favorite_languages.keys():
+    <span class="bu">print</span>(name.title())
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الدالة <code>keys()</code> تُرجِع جميع المفاتيح في القاموس، مما يسمح بالتكرار عبر الأسماء فقط دون الحاجة للقيم. هنا نطبع كل اسم باستخدام <code>title()</code> لجعل الحرف الأول كبيراً. في الواقع، <code>for name in favorite_languages.keys()</code> يكافئ <code>for name in favorite_languages</code> لأن التكرار الافتراضي عبر القاموس يمرّ على المفاتيح. المخرجات ستكون أسماء الأشخاص فقط: Ahmed, Sara, Khaled — كلٌ في سطر منفصل.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+Ahmed
+Sara
+Khaled
+      </div>
+
+      <p>
+        التكرار عبر المفاتيح هو السلوك الافتراضي عند التكرار عبر القاموس مباشرة. <span class="inline-code">for name in favorite_languages:</span> يعادل <span class="inline-code">for name in favorite_languages.keys():</span>.
+      </p>
+
+      <h3 class="subsection-title">التكرار عبر المفاتيح بترتيب معين</h3>
+
+      <p>
+        يمكنك استخدام الدالة <span class="inline-code">sorted()</span> للتكرار عبر المفاتيح بترتيب أبجدي:
+      </p>
+
+      <div class="code-block">
+favorite_languages = {
+    <span class="str">'ahmed'</span>: <span class="str">'python'</span>,
+    <span class="str">'sara'</span>: <span class="str">'javascript'</span>,
+    <span class="str">'khaled'</span>: <span class="str">'python'</span>,
+    <span class="str">'nora'</span>: <span class="str">'rust'</span>,
+}
+
+<span class="kw">for</span> name <span class="kw">in</span> <span class="bu">sorted</span>(favorite_languages.keys()):
+    <span class="bu">print</span>(f<span class="str">"{name.title()}, شكراً لك على المشاركة."</span>)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الدالة <code>sorted()</code> تُرتّب المفاتيح أبجدياً قبل التكرار عليها دون تغيير القاموس الأصلي. هنا <code>sorted(favorite_languages.keys())</code> يُرتّب الأسماء (ahmed, khaled, nora, sara) ترتيباً أبجدياً تصاعدياً. المخرجات ستكون: Ahmed, Khaled, Nora, Sara — كلٌ مع رسالة شكر. الترتيب الأبجدي الإنجليزي يضع <code>Ahmed</code> أولاً و <code>Sara</code> أخيراً. هذه التقنية مفيدة لعرض البيانات بترتيب منظم ومقروء.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+Ahmed, شكراً لك على المشاركة.
+Khaled, شكراً لك على المشاركة.
+Nora, شكراً لك على المشاركة.
+Sara, شكراً لك على المشاركة.
+      </div>
+
+      <h3 class="subsection-title">التكرار عبر القيم فقط</h3>
+
+      <p>
+        استخدم الدالة <span class="inline-code">values()</span> للتكرار عبر القيم:
+      </p>
+
+      <div class="code-block">
+favorite_languages = {
+    <span class="str">'ahmed'</span>: <span class="str">'python'</span>,
+    <span class="str">'sara'</span>: <span class="str">'javascript'</span>,
+    <span class="str">'khaled'</span>: <span class="str">'python'</span>,
+    <span class="str">'nora'</span>: <span class="str">'rust'</span>,
+}
+
+<span class="bu">print</span>(<span class="str">"اللغات التالية تم ذكرها:"</span>)
+<span class="kw">for</span> language <span class="kw">in</span> favorite_languages.values():
+    <span class="bu">print</span>(language.title())
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الدالة <code>values()</code> تُرجِع جميع القيم في القاموس متجاهلة المفاتيح. هنا نطبع اللغات المفضلة فقط دون أسماء الأشخاص. نلاحظ أن <code>'python'</code> يظهر مرتين لأن أحمد وخالد يفضلانها. إذا كنت تريد عرض كل لغة مرة واحدة فقط، يمكنك استخدام <code>set()</code> كما سيظهر في المثال التالي. هذه الطريقة مفيدة عندما تحتاج فقط إلى القيم (مثل إحصاءات) دون الحاجة للمفاتيح.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+اللغات التالية تم ذكرها:
+Python
+Javascript
+Python
+Rust
+      </div>
+
+      <p>
+        لاحظ أن <span class="inline-code">'python'</span> يظهر مرتين. إذا أردت قيماً فريدة فقط، استخدم <span class="inline-code">set()</span>:
+      </p>
+
+      <div class="code-block">
+<span class="kw">for</span> language <span class="kw">in</span> <span class="bu">set</span>(favorite_languages.values()):
+    <span class="bu">print</span>(language.title())
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>الدالة <code>set()</code> تُحوّل القيم إلى مجموعة (<code>set</code>) تزيل التكرارات تلقائياً. هنا <code>set(favorite_languages.values())</code> تستخرج اللغات الفريدة فقط: <code>'python'</code> تظهر مرة واحدة بدلاً من مرتين، بالإضافة إلى <code>'javascript'</code> و <code>'rust'</code>. المجموعات لا تحافظ على ترتيب معين، لذا قد يختلف ترتيب المخرجات في كل تشغيل. هذه التقنية مفيدة جداً عندما تريد معرفة التنوع في البيانات دون التكرارات.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+Javascript
+Rust
+Python
+      </div>
+
+      <h2 class="section-title">التداخل (Nesting)</h2>
+
+      <p>
+        <strong>التداخل</strong> يعني وضع قائمة داخل قاموس، أو قاموس داخل قائمة، أو حتى قاموس داخل قاموس آخر. هذه التقنية تسمح لك بتمثيل بيانات معقدة بسهولة.
+      </p>
+
+      <h3 class="subsection-title">قائمة من القواميس</h3>
+
+      <p>
+        يمكنك إنشاء قائمة تحتوي على عدة قواميس — مثلاً، قائمة من الفضائيين:
+      </p>
+
+      <div class="code-block">
+alien_0 = {<span class="str">'color'</span>: <span class="str">'green'</span>, <span class="str">'points'</span>: <span class="num">5</span>}
+alien_1 = {<span class="str">'color'</span>: <span class="str">'yellow'</span>, <span class="str">'points'</span>: <span class="num">10</span>}
+alien_2 = {<span class="str">'color'</span>: <span class="str">'red'</span>, <span class="str">'points'</span>: <span class="num">15</span>}
+
+aliens = [alien_0, alien_1, alien_2]
+
+<span class="kw">for</span> alien <span class="kw">in</span> aliens:
+    <span class="bu">print</span>(alien)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هذا مثال على التداخل — وضع قواميس داخل قائمة. ننشئ ثلاثة قواميس منفصلة تمثل ثلاثة فضائيين مختلفين، كلٌ بلونه ونقاطه الخاصة. ثم نجمعها في قائمة واحدة باسم <code>aliens</code>. استخدام حلقة <code>for</code> يتيح التكرار عبر القائمة وطباعة كل قاموس على حدة. هذه التقنية تسمح بإدارة مجموعة من الكائنات المتشابهة بسهولة، حيث يمكن الوصول إلى أي فضائي عبر الفهرس أو التكرار على جميعهم بسهولة.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+{'color': 'green', 'points': 5}
+{'color': 'yellow', 'points': 10}
+{'color': 'red', 'points': 15}
+      </div>
+
+      <p>
+        مثال أكثر واقعية — إنشاء 30 فضائياً تلقائياً باستخدام حلقة:
+      </p>
+
+      <div class="code-block">
+<span class="cm"># أنشئ قائمة فارغة للفضائيين</span>
+aliens = []
+
+<span class="cm"># أنشئ 30 فضائياً أخضر</span>
+<span class="kw">for</span> alien_number <span class="kw">in</span> <span class="bu">range</span>(<span class="num">30</span>):
+    new_alien = {<span class="str">'color'</span>: <span class="str">'green'</span>, <span class="str">'points'</span>: <span class="num">5</span>, <span class="str">'speed'</span>: <span class="str">'slow'</span>}
+    aliens.append(new_alien)
+
+<span class="cm"># اعرض أول 5 فضائيين</span>
+<span class="kw">for</span> alien <span class="kw">in</span> aliens[:<span class="num">5</span>]:
+    <span class="bu">print</span>(alien)
+<span class="bu">print</span>(<span class="str">"..."</span>)
+
+<span class="cm"># اعرض عدد الفضائيين الذين تم إنشاؤهم</span>
+<span class="bu">print</span>(f<span class="str">"إجمالي الفضائيين: {len(aliens)}"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هذا المثال يوضح كيفية إنشاء عدد كبير من القواميس تلقائياً باستخدام حلقة <code>for</code> والدالة <code>range(30)</code>. نبدأ بقائمة فارغة <code>aliens</code>، ثم في كل دورة ننشئ قاموساً جديداً يمثل فضائياً ونضيفه إلى القائمة باستخدام <code>append()</code>. بعد الإنشاء، نطبع أول 5 فضائيين فقط باستخدام تقطيع القائمة <code>[:5]</code>، ثم نطبع العدد الإجمالي باستخدام <code>len()</code>. هذه الطريقة أفضل بكثير من كتابة 30 قاموساً يدوياً وتظهر قوة الجمع بين الحلقات والقواميس.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+{'color': 'green', 'points': 5, 'speed': 'slow'}
+{'color': 'green', 'points': 5, 'speed': 'slow'}
+{'color': 'green', 'points': 5, 'speed': 'slow'}
+{'color': 'green', 'points': 5, 'speed': 'slow'}
+{'color': 'green', 'points': 5, 'speed': 'slow'}
+...
+إجمالي الفضائيين: 30
+      </div>
+
+      <p>
+        يمكنك أيضاً تعديل بعض الفضائيين — مثلاً، تغيير أول 3 فضائيين إلى اللون الأصفر:
+      </p>
+
+      <div class="code-block">
+<span class="kw">for</span> alien <span class="kw">in</span> aliens[:<span class="num">3</span>]:
+    <span class="kw">if</span> alien[<span class="str">'color'</span>] == <span class="str">'green'</span>:
+        alien[<span class="str">'color'</span>] = <span class="str">'yellow'</span>
+        alien[<span class="str">'speed'</span>] = <span class="str">'medium'</span>
+        alien[<span class="str">'points'</span>] = <span class="num">10</span>
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هنا نعدّل أول 3 فضائيين في القائمة باستخدام التقطيع <code>[:3]</code>. لكل فضائي نتحقق أولاً إذا كان لونه <code>'green'</code> باستخدام جملة <code>if</code>، وإذا كان كذلك نغيّر لونه إلى <code>'yellow'</code> وسرعته إلى <code>'medium'</code> ونقاطه إلى <code>10</code>. هذا التعديل يتم مباشرة على القواميس الأصلية داخل القائمة — لا حاجة لإنشاء قواميس جديدة. هذه التقنية تسمح بتحديث مجموعة مختارة من العناصر بسهولة وكفاءة.</p></div>
+
+      <p>
+        استخدام قائمة من القواميس مفيد جداً عندما يكون لديك مجموعة من الكائنات المتشابهة التي تحتاج إلى معالجتها بنفس الطريقة.
+      </p>
+
+      <h3 class="subsection-title">قائمة داخل قاموس</h3>
+
+      <p>
+        بدلاً من وضع قيمة مفردة في المفتاح، يمكنك وضع قائمة كاملة:
+      </p>
+
+      <div class="code-block">
+<span class="cm"># تخزين معلومات بيتزا مع قائمة من الإضافات</span>
+pizza = {
+    <span class="str">'crust'</span>: <span class="str">'thick'</span>,
+    <span class="str">'toppings'</span>: [<span class="str">'mushrooms'</span>, <span class="str">'extra cheese'</span>],
+}
+
+<span class="bu">print</span>(f<span class="str">"لقد طلبت بيتزا بقاعدة {pizza['crust']} "</span>
+      <span class="str">"مع الإضافات التالية:"</span>)
+<span class="kw">for</span> topping <span class="kw">in</span> pizza[<span class="str">'toppings'</span>]:
+    <span class="bu">print</span>(f<span class="str">"\t{topping}"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هنا القيمة المرتبطة بمفتاح <code>'toppings'</code> ليست قيمة مفردة، بل قائمة كاملة من الإضافات — هذا هو التداخل: وضع قائمة داخل قاموس. نصل إلى القائمة عبر <code>pizza['toppings']</code>، ثم نستخدم حلقة <code>for</code> للتكرار عبر الإضافات وطباعة كل إضافة بمسافة جدولة <code>\t</code>. نلاحظ أيضاً أن النص المطبوع مقسم على سطرين داخل أقواس — بايثون تدمج النصوص تلقائياً داخل الأقواس. المخرجات ستظهر قاعدة البيتزا ثم كل إضافة في سطر منفصل.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+لقد طلبت بيتزا بقاعدة thick مع الإضافات التالية:
+	mushrooms
+	extra cheese
+      </div>
+
+      <p>
+        مثال آخر — اللغات المفضلة مع إمكانية تفضيل أكثر من لغة لكل شخص:
+      </p>
+
+      <div class="code-block">
+favorite_languages = {
+    <span class="str">'ahmed'</span>: [<span class="str">'python'</span>, <span class="str">'go'</span>],
+    <span class="str">'sara'</span>: [<span class="str">'javascript'</span>],
+    <span class="str">'khaled'</span>: [<span class="str">'python'</span>, <span class="str">'rust'</span>],
+    <span class="str">'nora'</span>: [<span class="str">'rust'</span>, <span class="str">'c++'</span>],
+}
+
+<span class="kw">for</span> name, languages <span class="kw">in</span> favorite_languages.items():
+    <span class="kw">if</span> <span class="bu">len</span>(languages) == <span class="num">1</span>:
+        <span class="bu">print</span>(f<span class="str">"\nلغة {name.title()} المفضلة هي:"</span>)
+    <span class="kw">else</span>:
+        <span class="bu">print</span>(f<span class="str">"\nلغات {name.title()} المفضلة هي:"</span>)
+    <span class="kw">for</span> language <span class="kw">in</span> languages:
+        <span class="bu">print</span>(f<span class="str">"\t{language.title()}"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هذا مثال متقدم يتداخل فيه القوائم داخل القواميس مع التكرار. كل شخص لديه قائمة من اللغات المفضلة (قد تحتوي على لغة واحدة أو أكثر). نستخدم <code>items()</code> للتكرار، ثم نتحقق من طول القائمة: إذا كانت لغة واحدة (<code>len == 1</code>) نستخدم صيغة المفرد "لغة"، وإلا نستخدم الجمع "لغات". بعدها نستخدم حلقة داخلية لطباعة كل لغة بمسافة جدولة. هذا يوضح كيفية التعامل مع بيانات غير متجانسة بشكل أنيق مع مراعاة السياق اللغوي.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+
+لغة Ahmed المفضلة هي:
+	Python
+	Go
+
+لغة Sara المفضلة هي:
+	Javascript
+
+لغات Khaled المفضلة هي:
+	Python
+	Rust
+
+لغات Nora المفضلة هي:
+	Rust
+	C++
+      </div>
+
+      <div class="note">
+        <strong>💡 نصيحة:</strong> كلما كان مستوى التداخل أعمق، يجب أن يكون الكود أكثر تنظيماً. ابدأ بمستوى بسيط من التداخل وزد التعقيد فقط عندما تحتاج إليه حقاً.
+      </div>
+
+      <h3 class="subsection-title">قاموس داخل قاموس</h3>
+
+      <p>
+        يمكنك وضع قاموس كقيمة داخل مفتاح من قاموس آخر. هذا مفيد جداً لتخزين بيانات مفصلة عن مجموعة من العناصر:
+      </p>
+
+      <div class="code-block">
+users = {
+    <span class="str">'aeinstein'</span>: {
+        <span class="str">'first'</span>: <span class="str">'albert'</span>,
+        <span class="str">'last'</span>: <span class="str">'einstein'</span>,
+        <span class="str">'location'</span>: <span class="str">'princeton'</span>,
+    },
+    <span class="str">'mcurie'</span>: {
+        <span class="str">'first'</span>: <span class="str">'marie'</span>,
+        <span class="str">'last'</span>: <span class="str">'curie'</span>,
+        <span class="str">'location'</span>: <span class="str">'paris'</span>,
+    },
+}
+
+<span class="kw">for</span> username, user_info <span class="kw">in</span> users.items():
+    <span class="bu">print</span>(f<span class="str">"\nاسم المستخدم: {username}"</span>)
+    full_name = f<span class="str">"{user_info['first']} {user_info['last']}"</span>
+    location = user_info[<span class="str">'location'</span>]
+    <span class="bu">print</span>(f<span class="str">"\tالاسم الكامل: {full_name.title()}"</span>)
+    <span class="bu">print</span>(f<span class="str">"\tالموقع: {location.title()}"</span>)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p>هنا كل قيمة في القاموس الخارجي هي قاموس داخلي كامل يحتوي على تفاصيل المستخدم — قاموس داخل قاموس. المفتاح الخارجي هو اسم المستخدم، والقيمة الداخلية تخزن الاسم الأول واسم العائلة والموقع. عند التكرار باستخدام <code>items()</code>، نفك القيمة إلى <code>user_info</code> الذي يمثل القاموس الداخلي، ثم نصل إلى حقوله مثل <code>user_info['first']</code>. هذا البناء يشبه بنية JSON ويستخدم كثيراً في قواعد البيانات وتطبيقات API لتخزين بيانات هرمية منظمة.</p></div>
+
+      <div class="code-block">
+<span class="cm"># المخرجات:</span>
+
+اسم المستخدم: aeinstein
+	الاسم الكامل: Albert Einstein
+	الموقع: Princeton
+
+اسم المستخدم: mcurie
+	الاسم الكامل: Marie Curie
+	الموقع: Paris
+      </div>
+
+      <p>
+        لاحظ أن بنية كل قاموس داخلي يجب أن تكون متطابقة — نفس المفاتيح — حتى تتمكن من التكرار عبرها بسهولة. هذا النوع من الهيكلة شائع جداً في قواعد البيانات وملفات JSON و APIs.
+      </p>
+
+      <h2 class="section-title">التمارين</h2>
+
+      <div class="exercise">
+        <strong>تمرين 6-1: شخص</strong><br>
+        استخدم قاموساً لتخزين معلومات عن شخص تعرفه. خزّن اسمه الأول، اسم العائلة، العمر، ومدينة الإقامة. ثم اطبع كل معلومة في سطر منفصل.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 6-2: الأرقام المفضلة</strong><br>
+        استخدم قاموساً لتخزين الأرقام المفضلة لخمسة أشخاص. اطبع اسم كل شخص ورقمه المفضل.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 6-3: المصطلحات الحاسوبية</strong><br>
+        أنشئ قاموساً لخمسة مصطلحات برمجية (مثل "list", "dictionary", "loop", إلخ) مع معناها. اطبع كل مصطلح ومعناه بشكل منسق.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 6-4: المصطلحات 2</strong><br>
+        وسّع تمرين 6-3 بإضافة خمسة مصطلحات جديدة. استخدم حلقة لطباعة كل مصطلح مع معناه.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 6-5: الأنهار</strong><br>
+        أنشئ قاموساً لثلاثة أنهار وأسماء الدول التي تمر بها. استخدم حلقة لطباعة جملة عن كل نهر.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 6-6: الاستبيان</strong><br>
+        أنشئ قائمة بالأشخاص الذين يجب أن يشاركوا في استبيان اللغات المفضلة. استخدم حلقة لطباعة رسالة مناسبة لكل شخص (شكر للمشاركين، دعوة لغير المشاركين).
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 6-7: أشخاص</strong><br>
+        أنشئ قاموساً لثلاثة أشخاص. خزّن لكل شخص ثلاث معلومات على الأقل. خزّن القواميس الثلاثة في قائمة واحدة واطبع جميع المعلومات.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 6-8: الحيوانات الأليفة</strong><br>
+        أنشئ عدة قواميس للحيوانات الأليفة (نوع الحيوان واسم صاحبه). خزّنها في قائمة واطبع معلومات كل حيوان.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 6-9: الأماكن المفضلة</strong><br>
+        أنشئ قاموساً يخزن الأماكن المفضلة لثلاثة أشخاص (كل شخص لديه قائمة من 3 أماكن). اطبع اسم كل شخص وأماكنه المفضلة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 6-10: الأرقام المفضلة 2</strong><br>
+        عدّل تمرين 6-2 ليسمح لكل شخص بأن يكون لديه أكثر من رقم مفضل. اطبع الاسم مع جميع أرقامه المفضلة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 6-11: المدن</strong><br>
+        أنشئ قاموساً يخزن معلومات عن ثلاث مدن. لكل مدينة، خزّن الدولة، عدد السكان، وحقيقة واحدة. اطبع جميع المعلومات.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 6-12: امتدادات</strong><br>
+        اختر أحد التمارين السابقة ووسّعه بإضافة مستوى إضافي من التداخل أو المزيد من التفاصيل.
+      </div>
+
+      <h2 class="section-title">6.6 collections المتقدمة - defaultdict, Counter, ChainMap</h2>
+      <p>مكتبة <span class="inline-code">collections</span> توفر إضافات قوية للقاموس تساعدك على كتابة كود أنظف وأسرع:</p>
+
+      <h3 class="subsection-title">defaultdict - قاموس بالقيم الافتراضية</h3>
+      <p>يوفّر قيمة افتراضية تلقائياً عند الوصول لمفتاح غير موجود — يمنع <span class="inline-code">KeyError</span> نهائياً:</p>
+      <div class="code-block">
+<span class="kw">from</span> collections <span class="kw">import</span> defaultdict
+
+<span class="cm"># قبل - كود كثير للتحقق من وجود المفتاح</span>
+words = [<span class="str">'apple'</span>, <span class="str">'banana'</span>, <span class="str">'apple'</span>, <span class="str">'cherry'</span>]
+count = {}
+<span class="kw">for</span> w <span class="kw">in</span> words:
+    <span class="kw">if</span> w <span class="kw">not</span> <span class="kw">in</span> count:
+        count[w] = <span class="num">0</span>
+    count[w] += <span class="num">1</span>
+
+<span class="cm"># بعد - باستخدام defaultdict</span>
+count = defaultdict(<span class="bu">int</span>)  <span class="cm"># int() ترجع 0</span>
+<span class="kw">for</span> w <span class="kw">in</span> words:
+    count[w] += <span class="num">1</span>
+
+<span class="bu">print</span>(<span class="bu">dict</span>(count))  <span class="cm"># {'apple': 2, 'banana': 1, 'cherry': 1}</span>
+
+<span class="cm"># defaultdict مع list - يجمع القوائم تلقائياً</span>
+groups = defaultdict(<span class="bu">list</span>)
+groups[<span class="str">'even'</span>].append(<span class="num">2</span>)
+groups[<span class="str">'odd'</span>].append(<span class="num">1</span>)
+groups[<span class="str">'even'</span>].append(<span class="num">4</span>)
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>defaultdict</code> من مكتبة <code>collections</code> يزيل الحاجة للتحقق من وجود المفتاح قبل استخدامه. في الكود "قبل"، كنا نتحقق كل مرة باستخدام <code>if w not in count</code> قبل زيادة العدّاد — 4 أسطر. مع <code>defaultdict(int)</code>، القيمة الافتراضية لكل مفتاح جديد هي <code>0</code> (<code>int()</code> تُرجع 0)، ونستطيع زيادة القيمة مباشرة — سطر واحد فقط. <code>defaultdict(list)</code> ينشئ قائمة فارغة تلقائياً لكل مفتاح جديد، مما يسمح بإضافة عناصر مباشرة باستخدام <code>append()</code>. هذا يجعل الكود أنظف وأقل عرضة للأخطاء.</p></div>
+
+      <h3 class="subsection-title">Counter - عد العناصر باحترافية</h3>
+      <div class="code-block">
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+
+grades = [<span class="str">'A'</span>, <span class="str">'B'</span>, <span class="str">'A'</span>, <span class="str">'C'</span>, <span class="str">'B'</span>, <span class="str">'B'</span>, <span class="str">'A'</span>]
+cnt = Counter(grades)
+<span class="bu">print</span>(cnt)                <span class="cm"># Counter({'A': 3, 'B': 3, 'C': 1})</span>
+<span class="bu">print</span>(cnt[<span class="str">'A'</span>])           <span class="cm"># 3</span>
+<span class="bu">print</span>(cnt.<span class="fn">most_common</span>(<span class="num">2</span>))  <span class="cm"># [('A', 3), ('B', 3)]</span>
+
+<span class="cm"># عمليات Counter (جمع وطرح count)</span>
+cnt2 = Counter([<span class="str">'A'</span>, <span class="str">'B'</span>, <span class="str">'D'</span>])
+<span class="bu">print</span>(cnt + cnt2)  <span class="cm"># {'A': 4, 'B': 4, 'C': 1, 'D': 1}</span>
+<span class="bu">print</span>(cnt - cnt2)  <span class="cm"># {'A': 2, 'B': 2, 'C': 1} (لا تظهر القيم السالبة)</span>
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>Counter</code> من مكتبة <code>collections</code> أداة متخصصة في عدّ العناصر — يأخذ أي تسلسل (مثل قائمة) ويحسب تكرار كل عنصر تلقائياً. <code>Counter(grades)</code> يُرجع النتيجة مباشرة: <code>A</code> تكرر 3 مرات، <code>B</code> 3 مرات، و <code>C</code> مرة واحدة. الدالة <code>most_common(2)</code> تُرجع أكثر عنصرين تكراراً. الأروع: <code>Counter</code> يدعم العمليات الحسابية — الجمع <code>+</code> يدمج العدّادين، والطرح <code>-</code> يطرح التكرارات مع تجاهل القيم السالبة تماماً. هذا يجعل تحليل البيانات التكرارية سهلاً وأنيقاً في سطر واحد.</p></div>
+
+      <h3 class="subsection-title">ChainMap - دمج قواميس بدون نسخ</h3>
+      <div class="code-block">
+<span class="kw">from</span> collections <span class="kw">import</span> ChainMap
+
+defaults = {<span class="str">'color'</span>: <span class="str">'red'</span>, <span class="str">'size'</span>: <span class="str">'medium'</span>}
+user_prefs = {<span class="str">'color'</span>: <span class="str">'blue'</span>}
+
+<span class="cm"># الأولوية للقاموس الأول في ChainMap</span>
+settings = ChainMap(user_prefs, defaults)
+<span class="bu">print</span>(settings[<span class="str">'color'</span>])  <span class="cm"># 'blue' (من user_prefs)</span>
+<span class="bu">print</span>(settings[<span class="str">'size'</span>])   <span class="cm"># 'medium' (من defaults)</span>
+
+<span class="cm"># التعديل يؤثر على القاموس الأول فقط</span>
+settings[<span class="str">'color'</span>] = <span class="str">'green'</span>
+<span class="bu">print</span>(user_prefs)  <span class="cm"># {'color': 'green'}</span>
+      </div>
+
+      <div class="explanation-box"><strong>🔍 شرح الكود:</strong><p><code>ChainMap</code> يسمح بدمج عدة قواميس في واجهة واحدة دون نسخ البيانات أو تعديل القواميس الأصلية. الأولوية للقاموس الأول — هنا <code>user_prefs</code> له أولوية على <code>defaults</code>. عند البحث عن <code>'color'</code> يجده في <code>user_prefs</code> فيُعيد <code>'blue'</code>. عند البحث عن <code>'size'</code> لا يجده في <code>user_prefs</code> فيبحث في <code>defaults</code> ويعيد <code>'medium'</code>. التعديلات (مثل تغيير <code>'color'</code> إلى <code>'green'</code>) تؤثر فقط على القاموس الأول، مما يحمي الإعدادات الافتراضية من التغيير غير المقصود. هذا مثالي لإدارة إعدادات المستخدم مع القيم الافتراضية.</p></div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> <span class="inline-code">defaultdict</span> يستخدم <span class="inline-code">__missing__</span> داخلياً لتوليد القيم الافتراضية. يمكنك تخصيص السلوك بوراثة <span class="inline-code">dict</span> وتنفيذ <span class="inline-code">__missing__</span> بنفسك. <span class="inline-code">Counter</span> يدعم العمليات الحسابية كالمجموعات (<span class="inline-code">+</span>, <span class="inline-code">-</span>, <span class="inline-code">&</span>, <span class="inline-code">|</span>).</div>
+
+      <h2 class="section-title">ملخص الفصل</h2>
+
+      <div class="summary-box">
+        <h3>📋 ملخص الفصل 6: القواميس</h3>
+        <ul>
+          <li>تعلمت ما هي <strong>القواميس (dictionaries)</strong> وكيف تخزن البيانات في أزواج <strong>مفتاح-قيمة</strong></li>
+          <li>عرفت كيفية <strong>الوصول إلى القيم</strong> باستخدام الأقواس المربعة أو الدالة <strong>get()</strong></li>
+          <li>أتقنت <strong>إضافة أزواج جديدة</strong> وتعديل القيم الموجودة في القاموس</li>
+          <li>تعلمت <strong>حذف أزواج</strong> باستخدام <span class="inline-code">del</span></li>
+          <li>استخدمت قاموساً لتخزين <strong>بيانات متشابهة</strong> عن مجموعة من العناصر</li>
+          <li>تعلمت <strong>التكرار عبر القاموس</strong> باستخدام <strong>items()</strong>, <strong>keys()</strong>, <strong>values()</strong></li>
+          <li>عرفت كيفية التكرار عبر المفاتيح <strong>بترتيب معين</strong> باستخدام <strong>sorted()</strong></li>
+          <li>تعرفت على مفهوم <strong>التداخل (nesting)</strong>: قائمة من القواميس، قائمة داخل قاموس، وقاموس داخل قاموس</li>
+          <li>أصبحت قادراً على تمثيل بيانات معقدة بطرق منظمة وقابلة للقراءة</li>
+        </ul>
+      </div>
+
+    <div class="note"><strong>💡 نصيحة ذهبية:</strong> استخدم <span class="inline-code">dict.get(key, default)</span> بدلاً من <span class="inline-code">if key in dict:</span> للوصول الآمن: <span class="inline-code">count.get('apple', 0)</span>. استخدم <span class="inline-code">setdefault()</span> للقيم الافتراضية: <span class="inline-code">data.setdefault('key', []).append(value)</span>. ولجمع القيم، <span class="inline-code">from collections import defaultdict</span> هو الأفضل.</div>
+
+    <div class="warning"><strong>⚠️ خطأ شائع:</strong> محاولة الوصول إلى مفتاح غير موجود في القاموس يسبب <span class="inline-code">KeyError</span>. استخدم <span class="inline-code">.get()</span> دائماً إذا كنت غير متأكد من وجود المفتاح. أيضاً، لا تستخدم قائمة كـ key في القاموس — استخدم <span class="inline-code">tuple</span> بدلاً من ذلك لأن القوائم غير قابلة للتجزئة (unhashable).</div>
+
+    <div class="exercise"><strong>🏋️ تمرين:</strong> اكتب برنامجاً يعد تكرار الكلمات في جملة. اطلب من المستخدم إدخال جملة. استخدم <span class="inline-code">split()</span> لتقسيمها إلى كلمات. استخدم قاموساً لتخزين كل كلمة وعدد مرات ظهورها. اطبع النتيجة مرتبة من الأكثر تكراراً للأقل.</div>
+
+    <div class="footer">
+      <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+      <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+    </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) { link.classList.add('active'); }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

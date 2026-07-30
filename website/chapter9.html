@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الفصل 9: الكلاسات - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <div class="part-badge">📘 الجزء الأول: الأساسيات</div>
+      <h1>الفصل التاسع: الكلاسات</h1>
+      <p>Classes — البرمجة الكائنية (OOP) في بايثون</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        الكلاسات (Classes) هي مفهوم أساسي في البرمجة الكائنية التوجه (Object-Oriented Programming).
+        تسمح لك الكلاسات بتجميع البيانات والسلوك معاً في كيان واحد يُسمى كائن (object).
+        في هذا الفصل، ستتعلم كيفية إنشاء الكلاسات، تعريف الخصائص والسلوكيات،
+        وكيفية استخدام الوراثة (inheritance) لبناء كلاسات أكثر تخصصاً.
+      </p>
+
+      <!-- ========== 9.1 ========== -->
+      <h2 class="section-title">إنشاء واستخدام كلاس</h2>
+
+      <p>
+        يمكنك التفكير في الكلاس (Class) كمخطط (blueprint) لإنشاء كائنات (objects).
+        على سبيل المثال، إذا كان لديك كلاس اسمه <span class="inline-code">Dog</span>،
+        فهذا المخطط يصف ما يجب أن يحتويه كل كلب (اسم، عمر) وما يمكنه فعله (الجلوس، التقلب).
+        ثم يمكنك إنشاء كائنات فردية تمثل كلاباً حقيقية.
+      </p>
+
+      <h3 class="subsection-title">إنشاء كلاس Dog</h3>
+
+      <p>
+        كل كلاس في بايثون يتبع نفس البنية الأساسية. تستخدم الكلمة المحجوزة
+        <span class="inline-code">class</span> متبوعة باسم الكلاس ونقطتين رأسيتين.
+        كل الكود الخاص بالكلاس يُكتب بمسافة بادئة:
+      </p>
+
+      <div class="code-block"><span class="kw">class</span> Dog:
+    <span class="cm">"""A simple attempt to model a dog."""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, age):
+        <span class="cm">"""Initialize name and age attributes."""</span>
+        <span class="kw">self</span>.name = name
+        <span class="kw">self</span>.age = age
+
+    <span class="kw">def</span> <span class="fn">sit</span>(<span class="kw">self</span>):
+        <span class="cm">"""Simulate a dog sitting in response to a command."""</span>
+        <span class="fn">print</span>(<span class="str">f"{self.name} is now sitting."</span>)
+
+    <span class="kw">def</span> <span class="fn">roll_over</span>(<span class="kw">self</span>):
+        <span class="cm">"""Simulate rolling over in response to a command."""</span>
+        <span class="fn">print</span>(<span class="str">f"{self.name} rolled over!"</span>)</div>
+      <div class="explanation-box"><strong>📘 تعريف كلاس — المخطط الأساسي (Blueprint)</strong>كلاس <code>Dog</code> هو مثال أساسي لكلاس بايثون. الكلمة المفتاحية <code>class</code> تبدأ تعريف الكلاس متبوعة بالاسم وبنقطتين. دالة <code>__init__</code> هي المنشئ (constructor) الذي يُستدعى تلقائياً عند إنشاء كائن جديد — تقوم بتهيئة الخصائص <code>name</code> و <code>age</code>. المعامل <code>self</code> هو إشارة إلى الكائن الحالي ويجب أن يكون أول معامل في كل دالة. الدوال <code>sit</code> و <code>roll_over</code> تعرّف سلوك الكائن — ما يمكن للكلب القيام به.</div>
+
+      <p>هناك نقطتان مهمتان:</p>
+      <ul>
+        <li>
+          الدالة <span class="inline-code">__init__()</span> هي مُنشئ (constructor) يُستدعى
+          تلقائياً عند إنشاء كائن جديد من الكلاس. الاسم يبدأ وينتهي بشرطتين سفليتين لأن
+          بايثون تستخدم هذه التسمية للدوال الخاصة.
+        </li>
+        <li>
+          المُعامل <span class="inline-code">self</span> هو إشارة إلى الكائن الحالي نفسه.
+          يجب أن يكون <span class="inline-code">self</span> أول مُعامل في كل دالة في الكلاس.
+          عندما تنشئ كائناً، تمرر بايثون <span class="inline-code">self</span> تلقائياً —
+          لا تحتاج إلى تمريره يدوياً.
+        </li>
+      </ul>
+
+      <h3 class="subsection-title">إنشاء كائنات من كلاس (Instances)</h3>
+
+      <p>
+        لإنشاء كائن (instance) من كلاس، استخدم اسم الكلاس متبوعاً بقيم الوسائط المطلوبة —
+        بايثون تستدعي <span class="inline-code">__init__()</span> تلقائياً:
+      </p>
+
+      <div class="code-block">my_dog = Dog(<span class="str">'Willie'</span>, <span class="num">6</span>)
+
+<span class="fn">print</span>(<span class="str">f"My dog's name is {my_dog.name}."</span>)
+<span class="fn">print</span>(<span class="str">f"My dog is {my_dog.age} years old."</span>)</div>
+      <div class="explanation-box"><strong>📘 إنشاء كائن والوصول لخصائصه</strong>عند كتابة <code>Dog('Willie', 6)</code>، بايثون تستدعي دالة <code>__init__</code> وتمرر لها <code>'Willie'</code> و <code>6</code>، وتخزّن القيم في <code>self.name</code> و <code>self.age</code>. الوصول إلى الخصائص يتم باستخدام تدوين النقطة (dot notation): <code>my_dog.name</code> يعيد قيمة الخاصية name. يمكن قراءة الخصائص أو تعديلها بنفس الطريقة.</div>
+
+      <p>
+        هنا <span class="inline-code">my_dog</span> هو كائن من كلاس <span class="inline-code">Dog</span>.
+        نصل إلى الخصائص (attributes) باستخدام تدوين النقطة <span class="inline-code">.</span>:
+        <span class="inline-code">my_dog.name</span> و <span class="inline-code">my_dog.age</span>.
+      </p>
+
+      <p>لاستدعاء دوال (methods) من الكلاس، نستخدم نفس تدوين النقطة:</p>
+
+      <div class="code-block">my_dog = Dog(<span class="str">'Willie'</span>, <span class="num">6</span>)
+my_dog.sit()
+my_dog.roll_over()</div>
+      <div class="explanation-box"><strong>📘 استدعاء دوال الكلاس</strong>لاستدعاء دالة من الكلاس، نستخدم اسم الكائن متبوعاً بنقطة واسم الدالة: <code>my_dog.sit()</code>. بايثون تمرر تلقائياً المرجع <code>self</code> إلى الدالة — لا حاجة لتمريره يدوياً. الدوال تمثّل سلوك الكائن (ما يمكنه فعله). هنا <code>sit()</code> و <code>roll_over()</code> تطبعان رسائل توحي بأن الكلب ينفذ الأوامر.</div>
+
+      <p>يمكنك إنشاء عدد غير محدود من الكائنات من نفس الكلاس. كل كائن مستقل عن الآخر:</p>
+
+      <div class="code-block">my_dog = Dog(<span class="str">'Willie'</span>, <span class="num">6</span>)
+your_dog = Dog(<span class="str">'Lucy'</span>, <span class="num">3</span>)
+
+<span class="fn">print</span>(<span class="str">f"My dog's name is {my_dog.name}."</span>)
+<span class="fn">print</span>(<span class="str">f"My dog is {my_dog.age} years old."</span>)
+my_dog.sit()
+
+<span class="fn">print</span>(<span class="str">f"\nYour dog's name is {your_dog.name}."</span>)
+<span class="fn">print</span>(<span class="str">f"Your dog is {your_dog.age} years old."</span>)
+your_dog.sit()</div>
+      <div class="explanation-box"><strong>📘 إنشاء كائنات متعددة من نفس الكلاس</strong>يمكنك إنشاء عدد غير محدود من الكائنات من كلاس واحد، وكل كائن مستقل تماماً. <code>my_dog</code> و <code>your_dog</code> هما كائنان منفصلان — تغيير خصائص أحدهما لا يؤثر على الآخر. كل كائن يملك نسخته الخاصة من الخصائص (name و age). هذا هو مبدأ استقلالية الكائنات (object independence) وهو أساس البرمجة الكائنية.</div>
+
+      <!-- ========== 9.2 ========== -->
+      <h2 class="section-title">العمل مع الكلاسات والكائنات</h2>
+
+      <p>
+        في هذا القسم سنبني كلاساً أكثر واقعية — <span class="inline-code">Car</span> —
+        لنرى كيف نتعامل مع الخصائص والقيم الافتراضية وتعديلها.
+      </p>
+
+      <h3 class="subsection-title">كلاس Car</h3>
+
+      <div class="code-block"><span class="kw">class</span> Car:
+    <span class="cm">"""A simple attempt to represent a car."""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, make, model, year):
+        <span class="cm">"""Initialize attributes to describe a car."""</span>
+        <span class="kw">self</span>.make = make
+        <span class="kw">self</span>.model = model
+        <span class="kw">self</span>.year = year
+
+    <span class="kw">def</span> <span class="fn">get_descriptive_name</span>(<span class="kw">self</span>):
+        <span class="cm">"""Return a neatly formatted descriptive name."""</span>
+        long_name = <span class="str">f"{self.year} {self.make} {self.model}"</span>
+        <span class="kw">return</span> long_name.title()
+
+my_new_car = Car(<span class="str">'audi'</span>, <span class="str">'a4'</span>, <span class="num">2024</span>)
+<span class="fn">print</span>(my_new_car.get_descriptive_name())</div>
+      <div class="explanation-box"><strong>📘 كلاس Car مع دالة وصفية</strong>كلاس Car يخزّن معلومات السيارة الأساسية (الماركة، الموديل، السنة). دالة <code>get_descriptive_name()</code> تستخدم f-string لتنسيق وعرض هذه المعلومات في جملة مقروءة باستخدام <code>title()</code>. بعد تعريف الكلاس، ننشئ كائناً <code>my_new_car</code> ونستدعي الدالة لطباعة وصف السيارة. هذه هي البنية الأساسية لكل كلاس بايثون: خصائص (data) + دوال (behaviour).</div>
+
+      <p>المخرجات: <code style="background:#2d333b;color:#e6edf3;padding:2px 7px;border-radius:4px;">2024 Audi A4</code></p>
+
+      <h3 class="subsection-title">إعطاء قيمة افتراضية لخاصية</h3>
+
+      <p>
+        في بعض الأحيان تريد أن يكون لخاصية معينة قيمة أولية ثابتة. يمكنك تعيينها داخل
+        <span class="inline-code">__init__()</span> بدلاً من جعلها مُعامل:
+      </p>
+
+      <div class="code-block"><span class="kw">class</span> Car:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, make, model, year):
+        <span class="kw">self</span>.make = make
+        <span class="kw">self</span>.model = model
+        <span class="kw">self</span>.year = year
+        <span class="kw">self</span>.odometer_reading = <span class="num">0</span>
+
+    <span class="kw">def</span> <span class="fn">get_descriptive_name</span>(<span class="kw">self</span>):
+        long_name = <span class="str">f"{self.year} {self.make} {self.model}"</span>
+        <span class="kw">return</span> long_name.title()
+
+    <span class="kw">def</span> <span class="fn">read_odometer</span>(<span class="kw">self</span>):
+        <span class="fn">print</span>(<span class="str">f"This car has {self.odometer_reading} miles on it."</span>)</div>
+      <div class="explanation-box"><strong>📘 إعطاء قيمة افتراضية لخاصية</strong>يمكن تعيين قيمة أولية لخاصية داخل <code>__init__</code> دون جعلها مُعامل — هنا <code>odometer_reading</code> يبدأ بالقيمة 0 تلقائياً لكل سيارة جديدة. هذا يضمن أن كل الكائنات تبدأ بحالة افتراضية متسقة. القيم الافتراضية مفيدة للعدادات والحالات والشعارات — أي شيء يبدأ بقيمة معينة لجميع الكائنات الجديدة.</div>
+
+      <p>
+        هنا <span class="inline-code">self.odometer_reading = 0</span> يضمن أن كل سيارة جديدة
+        تبدأ بقراءة عداد 0.
+      </p>
+
+      <h3 class="subsection-title">تعديل قيمة خاصية</h3>
+
+      <p>هناك ثلاث طرق لتعديل قيمة خاصية:</p>
+
+      <p><strong>1. التعديل المباشر:</strong></p>
+      <div class="code-block">my_new_car = Car(<span class="str">'audi'</span>, <span class="str">'a4'</span>, <span class="num">2024</span>)
+my_new_car.odometer_reading = <span class="num">23</span>
+my_new_car.read_odometer()</div>
+      <div class="explanation-box"><strong>📘 التعديل المباشر للخاصية</strong>أبسط طريقة لتعديل قيمة خاصية هي الوصول إليها مباشرةً وتحديثها باستخدام علامة <code>=</code>. هنا نغيّر <code>odometer_reading</code> إلى 23 مباشرة على الكائن. هذه الطريقة مناسبة للعمليات البسيطة، لكنها لا توفّر أي تحقق من صحة القيمة — يمكن تعيين أي رقم حتى لو كان غير منطقي.</div>
+
+      <p><strong>2. التعديل عبر دالة (method):</strong></p>
+      <div class="code-block"><span class="kw">class</span> Car:
+    ...
+    <span class="kw">def</span> <span class="fn">update_odometer</span>(<span class="kw">self</span>, mileage):
+        <span class="kw">self</span>.odometer_reading = mileage
+
+my_new_car.update_odometer(<span class="num">23</span>)</div>
+      <div class="explanation-box"><strong>📘 التعديل عبر دالة (Method Modification)</strong>الطريقة الثانية هي إنشاء دالة تتولى تعديل الخاصية. هذا يوفّر طبقة تحكم (abstraction) — يمكن للمستخدم تعديل الخاصية دون معرفة التفاصيل الداخلية. الميزة الكبرى هي إمكانية إضافة منطق تحقق لاحقاً دون تغيير طريقة الاستخدام. من الأفضل استخدام دوال التعديل بدلاً من التعديل المباشر في التطبيقات الحقيقية.</div>
+
+      <p><strong>3. الزيادة عبر دالة (increment):</strong></p>
+      <div class="code-block"><span class="kw">class</span> Car:
+    ...
+    <span class="kw">def</span> <span class="fn">increment_odometer</span>(<span class="kw">self</span>, miles):
+        <span class="kw">self</span>.odometer_reading += miles
+
+my_used_car = Car(<span class="str">'subaru'</span>, <span class="str">'outback'</span>, <span class="num">2019</span>)
+my_used_car.update_odometer(<span class="num">23500</span>)
+my_used_car.read_odometer()
+
+my_used_car.increment_odometer(<span class="num">100</span>)
+my_used_car.read_odometer()</div>
+      <div class="explanation-box"><strong>📘 الزيادة عبر دالة (Increment Method)</strong>الطريقة الثالثة لتعديل الخاصية هي الزيادة — إضافة قيمة إلى القيمة الحالية بدلاً من استبدالها. <code>increment_odometer(miles)</code> يستخدم <code>+=</code> لإضافة miles إلى odometer_reading. هذا مفيد في حالات مثل زيادة عداد المسافات بعد رحلة جديدة. يمكن الجمع بين الطرق الثلاث حسب السياق — تعديل مباشر، تعيين عبر دالة، أو زيادة.</div>
+
+      <div class="note">
+        <strong>ملاحظة:</strong> يمكنك إضافة منطق إضافي داخل دوال التعديل لضمان عدم تمرير
+        قيم غير منطقية. مثلاً، في <span class="inline-code">update_odometer</span> يمكنك
+        التأكد من أن القراءة الجديدة أكبر من القديمة قبل التحديث.
+      </div>
+
+      <div class="code-block"><span class="kw">def</span> <span class="fn">update_odometer</span>(<span class="kw">self</span>, mileage):
+    <span class="kw">if</span> mileage >= <span class="kw">self</span>.odometer_reading:
+        <span class="kw">self</span>.odometer_reading = mileage
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="str">"You can't roll back an odometer!"</span>)</div>
+      <div class="explanation-box"><strong>📘 التحقق من صحة القيم في دوال التعديل</strong>من أفضل الممارسات إضافة منطق تحقق داخل دوال التعديل لضمان سلامة البيانات. هنا نتحقق من أن القراءة الجديدة أكبر من أو تساوي القراءة الحالية قبل التحديث — لمنع خفض عداد المسافات. إذا حاولت تمرير قيمة أقل، تطبع رسالة خطأ. هذا النمط (defensive programming) يمنع الأخطاء المنطقية ويحافظ على اتساق البيانات.</div>
+
+      <!-- ========== 9.3 ========== -->
+      <h2 class="section-title">الوراثة (Inheritance)</h2>
+
+      <p>
+        الوراثة تسمح لك بإنشاء كلاس جديد يرث كل خصائص ودوال كلاس موجود (يُسمى الكلاس الأب
+        أو parent class). ثم يمكن للكلاس الجديد (يُسمى الكلاس الابن أو child class) إضافة
+        خصائص ودوال جديدة أو تغيير سلوك الدوال الموروثة.
+      </p>
+
+      <p>لنقم بإنشاء كلاس <span class="inline-code">ElectricCar</span> يرث من <span class="inline-code">Car</span>:</p>
+
+      <div class="code-block"><span class="kw">class</span> ElectricCar(Car):
+    <span class="cm">"""Represent aspects of a car, specific to electric vehicles."""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, make, model, year):
+        <span class="cm">"""Initialize attributes of the parent class."""</span>
+        <span class="kw">super</span>().<span class="fn">__init__</span>(make, model, year)
+        <span class="kw">self</span>.battery_size = <span class="num">75</span>
+
+    <span class="kw">def</span> <span class="fn">describe_battery</span>(<span class="kw">self</span>):
+        <span class="fn">print</span>(<span class="str">f"This car has a {self.battery_size}-kWh battery."</span>)</div>
+      <div class="explanation-box"><strong>📘 الوراثة (Inheritance) — إنشاء كلاس من كلاس آخر</strong>لكلاس ابن يرث من كلاس أب، نضع اسم الكلاس الأب بين قوسين: <code>class ElectricCar(Car):</code>. الدالة <code>super().__init__()</code> تستدعي منشئ الكلاس الأب لتهيئة الخصائص الموروثة (make, model, year). ثم نضيف خصائص جديدة خاصة بالكلاس الابن مثل <code>battery_size</code>. الوراثة توفّر إعادة استخدام الكود وتسمح ببناء هرم من الكلاسات من العام إلى الخاص.</div>
+
+      <p>نقاط مهمة عن الكود أعلاه:</p>
+      <ul>
+        <li>
+          نكتب اسم الكلاس الأب بين قوسين بعد اسم الكلاس الابن:
+          <span class="inline-code">class ElectricCar(Car):</span>
+        </li>
+        <li>
+          الدالة <span class="inline-code">super()</span> هي دالة خاصة تسمح للكلاس الابن
+          باستدعاء دوال الكلاس الأب. هنا نستخدمها لاستدعاء <span class="inline-code">__init__()</span>
+          من الكلاس <span class="inline-code">Car</span> حتى يتولى تهيئة الخصائص الموروثة.
+        </li>
+        <li>
+          بعد ذلك نضيف الخاصية الجديدة <span class="inline-code">self.battery_size</span>
+          التي تخص السيارات الكهربائية فقط.
+        </li>
+      </ul>
+
+      <p>الاستخدام:</p>
+
+      <div class="code-block">my_tesla = ElectricCar(<span class="str">'tesla'</span>, <span class="str">'model s'</span>, <span class="num">2024</span>)
+<span class="fn">print</span>(my_tesla.get_descriptive_name())
+my_tesla.describe_battery()</div>
+      <div class="explanation-box"><strong>📘 استخدام الكلاس الابن (Inheritance in Action)</strong>عند إنشاء كائن من <code>ElectricCar</code>، نمرر نفس الوسائط التي يحتاجها <code>Car</code>. الدالة الموروثة <code>get_descriptive_name()</code> تعمل تلقائياً دون أي تعديل — هذا هو جوهر إعادة الاستخدام (reusability). الدالة الجديدة <code>describe_battery()</code> متاحة فقط للكلاس الابن. يمكننا الآن استخدام الكائن الجديد كما لو كان كائن Car عادي مع ميزات إضافية.</div>
+
+      <p>
+        لاحظ أن <span class="inline-code">get_descriptive_name()</span> موروثة من
+        <span class="inline-code">Car</span> وتعمل تلقائياً دون أي تعديل.
+      </p>
+
+      <h3 class="subsection-title">الوراثة في بايثون 2.7</h3>
+
+      <p>
+        في بايثون 2.7، كانت الصيغة مختلفة قليلاً — كان يجب تمرير الكلاس الأب كـ
+        <span class="inline-code">object</span> واستخدام <span class="inline-code">super()</span>
+        بمعاملات:
+      </p>
+
+      <div class="code-block"><span class="cm"># Python 2.7</span>
+<span class="kw">class</span> Car(<span class="bu">object</span>):
+    ...
+
+<span class="kw">class</span> ElectricCar(Car):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, make, model, year):
+        <span class="kw">super</span>(ElectricCar, <span class="kw">self</span>).<span class="fn">__init__</span>(make, model, year)
+        ...</div>
+      <div class="explanation-box"><strong>📘 الوراثة في بايثون 2.7</strong>في بايثون 2.7، كان كل كلاس يجب أن يرث صراحةً من <code>object</code> (كلاس القاعدة). كما أن استدعاء <code>super()</code> كان يتطلب معاملين: اسم الكلاس الابن و <code>self</code>. الصيغة الحديثة في بايثون 3 أبسط بكثير: <code>super().__init__()</code>. إذا كنت تعمل على مشروع قديم، قد تصادف هذه الصيغة القديمة — لكن لكل المشاريع الجديدة استخدم بايثون 3.</div>
+
+      <div class="note">
+        <strong>ملاحظة:</strong> إذا كنت تستخدم بايثون 3 (وهو ما نفترضه في هذا الكتاب)،
+        استخدم الصيغة المبسطة <span class="inline-code">super().__init__()</span>.
+      </div>
+
+      <h3 class="subsection-title">إضافة خصائص ودوال للكلاس الابن</h3>
+
+      <p>
+        بعد تعريف الكلاس الابن، يمكنك إضافة أي عدد تريده من الخصائص والدوال الجديدة.
+        المثال أعلاه أضاف <span class="inline-code">battery_size</span> و
+        <span class="inline-code">describe_battery()</span>. هذه العناصر موجودة فقط
+        في <span class="inline-code">ElectricCar</span> وليس في <span class="inline-code">Car</span>.
+      </p>
+
+      <h3 class="subsection-title">تجاوز دوال الكلاس الأب (Overriding)</h3>
+
+      <p>
+        إذا كانت هناك دالة في الكلاس الأب لا تناسب الكلاس الابن، يمكنك تجاوزها (override)
+        بتعريف دالة بنفس الاسم في الكلاس الابن. بايثون ستستخدم الدالة الجديدة بدلاً
+        من القديمة:
+      </p>
+
+      <div class="code-block"><span class="kw">class</span> ElectricCar(Car):
+    ...
+    <span class="kw">def</span> <span class="fn">fill_gas_tank</span>(<span class="kw">self</span>):
+        <span class="cm">"""Electric cars don't have gas tanks."""</span>
+        <span class="fn">print</span>(<span class="str">"This car doesn't need a gas tank!"</span>)</div>
+      <div class="explanation-box"><strong>📘 تجاوز دوال الكلاس الأب (Method Overriding)</strong>عند تعريف دالة بنفس الاسم الموجود في الكلاس الأب داخل الكلاس الابن، يتم تجاوز (override) الدالة القديمة. بايثون ستستخدم الدالة الجديدة عند استدعائها على كائن من الكلاس الابن. هنا <code>fill_gas_tank()</code> في ElectricCar تطبع رسالة مختلفة عن نسخة Car — لأن السيارات الكهربائية لا تحتاج بنزين. هذا مثال على polymorphism (تعدد الأشكال).</div>
+
+      <p>
+        الآن إذا استدعيت <span class="inline-code">fill_gas_tank()</span> على كائن من نوع
+        <span class="inline-code">ElectricCar</span>، ستنفذ الدالة الجديدة بدلاً من القديمة.
+      </p>
+
+      <h3 class="subsection-title">الكائنات كخصائص (Instances as Attributes)</h3>
+
+      <p>
+        مع تزايد عدد الخصائص والدوال في الكلاس، قد يُصبح الكلاس كبيراً جداً. بدلاً من ذلك،
+        يمكنك تجزئة الكلاس إلى كلاسات أصغر واستخدامها كخصائص.
+      </p>
+
+      <div class="code-block"><span class="kw">class</span> Battery:
+    <span class="cm">"""A simple attempt to model a battery for an electric car."""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, battery_size=<span class="num">75</span>):
+        <span class="cm">"""Initialize the battery's attributes."""</span>
+        <span class="kw">self</span>.battery_size = battery_size
+
+    <span class="kw">def</span> <span class="fn">describe_battery</span>(<span class="kw">self</span>):
+        <span class="fn">print</span>(<span class="str">f"This car has a {self.battery_size}-kWh battery."</span>)
+
+    <span class="kw">def</span> <span class="fn">get_range</span>(<span class="kw">self</span>):
+        <span class="cm">"""Print a statement about the range this battery provides."""</span>
+        <span class="kw">if</span> <span class="kw">self</span>.battery_size == <span class="num">75</span>:
+            range = <span class="num">260</span>
+        <span class="kw">elif</span> <span class="kw">self</span>.battery_size == <span class="num">100</span>:
+            range = <span class="num">315</span>
+
+        <span class="fn">print</span>(<span class="str">f"This car can go about {range} miles on a full charge."</span>)</div>
+      <div class="explanation-box"><strong>📘 كلاس Battery — تجزئة المسؤوليات</strong>بدلاً حشر كل التفاصيل في ElectricCar، أنشأنا كلاساً منفصلاً <code>Battery</code> يدير معلومات البطارية. هذا يتبع مبدأ Separation of Concerns — فصل المسؤوليات. <code>Battery</code> يحتوي على <code>battery_size</code> و <code>describe_battery()</code> و <code>get_range()</code>. يمكن تطوير واختبار Battery بشكل مستقل عن ElectricCar، مما يسهل صيانة الكود.</div>
+
+      <p>ثم نستخدم <span class="inline-code">Battery</span> كخاصية في <span class="inline-code">ElectricCar</span>:</p>
+
+      <div class="code-block"><span class="kw">class</span> ElectricCar(Car):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, make, model, year):
+        <span class="kw">super</span>().<span class="fn">__init__</span>(make, model, year)
+        <span class="kw">self</span>.battery = Battery()
+
+    <span class="kw">def</span> <span class="fn">fill_gas_tank</span>(<span class="kw">self</span>):
+        <span class="fn">print</span>(<span class="str">"This car doesn't need a gas tank!"</span>)</div>
+      <div class="explanation-box"><strong>📘 تكوين (Composition) باستخدام كلاسات كخصائص</strong>بدلاً جعل ElectricCar تدير كل تفاصيل البطارية بنفسها، نستخدم كلاساً منفصلاً <code>Battery</code> كخاصية: <code>self.battery = Battery()</code>. هذا يسمى تكوين (composition) — كلاس ElectricCar يمتلك (has-a) كائن Battery. تكوين أفضل من الوراثة في كثير من الحالات لأنه يفصل المسؤوليات ويجعل الكود أسهل للصيانة والاختبار.</div>
+
+      <p>الاستخدام:</p>
+
+      <div class="code-block">my_tesla = ElectricCar(<span class="str">'tesla'</span>, <span class="str">'model s'</span>, <span class="num">2024</span>)
+my_tesla.battery.describe_battery()
+my_tesla.battery.get_range()</div>
+      <div class="explanation-box"><strong>📘 الوصول للخصائص المتداخلة (Chaining)</strong>عند استخدام كلاس كخاصية في كلاس آخر، نصل إلى الدوال المتداخلة عبر تكرار تدوين النقطة: <code>my_tesla.battery.describe_battery()</code>. المستوى الأول <code>battery</code> يصل إلى كائن Battery، والمستوى الثاني يستدعي الدالة داخله. هذا التسلسل (chaining) ينظّم الكود بشكل هرمي ويعكس علاقة التكوين بين الكلاسات.</div>
+
+      <p>
+        هذه طريقة أنيقة جداً لتنظيم الكود — كل جزء من المشكلة يُعالَج في كلاس مستقل خاص به.
+      </p>
+
+      <!-- ========== 9.4 ========== -->
+      <h2 class="section-title">استيراد الكلاسات</h2>
+
+      <p>
+        مثل الدوال، يمكن تخزين الكلاسات في وحدات (modules) منفصلة واستيرادها عند الحاجة.
+        هذا يساعد في تنظيم المشاريع الكبيرة.
+      </p>
+
+      <h3 class="subsection-title">استيراد كلاس واحد</h3>
+
+      <p>لنفترض أن لدينا ملف <span class="inline-code">car.py</span> يحتوي على كلاس <span class="inline-code">Car</span>:</p>
+
+      <div class="code-block"><span class="cm"># car.py</span>
+<span class="kw">class</span> Car:
+    <span class="cm">"""A simple attempt to represent a car."""</span>
+    ...</div>
+      <div class="explanation-box"><strong>📘 تخزين الكلاسات في وحدات منفصلة</strong>يمكن وضع تعريف الكلاس في ملف <code>.py</code> منفصل (يسمى وحدة أو module). هذا ينظّم المشروع ويسهل إعادة استخدام الكود عبر ملفات ومشاريع متعددة. كل وحدة تركّز على جزء محدد من الوظائف — مثل <code>car.py</code> لكلاسات السيارات. سمّ الملف بحروف صغيرة مع شرطات سفلية حسب convention.</div>
+
+      <p>في ملف آخر <span class="inline-code">my_car.py</span> نستورد الكلاس:</p>
+
+      <div class="code-block"><span class="cm"># my_car.py</span>
+<span class="kw">from</span> car <span class="kw">import</span> Car
+
+my_new_car = Car(<span class="str">'audi'</span>, <span class="str">'a4'</span>, <span class="num">2024</span>)
+<span class="fn">print</span>(my_new_car.get_descriptive_name())</div>
+      <div class="explanation-box"><strong>📘 استيراد كلاس واحد من وحدة</strong>لاستيراد كلاس من وحدة منفصلة، نستخدم <code>from module import ClassName</code>. هذا يسمح باستخدام الكلاس مباشرةً كما لو كان معرفاً في نفس الملف. يفصل استيراد الكلاسات في وحدات منفصلة بين أجزاء المشروع ويحسّن إعادة استخدام الكود. هذه الممارسة أساسية في المشاريع الكبيرة.</div>
+
+      <h3 class="subsection-title">تخزين كلاسات متعددة في وحدة واحدة</h3>
+
+      <p>يمكن لملف واحد أن يحتوي على عدة كلاسات. على سبيل المثال، نضع <span class="inline-code">Car</span> و <span class="inline-code">ElectricCar</span> معاً في <span class="inline-code">car.py</span>:</p>
+
+      <div class="code-block"><span class="cm"># car.py</span>
+<span class="kw">class</span> Car:
+    ...
+
+<span class="kw">class</span> Battery:
+    ...
+
+<span class="kw">class</span> ElectricCar(Car):
+    ...</div>
+      <div class="explanation-box"><strong>📘 تخزين كلاسات متعددة في وحدة واحدة</strong>يمكن لملف <code>.py</code> واحد أن يحتوي على عدة كلاسات مرتبطة ببعضها. هنا <code>car.py</code> يحتوي على <code>Car</code> و <code>Battery</code> و <code>ElectricCar</code>. اترك سطرين فارغين بين الكلاسات وفقاً لـ PEP 8. هذا التنظيم مناسب للكلاسات الصغيرة والمترابطة، لكن للكلاسات الكبيرة يُفضل فصلها في وحدات منفصلة.</div>
+
+      <h3 class="subsection-title">استيراد كلاسات متعددة من وحدة</h3>
+
+      <div class="code-block"><span class="kw">from</span> car <span class="kw">import</span> Car, ElectricCar
+
+my_beetle = Car(<span class="str">'volkswagen'</span>, <span class="str">'beetle'</span>, <span class="num">2019</span>)
+<span class="fn">print</span>(my_beetle.get_descriptive_name())
+
+my_tesla = ElectricCar(<span class="str">'tesla'</span>, <span class="str">'roadster'</span>, <span class="num">2019</span>)
+<span class="fn">print</span>(my_tesla.get_descriptive_name())</div>
+      <div class="explanation-box"><strong>📘 استيراد كلاسات متعددة من وحدة</strong>لفصل أسماء الكلاسات بفواصل في أمر الاستيراد: <code>from car import Car, ElectricCar</code>. هذه الطريقة واضحة وتظهر بالضبط أي الكلاسات ستستخدمها. يمكنك الآن إنشاء كائنات من كلا الكلاسين مباشرةً بدون بادئة. هذا يوفر كتابة أقل مع بقاء الكود واضحاً.</div>
+
+      <h3 class="subsection-title">استيراد الوحدة بأكملها</h3>
+
+      <div class="code-block"><span class="kw">import</span> car
+
+my_beetle = car.Car(<span class="str">'volkswagen'</span>, <span class="str">'beetle'</span>, <span class="num">2019</span>)
+my_tesla = car.ElectricCar(<span class="str">'tesla'</span>, <span class="str">'roadster'</span>, <span class="num">2019</span>)</div>
+      <div class="explanation-box"><strong>📘 استيراد الوحدة بأكملها</strong><code>import car</code> يستورد الوحدة بأكملها، ثم نستخدم تدوين النقطة للوصول إلى كلاساتها: <code>car.Car()</code>. هذه الطريقة تمنع تضارب الأسماء تماماً لأن كل اسم مسبوق باسم الوحدة. مفيدة جداً في المشاريع الكبيرة حيث تريد توثيق مصدر كل كلاس تستخدمه.</div>
+
+      <h3 class="subsection-title">استيراد كل الكلاسات من وحدة</h3>
+
+      <div class="code-block"><span class="kw">from</span> car <span class="kw">import</span> *</div>
+      <div class="explanation-box"><strong>📘 استيراد كل المحتويات</strong>استيراد كل الكلاسات باستخدام <code>*</code> غير مستحسن. هذا يجعل من غير الواضح أي الكلاسات مستخدمة في الملف وقد يسبب تضارباً في الأسماء إذا كانت وحدات مختلفة تحتوي على كلاسات بنفس الاسم. القاعدة الذهبية: استورد دائماً ما تحتاجه فقط بشكل صريح — الكود الواضح أفضل من الكود المختصر.</div>
+
+      <div class="warning">
+        <strong>تحذير:</strong> مثل الدوال، استيراد كل الكلاسات باستخدام <span class="inline-code">*</span>
+        غير مستحسن لأنه قد يسبب تضارب في الأسماء. الأفضل استيراد ما تحتاجه فقط.
+      </div>
+
+      <h3 class="subsection-title">استيراد وحدة داخل وحدة أخرى</h3>
+
+      <p>
+        أحياناً يكون من الأفضل فصل الكلاسات في وحدات متعددة. مثلاً، نضع
+        <span class="inline-code">Car</span> في <span class="inline-code">car.py</span>
+        و <span class="inline-code">ElectricCar</span> في <span class="inline-code">electric_car.py</span>.
+        في هذه الحالة، يحتاج <span class="inline-code">electric_car.py</span> إلى استيراد
+        <span class="inline-code">Car</span> من <span class="inline-code">car.py</span>:
+      </p>
+
+      <div class="code-block"><span class="cm"># electric_car.py</span>
+<span class="kw">from</span> car <span class="kw">import</span> Car
+
+<span class="kw">class</span> Battery:
+    ...
+
+<span class="kw">class</span> ElectricCar(Car):
+    ...</div>
+      <div class="explanation-box"><strong>📘 استيراد وحدة داخل وحدة أخرى</strong>عند فصل الكلاسات في وحدات متعددة، قد يحتاج كلاس ابن إلى استيراد كلاس أب من وحدة أخرى. هنا <code>electric_car.py</code> يستورد <code>Car</code> من <code>car.py</code> ليتمكن <code>ElectricCar</code> من وراثته. هذا يخلق تبعيات (dependencies) بين الوحدات يجب إدارتها بعناية لتجنب الاستيراد الدائري (circular imports).</div>
+
+      <p>ثم في الملف الرئيسي:</p>
+
+      <div class="code-block"><span class="kw">from</span> car <span class="kw">import</span> Car
+<span class="kw">from</span> electric_car <span class="kw">import</span> ElectricCar</div>
+      <div class="explanation-box"><strong>📘 استيراد من وحدات متعددة</strong>يمكن الجمع بين استيرادات من وحدات مختلفة في الملف الرئيسي. هنا نستورد <code>Car</code> من <code>car.py</code> و <code>ElectricCar</code> من <code>electric_car.py</code>. هذا الأسلوب ينظّم المشروع بشكل أفضل — كل كلاس في ملف منفصل، والملف الرئيسي ينسّق بينهم. يساعد هذا في المشاريع الكبيرة حيث تتوزع الكلاسات عبر عدة وحدات.</div>
+
+      <!-- ========== 9.5 ========== -->
+      <h2 class="section-title">مكتبة بايثون القياسية (Python Standard Library)</h2>
+
+      <p>
+        مكتبة بايثون القياسية هي مجموعة ضخمة من الوحدات الجاهزة التي تأتي مع بايثون.
+        يمكنك استخدامها في برامجك دون الحاجة إلى تثبيت أي شيء إضافي. إليك مثالان مفيدان:
+      </p>
+
+      <p><strong>OrderedDict — قاموس مرتب:</strong></p>
+      <p>
+        في القاموس العادي، ترتيب العناصر غير مضمون (قبل بايثون 3.7). توفر
+        <span class="inline-code">OrderedDict</span> قاموساً يحافظ على ترتيب الإدراج:
+      </p>
+
+      <div class="code-block"><span class="kw">from</span> collections <span class="kw">import</span> OrderedDict
+
+favorite_languages = OrderedDict()
+
+favorite_languages[<span class="str">'jen'</span>] = <span class="str">'python'</span>
+favorite_languages[<span class="str">'sarah'</span>] = <span class="str">'c'</span>
+favorite_languages[<span class="str">'edward'</span>] = <span class="str">'ruby'</span>
+favorite_languages[<span class="str">'phil'</span>] = <span class="str">'python'</span>
+
+<span class="kw">for</span> name, language <span class="kw">in</span> favorite_languages.items():
+    <span class="fn">print</span>(<span class="str">f"{name.title()}'s favorite language is {language.title()}."</span>)</div>
+      <div class="explanation-box"><strong>📘 OrderedDict — قاموس يحافظ على الترتيب</strong><code>OrderedDict</code> من وحدة <code>collections</code> هو قاموس يضمن بقاء العناصر بنفس ترتيب إدراجها. قبل بايثون 3.7، القواميس العادية لم تكن مضمونة الترتيب، لذا كان OrderedDict ضرورياً. على الرغم أن الإصدارات الحديثة من بايثون تحافظ على الترتيب تلقائياً، إلا أن OrderedDict يوفّر دوالاً إضافية مثل <code>move_to_end()</code> مفيدة في تطبيقات مثل LRU cache وترتيب المفضلات.</div>
+
+      <p><strong>random — توليد أرقام عشوائية:</strong></p>
+      <div class="code-block"><span class="kw">from</span> random <span class="kw">import</span> randint
+
+<span class="cm"># رقم عشوائي بين 1 و 6</span>
+x = randint(<span class="num">1</span>, <span class="num">6</span>)
+
+<span class="cm"># اختيار عنصر عشوائي من قائمة</span>
+players = [<span class="str">'charles'</span>, <span class="str">'martina'</span>, <span class="str">'michael'</span>, <span class="str">'florence'</span>, <span class="str">'eli'</span>]
+lucky = <span class="fn">choice</span>(players)</div>
+      <div class="explanation-box"><strong>📘 random — توليد أرقام عشوائية</strong>وحدة <code>random</code> توفر دوالاً للعشوائية الأساسية. <code>randint(a, b)</code> ترجع عدداً صحيحاً عشوائياً ضمن النطاق (بما في ذلك a و b). <code>choice(list)</code> تختار عنصراً عشوائياً من قائمة. هذه الدوال أساسية للألعاب والمحاكاة واختيار العينات العشوائية. مكتبة <code>random</code> تحتوي أيضاً على دوال مثل <code>shuffle</code> لخلط القوائم و <code>sample</code> لاختيار عينة عشوائية.</div>
+
+      <div class="note">
+        <strong>ملاحظة:</strong> يمكنك استكشاف باقي مكتبة بايثون القياسية في
+        <a href="https://docs.python.org/3/library/" style="color:var(--primary);">docs.python.org/3/library/</a>.
+        المكتبة القياسية تغطي كل شيء من التعامل مع JSON و CSV إلى البريد الإلكتروني وبروتوكولات الإنترنت.
+      </div>
+
+      <!-- ========== 9.6 ========== -->
+      <h2 class="section-title">تنسيق الكلاسات (Styling Classes)</h2>
+
+      <ul>
+        <li>أسماء الكلاسات تُكتب بأسلوب <strong>CamelCase</strong>:
+          <span class="inline-code">class ElectricCar()</span></li>
+        <li>أسماء الكائنات والمتغيرات تُكتب بحروف صغيرة مع شرطات سفلية:
+          <span class="inline-code">my_tesla</span></li>
+        <li>كل كلاس يحتاج إلى docstring يشرح وظيفته</li>
+        <li>اترك سطراً فارغاً بعد docstring الكلاس</li>
+        <li>اترك سطراً فارغاً بين الدوال داخل الكلاس</li>
+        <li>اترك سطرين فارغين بين الكلاسات في نفس الملف</li>
+        <li>استخدم أسماء وصفية للخصائص والدوال لتوضيح الغرض منها</li>
+        <li>خصائص الكلاس تبدأ بـ <span class="inline-code">self.</span> دائماً</li>
+      </ul>
+
+      <!-- ========== EXERCISES 9 ========== -->
+      <h2 class="section-title">تمارين الفصل التاسع</h2>
+
+      <div class="exercise">
+        <strong>تمرين 9-1: مطعم</strong><br>
+        أنشئ كلاساً باسم <span class="inline-code">Restaurant</span>. الدالة
+        <span class="inline-code">__init__()</span> تخزّن خاصيتين: <span class="inline-code">restaurant_name</span>
+        و <span class="inline-code">cuisine_type</span>. أضف دالة <span class="inline-code">describe_restaurant()</span>
+        تطبع هاتين الخاصيتين، ودالة <span class="inline-code">open_restaurant()</span> تطبع
+        رسالة تفيد بأن المطعم مفتوح. أنشئ كائناً واطبع الخاصيتين واستدعِ كل دالة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-2: ثلاث مطاعم</strong><br>
+        أنشئ ثلاثة كائنات من كلاس <span class="inline-code">Restaurant</span> واستدعِ
+        <span class="inline-code">describe_restaurant()</span> لكل منها.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-3: المستخدمون</strong><br>
+        أنشئ كلاساً باسم <span class="inline-code">User</span> بخاصيتين
+        <span class="inline-code">first_name</span> و <span class="inline-code">last_name</span>
+        وعدة خصائص أخرى. أضف دالة <span class="inline-code">describe_user()</span> تطبع ملخصاً
+        عن المستخدم، ودالة <span class="inline-code">greet_user()</span> تطبع تحية مخصصة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-4: عدد الوجبات</strong><br>
+        أضف خاصية <span class="inline-code">number_served</span> بقيمة افتراضية 0 لكلاس
+        <span class="inline-code">Restaurant</span>. أنشئ كائناً واطبع عدد الوجبات.
+        غيّر القيمة مباشرة، ثم استخدم دالة <span class="inline-code">set_number_served()</span>
+        وأخيراً دالة <span class="inline-code">increment_number_served()</span>.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-5: محاولات تسجيل الدخول</strong><br>
+        أضف خاصية <span class="inline-code">login_attempts</span> لكلاس
+        <span class="inline-code">User</span>. أضف دالة
+        <span class="inline-code">increment_login_attempts()</span> تزيد القيمة بمقدار 1،
+        ودالة <span class="inline-code">reset_login_attempts()</span> تعيد تعيينها إلى 0.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-6: كشك البوظة</strong><br>
+        أنشئ كلاساً باسم <span class="inline-code">IceCreamStand</span> يرث من
+        <span class="inline-code">Restaurant</span>. أضف خاصية <span class="inline-code">flavors</span>
+        تخزّن قائمة بنكهات البوظة. أضف دالة لعرض النكهات. أنشئ كائناً واستدعِ الدالة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-7: المشرف</strong><br>
+        أنشئ كلاساً باسم <span class="inline-code">Admin</span> يرث من
+        <span class="inline-code">User</span>. أضف خاصية <span class="inline-code">privileges</span>
+        تخزّن قائمة بصلاحيات المشرف (مثل "can add post", "can delete post", إلخ).
+        أضف دالة <span class="inline-code">show_privileges()</span> لعرض الصلاحيات.
+        أنشئ كائناً واستدعِ الدالة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-8: الصلاحيات</strong><br>
+        أنشئ كلاساً منفصلاً باسم <span class="inline-code">Privileges</span> يحتوي على خاصية
+        <span class="inline-code">privileges</span> ودالة <span class="inline-code">show_privileges()</span>.
+        استخدم هذا الكلاس كخاصية في <span class="inline-code">Admin</span>.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-9: ترقية البطارية</strong><br>
+        أضف دالة <span class="inline-code">upgrade_battery()</span> إلى كلاس
+        <span class="inline-code">Battery</span>. تتحقق من سعة البطارية، وإذا كانت 75،
+        تعيّنها إلى 100. أنشئ سيارة كهربائية واستدعِ <span class="inline-code">get_range()</span>
+        قبل وبعد الترقية.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-10: استيراد مطعم</strong><br>
+        انقل كلاس <span class="inline-code">Restaurant</span> إلى وحدة منفصلة. أنشئ ملفاً
+        جديداً يستورد الكلاس وينشئ كائناً منه.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-11: استيراد مشرف</strong><br>
+        انقل كلاسات <span class="inline-code">User</span> و <span class="inline-code">Privileges</span>
+        و <span class="inline-code">Admin</span> إلى وحدة منفصلة. أنشئ ملفاً جديداً يستوردها
+        وينشئ كائناً من <span class="inline-code">Admin</span>.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-12: وحدات متعددة</strong><br>
+        خزّن كلاس <span class="inline-code">User</span> في وحدة، و <span class="inline-code">Privileges</span>
+        و <span class="inline-code">Admin</span> في وحدة أخرى. استوردها في ملف رئيسي.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-13: القواميس المرتبة</strong><br>
+        استخدم <span class="inline-code">OrderedDict</span> لإنشاء قاموس مرتب يخزّن
+        مفردات بايثون التي تعلمتها (الكلمة الرئيسية: المعنى). اطبع القاموس.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-14: النرد</strong><br>
+        أنشئ كلاساً باسم <span class="inline-code">Die</span>. افترض أن النرد له 6 أوجه.
+        أضف دالة <span class="inline-code">roll_die()</span> تطبع رقماً عشوائياً بين 1
+        وعدد الأوجه. اختبر النرد بـ 6 و 10 و 20 وجهاً.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 9-15: تحليل بايثون</strong><br>
+        ابحث في مكتبة بايثون القياسية عن وحدة تهمك. اقرأ وثائقها واكتب برنامجاً صغيراً
+        يستخدمها.
+      </div>
+
+      <!-- ========== 9.6 ========== -->
+      <h2 class="section-title">9.6 Data Classes و Named Tuple - كلاسات مختصرة</h2>
+      <p>بايثون توفر طرقاً مختصرة لإنشاء كلاسات تخزين بيانات بدون كتابة <span class="inline-code">__init__</span> و <span class="inline-code">__repr__</span> يدوياً:</p>
+
+      <h3 class="subsection-title">namedtuple - tuples بأسماء</h3>
+      <div class="code-block">
+<span class="kw">from</span> collections <span class="kw">import</span> namedtuple
+
+<span class="cm"># تعريف - يولد __init__, __repr__, __eq__ تلقائياً</span>
+Point = namedtuple(<span class="str">'Point'</span>, [<span class="str">'x'</span>, <span class="str">'y'</span>])
+p = Point(<span class="num">3</span>, <span class="num">4</span>)
+
+<span class="bu">print</span>(p.x, p.y)      <span class="cm"># 3 4</span>
+<span class="bu">print</span>(p)             <span class="cm"># Point(x=3, y=4)</span>
+x, y = p             <span class="cm"># تفكيك tuple</span>
+<span class="bu">print</span>(p == Point(<span class="num">3</span>, <span class="num">4</span>))  <span class="cm"># True</span>
+      </div>
+      <div class="explanation-box"><strong>📘 namedtuple — tuples بأسماء للحقول</strong>namedtuple ينشئ كلاساً خفيفاً غير قابل للتعديل (immutable) يجمع بين خصائص tuple و class. يمكن الوصول للحقول بالاسم (<code>p.x</code>) بدلاً من الأرقام (<code>p[0]</code>) مما يجعل الكود أكثر وضوحاً. كما يدعم التفكيك (unpacking) مثل <code>x, y = p</code> ويوفّر <code>__repr__</code> و <code>__eq__</code> تلقائياً. مثالي لتمثيل بيانات بسيطة مثل الإحداثيات والألوان.</div>
+
+      <h3 class="subsection-title">@dataclass - كلاسات بيانات أوتوماتيكية</h3>
+      <div class="code-block">
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
+
+<span class="nd">@dataclass</span>
+<span class="kw">class</span> <span class="fn">Student</span>:
+    name: <span class="bu">str</span>
+    age: <span class="bu">int</span>
+    grades: <span class="bu">list</span> = field(default_factory=<span class="bu">list</span>)  <span class="cm"># تجنب mutable default!</span>
+
+<span class="cm"># __init__ و __repr__ و __eq__ تولد تلقائياً</span>
+s1 = Student(<span class="str">'Ahmed'</span>, <span class="num">22</span>)
+s2 = Student(<span class="str">'Sara'</span>, <span class="num">20</span>, [<span class="num">90</span>, <span class="num">85</span>])
+<span class="bu">print</span>(s1)  <span class="cm"># Student(name='Ahmed', age=22, grades=[])</span>
+
+<span class="nd">@dataclass(frozen=True)</span>  <span class="cm"># immutable (غير قابل للتعديل)</span>
+<span class="kw">class</span> <span class="fn">Config</span>:
+    host: <span class="bu">str</span>
+    port: <span class="bu">int</span> = <span class="num">8080</span>
+
+<span class="nd">@dataclass</span>
+<span class="kw">class</span> <span class="fn">ValidatedStudent</span>:
+    name: <span class="bu">str</span>
+    age: <span class="bu">int</span>
+
+    <span class="kw">def</span> <span class="fn">__post_init__</span>(<span class="kw">self</span>):  <span class="cm"># تُستدعى بعد __init__</span>
+        <span class="kw">if</span> <span class="kw">self</span>.age < <span class="num">0</span>:
+            <span class="kw">raise</span> ValueError(<span class="str">'Age cannot be negative'</span>)
+        <span class="kw">if</span> <span class="kw">not</span> <span class="kw">self</span>.name.<span class="bu">strip</span>():
+            <span class="kw">raise</span> ValueError(<span class="str">'Name is required'</span>)
+      </div>
+      <div class="explanation-box"><strong>📘 @dataclass — كلاسات بيانات أوتوماتيكية</strong>الديكوريتور <code>@dataclass</code> يولّد تلقائياً <code>__init__</code> و <code>__repr__</code> و <code>__eq__</code> بناءً على تعريف الخصائص مع Type hints. <code>field(default_factory=list)</code> يمنع مشكلة مشاركة mutable defaults بين النسخ. دالة <code>__post_init__</code> تُستدعى بعد <code>__init__</code> للتحقق من صحة البيانات. <code>frozen=True</code> يجعل الكائن غير قابل للتعديل (immutable). dataclass مثالية لكلاسات DTO و Value Objects.</div>
+
+      <h3 class="subsection-title">مقارنة: class عادي vs @dataclass vs namedtuple</h3>
+      <div class="code-block">
+<span class="cm"># كلاس عادي - كتابة يدوية كثيرة</span>
+<span class="kw">class</span> <span class="fn">Point1</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, x, y):
+        <span class="kw">self</span>.x = x; <span class="kw">self</span>.y = y
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="str">f'Point1({self.x}, {self.y})'</span>
+    <span class="kw">def</span> <span class="fn">__eq__</span>(<span class="kw">self</span>, other):
+        <span class="kw">return</span> (self.x, self.y) == (other.x, other.y)
+
+<span class="cm"># @dataclass - سطر واحد!</span>
+<span class="nd">@dataclass</span>
+<span class="kw">class</span> <span class="fn">Point2</span>:
+    x: <span class="bu">float</span>; y: <span class="bu">float</span>
+
+<span class="cm"># namedtuple - الأقل كتابة لكن immutable وغير قابل للتوسع</span>
+Point3 = namedtuple(<span class="str">'Point3'</span>, [<span class="str">'x'</span>, <span class="str">'y'</span>])
+      </div>
+      <div class="explanation-box"><strong>📘 مقارنة طرق إنشاء كلاسات البيانات</strong>الكلاس العادي يتطلب كتابة <code>__init__</code> و <code>__repr__</code> و <code>__eq__</code> يدوياً — كود كثير للأخطاء. <code>@dataclass</code> يولّد كل هذه الدوال تلقائياً بسطر واحد، ويسمح بإضافة دوال custom. <code>namedtuple</code> هو الأخف وزناً ويوفّر تفكيك (unpacking) مجاني لكنه غير قابل للتعديل (immutable) ولا يمكن إضافة دوال أو تعديل الخصائص بسهولة. اختيار الأداة يعتمد على حاجتك: المرونة → class عادي، السرعة في الكتابة → dataclass، الخفة والثبات → namedtuple.</div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> استخدم <span class="inline-code">@dataclass</span> لكلاسات البيانات البسيطة (DTOs, Value Objects). استخدم <span class="inline-code">namedtuple</span> عندما تحتاج immutable و unpacking. استخدم class العادي عندما تحتاج behaviour معقداً. <span class="inline-code">field(default_factory=list)</span> يمنع مشاركة mutable defaults بين النسخ.</div>
+
+      <!-- ========== 9.7 ========== -->
+      <h2 class="section-title">9.7 Type Hints للكلاسات - أنماط متقدمة</h2>
+      <p>يمكن استخدام Type hints مع الكلاسات لتوثيق الخصائص والدوال، مما يجعل الكود أكثر أماناً وقابلية للصيانة:</p>
+
+      <div class="code-block">
+<span class="kw">from</span> typing <span class="kw">import</span> ClassVar, Self, Protocol
+
+<span class="cm"># Self - الرجوع إلى الكلاس نفسه</span>
+<span class="kw">class</span> <span class="fn">Builder</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, value: <span class="bu">int</span> = <span class="num">0</span>):
+        <span class="kw">self</span>.value = value
+
+    <span class="kw">def</span> <span class="fn">add</span>(<span class="kw">self</span>, n: <span class="bu">int</span>) -> Self:  <span class="cm"># ترجع نفس الكلاس</span>
+        <span class="kw">self</span>.value += n
+        <span class="kw">return</span> <span class="kw">self</span>
+
+    <span class="kw">def</span> <span class="fn">multiply</span>(<span class="kw">self</span>, n: <span class="bu">int</span>) -> Self:
+        <span class="kw">self</span>.value *= n
+        <span class="kw">return</span> <span class="kw">self</span>
+
+<span class="cm"># ClassVar - متغير مشترك بين كل النسخ</span>
+<span class="kw">class</span> <span class="fn">Employee</span>:
+    company: ClassVar[<span class="bu">str</span>] = <span class="str">'Acme Corp'</span>  <span class="cm"># مشترك للكل</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name: <span class="bu">str</span>):
+        <span class="kw">self</span>.name = name  <span class="cm"># خاص بكل نسخة</span>
+
+<span class="cm"># Protocol - Duck typing مع Type hints</span>
+<span class="kw">class</span> <span class="fn">SupportsClose</span>(Protocol):
+    <span class="kw">def</span> <span class="fn">close</span>(<span class="kw">self</span>) -> <span class="kw">None</span>: ...
+
+<span class="kw">def</span> <span class="fn">cleanup</span>(obj: SupportsClose) -> <span class="kw">None</span>:
+    obj.close()
+
+<span class="cm"># أي كائن لديه .close() يقبل — بدون وراثة!</span>
+<span class="kw">class</span> <span class="fn">MyFile</span>:
+    <span class="kw">def</span> <span class="fn">close</span>(<span class="kw">self</span>) -> <span class="kw">None</span>:
+        <span class="bu">print</span>(<span class="str">'Closing...'</span>)
+
+<span class="fn">cleanup</span>(MyFile())  <span class="cm"># صحيح</span>
+      </div>
+      <div class="explanation-box"><strong>📘 Type Hints المتقدمة للكلاسات</strong><code>Self</code> (من بايثون 3.11) يسمح للدالة بإرجاع نوع الكلاس نفسه بدقة — مثالي لنمط Builder حيث الدوال ترجع <code>self</code>. <code>ClassVar</code> تخبر type checker أن هذا المتغير مشترك بين كل النسخ وليس خاصاً بكائن معين. <code>Protocol</code> يطبّق duck typing مع type hints: أي كائن يملك الدالة <code>close()</code> يقبل في <code>cleanup()</code> دون حاجة للوراثة — هذا يسمى structural subtyping.</div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> <span class="inline-code">Self</span> (من 3.11) يحل مشكلة إرجاع نوع الكلاس نفسه بدقة. <span class="inline-code">Protocol</span> هو بديل مرن لـ ABC — يحدد الشكل (what) وليس الأصل (who). استخدم <span class="inline-code">ClassVar</span> للمتغيرات المشتركة لتجنب التباس type checker.</div>
+
+      <!-- ========== 9.8 ========== -->
+      <h2 class="section-title">9.8 Context Managers - مديري السياق (with)</h2>
+      <p>مدير السياق يضمن إعداد وتنظيف الموارد تلقائياً — حتى لو حدث خطأ. الأكثر شهرة هو <span class="inline-code">with open(...) as f:</span> لكن يمكنك إنشاء مديري سياق خاصين:</p>
+
+      <div class="code-block">
+<span class="cm"># 1. كلاس مدير سياق — __enter__ و __exit__</span>
+<span class="kw">class</span> <span class="fn">ManagedFile</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, path):
+        <span class="kw">self</span>.path = path
+
+    <span class="kw">def</span> <span class="fn">__enter__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.f = <span class="bu">open</span>(<span class="kw">self</span>.path, <span class="str">'w'</span>)
+        <span class="kw">return</span> <span class="kw">self</span>.f
+
+    <span class="kw">def</span> <span class="fn">__exit__</span>(<span class="kw">self</span>, exc_type, exc_val, exc_tb):
+        <span class="kw">self</span>.f.close()
+        <span class="kw">return</span> <span class="kw">False</span>  <span class="cm"># لا تبتلع الاستثناء</span>
+
+<span class="kw">with</span> ManagedFile(<span class="str">'test.txt'</span>) <span class="kw">as</span> f:
+    f.write(<span class="str">'Hello!'</span>)
+
+<span class="cm"># 2. contextlib.contextmanager — ديكوريتور أسهل</span>
+<span class="kw">from</span> contextlib <span class="kw">import</span> contextmanager
+
+<span class="nd">@contextmanager</span>
+<span class="kw">def</span> <span class="fn">managed_file</span>(path):
+    f = <span class="bu">open</span>(path, <span class="str">'w'</span>)
+    <span class="kw">try</span>:
+        <span class="kw">yield</span> f
+    <span class="kw">finally</span>:
+        f.close()
+
+<span class="kw">with</span> <span class="fn">managed_file</span>(<span class="str">'test.txt'</span>) <span class="kw">as</span> f:
+    f.write(<span class="str">'Hello!'</span>)
+      </div>
+      <div class="explanation-box"><strong>📘 مديري السياق (Context Managers)</strong>مدير السياق يضمن إعداد وتنظيف الموارد تلقائياً عبر <code>with</code>. الطريقة الأولى تستخدم كلاساً بدوال <code>__enter__</code> (تفتح الملف) و <code>__exit__</code> (تغلقه حتى لو حدث خطأ). الطريقة الثانية تستخدم الديكوريتور <code>@contextmanager</code> من <code>contextlib</code> — كل ما قبل <code>yield</code> هو جزء الإعداد، وما بعده هو جزء التنظيف. هذا النمط يمنع تسرب الموارد ويجعل الكود أكثر أماناً.</div>
+
+      <div class="code-block">
+<span class="cm"># مثال عملي — قياس وقت الكتلة</span>
+<span class="nd">@contextmanager</span>
+<span class="kw">def</span> <span class="fn">timed</span>(label):
+    start = time.perf_counter()
+    <span class="kw">yield</span>
+    elapsed = time.perf_counter() - start
+    <span class="bu">print</span>(<span class="str">f'{label}: {elapsed:.4f}s'</span>)
+
+<span class="kw">with</span> <span class="fn">timed</span>(<span class="str">'Processing'</span>):
+    <span class="bu">sum</span>(<span class="bu">range</span>(<span class="num">10_000_000</span>))
+      </div>
+      <div class="explanation-box"><strong>📘 مثال عملي — قياس وقت التنفيذ</strong>مدير السياق <code>timed</code> يقيس وقت تنفيذ أي كتلة كود باستخدام <code>time.perf_counter()</code>. <code>yield</code> يقسم الدالة إلى جزئين: ما قبل yield يُنفّذ عند الدخول (تسجيل الوقت)، وما بعده يُنفّذ عند الخروج (حساب الفارق وطباعته). يمكن استخدام هذا النمط لإضافة logging أو measuring أو setup/teardown لأي كتلة كود بسهولة.</div>
+
+      <!-- ========== 9.9 ========== -->
+      <h2 class="section-title">9.9 Property Decorator و __slots__</h2>
+
+      <div class="code-block">
+<span class="cm"># @property — تحكم في الوصول للخصائص</span>
+<span class="kw">class</span> <span class="fn">Temperature</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, celsius):
+        <span class="kw">self</span>._celsius = celsius
+
+    <span class="nd">@property</span>
+    <span class="kw">def</span> <span class="fn">fahrenheit</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="kw">self</span>._celsius * <span class="num">1.8</span> + <span class="num">32</span>
+
+    <span class="nd">@property</span>
+    <span class="kw">def</span> <span class="fn">celsius</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="kw">self</span>._celsius
+
+    <span class="nd">@celsius.setter</span>
+    <span class="kw">def</span> <span class="fn">celsius</span>(<span class="kw">self</span>, value):
+        <span class="kw">if</span> value < -<span class="num">273.15</span>:
+            <span class="kw">raise</span> ValueError(<span class="str">'Below absolute zero!'</span>)
+        <span class="kw">self</span>._celsius = value
+
+t = Temperature(<span class="num">25</span>)
+<span class="bu">print</span>(t.fahrenheit)  <span class="cm"># 77.0 — محسوبة تلقائياً</span>
+t.celsius = <span class="num">30</span>          <span class="cm"># تستخدم setter</span>
+<span class="cm"># t.celsius = -300     # يرفع ValueError</span>
+      </div>
+      <div class="explanation-box"><strong>📘 @property — تحكم ذكي بالخصائص</strong>الديكوريتور <code>@property</code> يحوّل دالة إلى خاصية يمكن الوصول إليها كخاصية عادية بدون أقواس. <code>fahrenheit</code> خاصية محسوبة (computed property) تُشتق من <code>_celsius</code>. <code>@celsius.setter</code> يتحقق من صحة القيمة قبل تعيينها — إذا حاول المستخدم تعيين درجة حرارة أقل من الصفر المطلق، يتم رفع <code>ValueError</code>. هذه الطريقة أفضل من getters و setters التقليدية لأنها تحافظ على واجهة استخدام بسيطة.</div>
+
+      <div class="code-block">
+<span class="cm"># __slots__ — توفير الذاكرة بحذف __dict__</span>
+<span class="kw">class</span> <span class="fn">Point3D</span>:
+    __slots__ = (<span class="str">'x'</span>, <span class="str">'y'</span>, <span class="str">'z'</span>)  <span class="cm"># فقط هذه الخصائص مسموحة</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, x, y, z):
+        <span class="kw">self</span>.x = x; <span class="kw">self</span>.y = y; <span class="kw">self</span>.z = z
+
+<span class="cm"># بدون __slots__: كل كائن ~56 بايت لـ __dict__</span>
+<span class="cm"># مع __slots__: ~24 بايت فقط — توفير يصل لـ 50% للكلاسات الكثيرة</span>
+<span class="cm"># منع: p.z = 5  # OK</span>
+<span class="cm"># منع: p.w = 10 # AttributeError</span>
+      </div>
+      <div class="explanation-box"><strong>📘 __slots__ وتحسين الذاكرة</strong>__slots__ تسمح بتحديد قائمة الخصائص المسموحة للكلاس بشكل صارم، مما يلغي إنشاء <code>__dict__</code> لكل كائن ويوفّر ذاكرة كبيرة تصل إلى 50%. الوصول للخصائص يصبح أسرع أيضاً بنسبة تصل إلى 20%. لكن المقابل هو منع إضافة خصائص جديدة ديناميكياً — محاولة تعيين <code>p.w = 10</code> ستؤدي لخطأ <code>AttributeError</code>. يُنصح باستخدام __slots__ فقط بعد إثبات الحاجة لها عبر Profiler.</div>
+
+      <div class="note"><strong>💡 من Fluent Python:</strong> <span class="inline-code">@property</span> مثالي للخصائص المحسوبة والتحقق من الصحة. <span class="inline-code">slots</span> يسرّع الوصول للخصائص أيضاً (حتى 20%) لكنه يمنع إضافة خصائص جديدة. لا تستخدم <span class="inline-code">slots</span> مبكراً — إلا إذا أثبت الـ Profiler حاجتك للذاكرة.</div>
+
+      <!-- ========== SUMMARY ========== -->
+      <div class="summary-box">
+        <h3>📝 ملخص الفصل التاسع</h3>
+        <p>في هذا الفصل تعلمت:</p>
+        <ul>
+          <li>كيف تُنشئ كلاساً باستخدام الكلمة المحجوزة <span class="inline-code">class</span></li>
+          <li>كيف تعمل الدالة <span class="inline-code">__init__()</span> وما هو <span class="inline-code">self</span></li>
+          <li>كيف تُنشئ كائنات (instances) من كلاس وتصل إلى خصائصها ودوالها</li>
+          <li>كيف تُنشئ كلاسات بخصائص متعددة ودوال متنوعة</li>
+          <li>كيف تعيّن قيماً افتراضية للخصائص</li>
+          <li>ثلاث طرق لتعديل قيمة خاصية: مباشرةً وعبر دالة وعبر الزيادة</li>
+          <li>مفهوم الوراثة (inheritance) وكيف يُنشئ كلاساً ابناً يرث من كلاس أب</li>
+          <li>كيف تستخدم <span class="inline-code">super()</span> لاستدعاء دوال الكلاس الأب</li>
+          <li>كيف تضيف خصائص ودوال جديدة للكلاس الابن</li>
+          <li>كيف تتجاوز (override) دوال الكلاس الأب في الكلاس الابن</li>
+          <li>كيف تستخدم الكائنات كخصائص لتقسيم الكلاسات الكبيرة</li>
+          <li>كيف تخزّن الكلاسات في وحدات منفصلة وتستوردها</li>
+          <li>طرق استيراد الكلاسات المختلفة</li>
+          <li>كيف تستخدم مكتبة بايثون القياسية (OrderedDict, random)</li>
+          <li>إرشادات تنسيق الكلاسات وفقاً لـ PEP 8</li>
+        </ul>
+      </div>
+
+    <div class="note"><strong>💡 نصيحة ذهبية:</strong> طبّق دائماً <span class="inline-code">__repr__</span> في كلاساتك — يساعد في debugging بشكل كبير. استخدم <span class="inline-code">@dataclass</span> للكلاسات البسيطة التي تخزن بيانات فقط: <span class="inline-code">from dataclasses import dataclass</span>. استخدم <span class="inline-code">@property</span> بدلاً من getters/setters العادية. وتذكر: <span class="inline-code">isinstance(obj, Class)</span> أفضل من <span class="inline-code">type(obj) == Class</span>.</div>
+
+    <div class="warning"><strong>⚠️ خطأ شائع:</strong> نسيان استدعاء <span class="inline-code">super().__init__()</span> في الكلاس الابن — هذا يمنع تهيئة الخصائص الموروثة. أيضاً، استخدام mutable objects (مثل قائمة) كـ class attribute: <span class="inline-code">class A: items = []</span> — كل النسخ تشارك نفس القائمة! استخدم instance attributes بدلاً من ذلك.</div>
+
+    <div class="exercise"><strong>🏋️ تمرين:</strong> أنشئ كلاس <span class="inline-code">BankAccount</span> له: <span class="inline-code">owner</span>، <span class="inline-code">balance</span> (يبدأ بـ 0)، دوال <span class="inline-code">deposit(amount)</span> و <span class="inline-code">withdraw(amount)</span> (تحقق من وجود رصيد كافٍ). أضف <span class="inline-code">__str__</span> لعرض الحساب بشكل مقروء. أنشئ كلاس <span class="inline-code">SavingsAccount</span> يضيف فائدة سنوية <span class="inline-code">apply_interest(rate)</span>.</div>
+
+    <div class="footer">
+        <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+        <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+    }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>

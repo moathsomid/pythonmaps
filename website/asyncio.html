@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AsyncIO - البرمجة غير المتزامنة - دورة بايثون المكثفة</title>
+<style>
+  :root {
+    --primary: #58a6ff;
+    --primary-light: #79c0ff;
+    --secondary: #00b4d8;
+    --accent: #ffd166;
+    --bg: #0d1117;
+    --sidebar-bg: #161b22;
+    --sidebar-text: #c9d1d9;
+    --card-bg: #1c2128;
+    --text: #e6edf3;
+    --text-light: #8b949e;
+    --code-bg: #1e1e2e;
+    --border: #30363d;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 320px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  .sidebar-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #1f3a5f, #0d1117);
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
+  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .sidebar-nav { padding: 15px 0; }
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 14px;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-right-color: var(--secondary);
+    color: #fff;
+  }
+  .sidebar-nav .part-label {
+    padding: 12px 20px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
+  .sidebar-nav .chapter-link.active {
+    background: rgba(255,255,255,0.12);
+    border-right-color: var(--accent);
+    color: #fff;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
+  body.sidebar-active .main-content { margin-right: 320px; }
+  .chapter-page { padding: 0; }
+  .chapter-header {
+    background: linear-gradient(135deg, #0a1929, #1a3a5c);
+    color: #fff;
+    padding: 40px 50px;
+  }
+  .chapter-header .part-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--sidebar-bg);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
+  .chapter-header p { opacity: 0.85; font-size: 16px; }
+  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  .section-title {
+    font-size: 24px;
+    color: var(--primary);
+    margin: 35px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--secondary);
+  }
+  .subsection-title {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin: 25px 0 12px;
+  }
+  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
+  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
+  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
+  .code-block {
+    background: var(--code-bg);
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 0;
+    margin: 15px 0 20px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-block .kw { color: #cba6f7; }
+  .code-block .fn { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .cm { color: #6c7086; }
+  .code-block .num { color: #fab387; }
+  .code-block .op { color: #89dceb; }
+  .code-block .bu { color: #f38ba8; }
+  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
+  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
+  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
+  .explanation-box {
+    background: #151d28;
+    border: 1px solid #1e3a5f;
+    border-right: 4px solid #58a6ff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
+  .explanation-box p { margin: 0; }
+  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
+  .inline-code {
+    background: #2d333b;
+    color: #e6edf3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .note {
+    background: #0c2d6b;
+    border-right: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .note strong { color: var(--primary); }
+  .warning {
+    background: #3d2e00;
+    border-right: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise {
+    background: #0a3d1a;
+    border-right: 4px solid #22c55e;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .exercise strong { color: #4ade80; }
+  .summary-box {
+    background: linear-gradient(135deg, #0c2d6b, #0d1117);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
+  .summary-box ul { margin: 0; }
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(320px); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-right: 0; }
+    .chapter-header { padding: 30px 25px; }
+    .chapter-header h1 { font-size: 24px; }
+    .chapter-content { padding: 25px; }
+  }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    /* Desktop sidebar collapse */
+  @media (min-width: 768px) {
+    .sidebar { transform: translateX(320px); pointer-events: none; }
+    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
+    body.sidebar-active .main-content { margin-right: 0; }
+    .sidebar-toggle { right: 15px; }
+    body.sidebar-active .sidebar-toggle { right: 335px; }
+  }
+
+  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <div class="part-label">🚀 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <div class="part-badge">⚙️ Core Engineering</div>
+      <h1>AsyncIO - البرمجة غير المتزامنة</h1>
+      <p>Asynchronous Programming in Python — Coroutines, Event Loop, and Concurrency</p>
+    </div>
+
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <div class="section-title">مقدمة إلى AsyncIO</div>
+
+      <p>
+        <strong>AsyncIO</strong> هي مكتبة قياسية في بايثون (موجودة من Python 3.4) تتيح لك كتابة
+        كود <strong>غير متزامن (asynchronous)</strong> باستخدام نموذج <strong>async/await</strong>.
+        البرمجة غير المتزامنة تسمح لبرنامجك بالقيام بمهام متعددة في نفس الوقت دون الحاجة
+        إلى خيوط تنفيذ متعددة (threads). الفكرة الأساسية: بدلاً من انتظار اكتمال مهمة بطيئة
+        (مثل قراءة ملف أو طلب HTTP)، يمكن للبرنامج تنفيذ مهام أخرى أثناء الانتظار.
+      </p>
+
+      <p>
+        متى نستخدم AsyncIO؟ عندما يكون البرنامج <strong>I/O bound</strong> — أي محدود
+        بعمليات الإدخال/الإخراج مثل طلبات الشبكة أو قراءة الملفات أو قواعد البيانات.
+        لا يُنصح باستخدامه للمهام <strong>CPU-bound</strong> (المهام التي تستهلك المعالج
+        مثل العمليات الحسابية الثقيلة)، فهذه تحتاج إلى <strong>multiprocessing</strong>
+        أو <strong>threading</strong>.
+      </p>
+
+      <div class="note">
+        <strong>💡 الفرق بين AsyncIO و Threading:</strong> في الـ threading، نظام التشغيل
+        هو من يُقرر متى يبدّل بين الخيوط (preemptive). في AsyncIO، البرنامج نفسه يُقرر
+        متى يبدّل بين المهام (cooperative) باستخدام <span class="inline-code">await</span>.
+        هذا يعني أن AsyncIO أكثر كفاءة في استهلاك الذاكرة ويمكنه إدارة آلاف المهام المتزامنة
+        بسهولة — بينما الـ threads محدودة بعدد أنوية المعالجة وتستهلك ذاكرة أكبر لكل خيط.
+      </div>
+
+      <!-- ========== Coroutines ========== -->
+      <div class="section-title">Coroutines - الكوروتينات</div>
+
+      <p>
+        <strong>الكوروتين (coroutine)</strong> هو دالة غير متزامنة تُعرّف باستخدام
+        <span class="inline-code">async def</span>. عند استدعاء كوروتين، لا يتم تنفيذه فوراً
+        — بل يُعيد كائن كوروتين (coroutine object) يحتاج إلى <strong>await</strong> أو
+        تشغيله عبر <span class="inline-code">asyncio.run()</span>. الكلمة المفتاحية
+        <span class="inline-code">await</span> تسلّم التحكم إلى event loop لتشغيل مهام أخرى
+        أثناء انتظار اكتمال العملية البطيئة.
+      </p>
+
+      <div class="code-block"><span class="kw">import</span> asyncio
+
+<span class="cm"># تعريف كوروتين باستخدام async def</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">say_hello</span>():
+    <span class="fn">print</span>(<span class="str">"مرحباً!"</span>)
+    <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">sleep</span>(<span class="num">1</span>)  <span class="cm"># انتظر ثانية دون حجب البرنامج</span>
+    <span class="fn">print</span>(<span class="str">"انتهى الانتظار!"</span>)
+
+<span class="cm"># تشغيل الكوروتين</span>
+<span class="kw">asyncio</span>.<span class="fn">run</span>(<span class="fn">say_hello</span>())</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>نستخدم <code>async def</code> لتعريف دالة غير متزامنة تُسمى <strong>كوروتين</strong>. داخل الكوروتين، نستخدم <code>await</code> قبل العمليات البطيئة — مثل <code>asyncio.sleep(1)</code> — لتسليم التحكم إلى الـ event loop. الدالة <code>asyncio.run()</code> هي الطريقة المُوصى بها لتشغيل أي كود غير متزامن؛ تنشئ event loop جديد، تشغّل الكوروتين، ثم تُغلقه.</p></div>
+
+      <p>
+        لاحظ أن استخدام <span class="inline-code">time.sleep()</span> العادية داخل كوروتين
+        <strong>سيحجب</strong> الـ event loop بالكامل — وهذا خطأ شائع! استخدم دائماً
+        <span class="inline-code">asyncio.sleep()</span> بدلاً منها.
+      </p>
+
+      <!-- ========== Event Loop ========== -->
+      <div class="section-title">Event Loop</div>
+
+      <p>
+        <strong>Event Loop (حلقة الأحداث)</strong> هو قلب AsyncIO. هو عبارة عن حلقة لا نهائية
+        تدير تنفيذ الكوروتينات والمهام. عندما تستخدم <span class="inline-code">await</span>،
+        يعود التحكم إلى الـ event loop الذي يبحث عن مهام أخرى جاهزة للتشغيل. عندما تنجز
+        العملية البطيئة، يُستأنف الكوروتين من حيث توقف.
+      </p>
+
+      <p>
+        في الإصدارات القديمة من بايثون، كنا نستخدم <span class="inline-code">asyncio.get_event_loop()</span>
+        ثم <span class="inline-code">loop.run_until_complete()</span>. لكن من Python 3.7 فصاعداً،
+        <span class="inline-code">asyncio.run()</span> هي الطريقة المُوصى بها لأنها تتعامل
+        مع إنشاء وإغلاق الـ loop تلقائياً.
+      </p>
+
+      <div class="code-block"><span class="cm"># الطريقة القديمة (Python 3.6)</span>
+loop = <span class="kw">asyncio</span>.<span class="fn">get_event_loop</span>()
+loop.<span class="fn">run_until_complete</span>(<span class="fn">say_hello</span>())
+loop.<span class="fn">close</span>()
+
+<span class="cm"># الطريقة الحديثة (Python 3.7+)</span>
+<span class="kw">asyncio</span>.<span class="fn">run</span>(<span class="fn">say_hello</span>())</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>الـ <strong>Event Loop</strong> هو المسؤول عن جدولة وتشغيل الكوروتينات. <code>asyncio.run()</code> هي واجهة عالية المستوى: تنشئ loop، تشغّل الكوروتين، وتُغلق الـ loop بعد الانتهاء. في الإصدارات القديمة، كنا نضطر لإدارة الـ loop يدوياً — وهو مصدر شائع للأخطاء (مثل نسيان إغلاق الـ loop).</p></div>
+
+      <div class="note">
+        <strong>💡 ملاحظة مهمة:</strong> <span class="inline-code">asyncio.run()</span>
+        لا يمكن استدعاؤها من داخل كوروتين قيد التشغيل. إذا كنت داخل كوروتين وتحتاج
+        لتشغيل كوروتين آخر، استخدم <span class="inline-code">await</span> مباشرة.
+        يوجد loop واحد فقط لكل thread.
+      </div>
+
+      <!-- ========== Tasks ========== -->
+      <div class="section-title">Tasks - المهام</div>
+
+      <p>
+        الـ <strong>Task</strong> هو كائن يلفّ كوروتين ويُجدول تنفيذه في الـ event loop.
+        باستخدام <span class="inline-code">asyncio.create_task()</span>، يمكنك تشغيل
+        كوروتين في الخلفية (في الخلفية هنا يعني بالتوازي مع مهام أخرى). هذا يسمح
+        بتشغيل عدة عمليات غير متزامنة بشكل <strong>متزامن (concurrently)</strong>.
+      </p>
+
+      <div class="code-block"><span class="kw">import</span> asyncio
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">task_a</span>():
+    <span class="fn">print</span>(<span class="str">"بدء المهمة A"</span>)
+    <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">sleep</span>(<span class="num">2</span>)
+    <span class="fn">print</span>(<span class="str">"اكتملت المهمة A"</span>)
+    <span class="kw">return</span> <span class="str">"نتيجة A"</span>
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">task_b</span>():
+    <span class="fn">print</span>(<span class="str">"بدء المهمة B"</span>)
+    <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">sleep</span>(<span class="num">1</span>)
+    <span class="fn">print</span>(<span class="str">"اكتملت المهمة B"</span>)
+    <span class="kw">return</span> <span class="str">"نتيجة B"</span>
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="cm"># إنشاء مهام متزامنة</span>
+    t1 = <span class="kw">asyncio</span>.<span class="fn">create_task</span>(<span class="fn">task_a</span>())
+    t2 = <span class="kw">asyncio</span>.<span class="fn">create_task</span>(<span class="fn">task_b</span>())
+
+    <span class="cm"># انتظار اكتمال كل المهام</span>
+    r1 = <span class="kw">await</span> t1
+    r2 = <span class="kw">await</span> t2
+    <span class="fn">print</span>(<span class="str">f"النتائج: {r1}, {r2}"</span>)
+
+<span class="kw">asyncio</span>.<span class="fn">run</span>(<span class="fn">main</span>())</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><code>asyncio.create_task()</code> تُنشئ <strong>Task</strong> جديداً يُجدول الكوروتين للتشغيل في الخلفية. هذا يسمح بتشغيل مهمة (A) ومهمة (B) بشكل متزامن — لا تنتظر إحداهما الأخرى. ستلاحظ أن B تبدأ بعد A مباشرة وتنتهي أولاً لأنها تنام لمدة أقل. الإجمالي الزمني سيكون ~2 ثانية وليس 3 (ولو كنا استخدمنا await مباشرة لكانت 3 ثوانٍ).</p></div>
+
+      <!-- ========== asyncio.gather ========== -->
+      <div class="section-title">asyncio.gather</div>
+
+      <p>
+        الدالة <span class="inline-code">asyncio.gather()</span> تسمح بتشغيل عدة كوروتينات
+        <strong>بالتوازي</strong> (concurrently) وانتظار اكتمالها جميعاً. تُعيد قائمة
+        بالنتائج بنفس ترتيب الكوروتينات المُمرّرة. الخيار
+        <span class="inline-code">return_exceptions=True</span> يجعلها تتعامل مع
+        الاستثناءات كقيم مُرجعة بدلاً من رفعها فوراً.
+      </p>
+
+      <div class="code-block"><span class="kw">import</span> asyncio
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">fetch_data</span>(url, delay):
+    <span class="fn">print</span>(<span class="str">f"جارٍ جلب: {url}"</span>)
+    <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">sleep</span>(delay)
+    <span class="fn">print</span>(<span class="str">f"تم جلب: {url}"</span>)
+    <span class="kw">return</span> <span class="str">f"بيانات {url}"</span>
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    results = <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">gather</span>(
+        <span class="fn">fetch_data</span>(<span class="str">"site1.com"</span>, <span class="num">3</span>),
+        <span class="fn">fetch_data</span>(<span class="str">"site2.com"</span>, <span class="num">2</span>),
+        <span class="fn">fetch_data</span>(<span class="str">"site3.com"</span>, <span class="num">1</span>),
+        return_exceptions=<span class="kw">True</span>
+    )
+    <span class="fn">print</span>(<span class="str">f"جميع النتائج: {results}"</span>)
+
+<span class="kw">asyncio</span>.<span class="fn">run</span>(<span class="fn">main</span>())</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><code>asyncio.gather()</code> تشغّل كل الكوروتينات المُمرّرة بشكل متزامن وتنتظر اكتمالها جميعاً. المدة الإجمالية = أطول مدة بينها (3 ثوانٍ)، وليس مجموعها (6 ثوانٍ). <code>return_exceptions=True</code> يعني: إذا فشل أحد الكوروتينات، لا تُرفع الـ exception فوراً بل تُعاد كقيمة في القائمة — يمكنك معالجتها لاحقاً.</p></div>
+
+      <!-- ========== Async Context Managers ========== -->
+      <div class="section-title">Async Context Managers</div>
+
+      <p>
+        <strong>مدير السياق غير المتزامن (async context manager)</strong> يستخدم
+        <span class="inline-code">async with</span> بدلاً من <span class="inline-code">with</span>
+        العادي. يُستخدم لإدارة الموارد التي تحتاج عمليات إعداد وإغلاق غير متزامنة
+        — مثل فتح وإغلاق اتصال بقاعدة بيانات أو ملف. يمكنك تنفيذ واحد بنفسك باستخدام
+        <span class="inline-code">__aenter__</span> و <span class="inline-code">__aexit__</span>.
+      </p>
+
+      <div class="code-block"><span class="kw">import</span> asyncio
+
+<span class="kw">class</span> <span class="fn">AsyncResource</span>:
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">__aenter__</span>(<span class="kw">self</span>):
+        <span class="fn">print</span>(<span class="str">"فتح المورد..."</span>)
+        <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">sleep</span>(<span class="num">1</span>)
+        <span class="kw">return</span> <span class="str">"المورد جاهز"</span>
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">__aexit__</span>(<span class="kw">self</span>, exc_type, exc_val, exc_tb):
+        <span class="fn">print</span>(<span class="str">"إغلاق المورد..."</span>)
+        <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">sleep</span>(<span class="num">0.5</span>)
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="kw">async</span> <span class="kw">with</span> <span class="fn">AsyncResource</span>() <span class="kw">as</span> resource:
+        <span class="fn">print</span>(<span class="str">f"استخدام: {resource}"</span>)
+
+<span class="kw">asyncio</span>.<span class="fn">run</span>(<span class="fn">main</span>())</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><strong>مدير السياق غير المتزامن</strong> يُنفّذ <code>__aenter__</code> (يُستدعى عند الدخول إلى <code>async with</code>) و <code>__aexit__</code> (يُستدعى عند الخروج). كلاهما كوروتينات — يمكن استخدام <code>await</code> داخلهما. هذا مثالي لإدارة اتصالات قواعد البيانات، جلسات HTTP، والملفات التي تحتاج فتحاً وإغلاقاً غير متزامنين.</p></div>
+
+      <p>
+        مكتبات مثل <span class="inline-code">aiohttp</span> و
+        <span class="inline-code">asyncpg</span> توفر مديري سياق غير متزامنين جاهزين
+        لإدارة جلسات العمل والاتصالات.
+      </p>
+
+      <!-- ========== Async Iterators ========== -->
+      <div class="section-title">Async Iterators</div>
+
+      <p>
+        الـ <strong>مُكرّر غير المتزامن (async iterator)</strong> يسمح بالتكرار على
+        عناصر تُنتج بشكل غير متزامن. تستخدم <span class="inline-code">async for</span>
+        للتكرار عليه. لتنفيذ واحد بنفسك، تحتاج إلى تعريف
+        <span class="inline-code">__aiter__</span> (يُعيد <span class="inline-code">self</span>)
+        و <span class="inline-code">__anext__</span> (يُعيد العنصر التالي أو يرفع
+        <span class="inline-code">StopAsyncIteration</span>).
+      </p>
+
+      <p>
+        الطريقة الأسهل هي استخدام <strong>async generator</strong> — دالة مولّد غير متزامنة
+        تستخدم <span class="inline-code">async for</span> مع <span class="inline-code">yield</span>:
+      </p>
+
+      <div class="code-block"><span class="kw">import</span> asyncio
+
+<span class="cm"># Async Generator — أسهل طريقة</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">countdown</span>(start):
+    <span class="kw">while</span> start > <span class="num">0</span>:
+        <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">sleep</span>(<span class="num">1</span>)
+        <span class="kw">yield</span> start
+        start -= <span class="num">1</span>
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="kw">async</span> <span class="kw">for</span> num <span class="kw">in</span> <span class="fn">countdown</span>(<span class="num">5</span>):
+        <span class="fn">print</span>(<span class="str">f"العد التنازلي: {num}"</span>)
+
+<span class="kw">asyncio</span>.<span class="fn">run</span>(<span class="fn">main</span>())</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><strong>المُولّد غير المتزامن (async generator)</strong> يُعرّف بـ <code>async def</code> ويحتوي على <code>yield</code>. كل تكرار باستخدام <code>async for</code> ينتظر <code>await</code> داخل المُولّد قبل إنتاج القيمة التالية. هذا مثالي لقراءة البيانات من مصدر بطيء (مثل API أو قاعدة بيانات) صفاً تلو الآخر.</p></div>
+
+      <!-- ========== wait_for and timeouts ========== -->
+      <div class="section-title">asyncio.wait_for والـ Timeouts</div>
+
+      <p>
+        عند التعامل مع عمليات خارجية (مثل طلبات HTTP أو اتصالات قاعدة بيانات)، من
+        الضروري تحديد <strong>مهلة زمنية (timeout)</strong> لمنع تعليق البرنامج إلى
+        الأبد. الدالة <span class="inline-code">asyncio.wait_for()</span> تغلّف
+        كوروتين بمهلة زمنية — إذا لم يكتمل خلال المدة المُحددة، ترفع
+        <span class="inline-code">asyncio.TimeoutError</span>.
+      </p>
+
+      <div class="code-block"><span class="kw">import</span> asyncio
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">slow_operation</span>():
+    <span class="fn">print</span>(<span class="str">"بدء العملية البطيئة..."</span>)
+    <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">sleep</span>(<span class="num">5</span>)
+    <span class="kw">return</span> <span class="str">"نتيجة"</span>
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="kw">try</span>:
+        result = <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">wait_for</span>(
+            <span class="fn">slow_operation</span>(), timeout=<span class="num">2</span>
+        )
+        <span class="fn">print</span>(<span class="str">f"النتيجة: {result}"</span>)
+    <span class="kw">except</span> <span class="kw">asyncio</span>.TimeoutError:
+        <span class="fn">print</span>(<span class="str">"❌ تجاوزت المهلة الزمنية!"</span>)
+
+<span class="kw">asyncio</span>.<span class="fn">run</span>(<span class="fn">main</span>())</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><code>asyncio.wait_for()</code> تلفّ كوروتيناً بمُؤقّت. إذا لم يكتمل الكوروتين خلال <code>timeout</code> ثانية، تُرفع <code>asyncio.TimeoutError</code>. هذا ضروري في التطبيقات الحقيقية — تخيل أن خادم API لا يستجيب أبداً. الـ timeout يضمن أن برنامجك لن يُعلق للأبد، ويمكنك التعامل مع الحالة برشاقة.</p></div>
+
+      <div class="note">
+        <strong>💡 نصيحة:</strong> استخدم دائماً <span class="inline-code">asyncio.wait_for()</span>
+        مع أي عملية شبكة أو قاعدة بيانات. اختر timeout معقول — طويل كفاية للعملية الشرعية،
+        لكن قصير كفاية لعدم تعليق المستخدم. 5-30 ثانية هي مدة شائعة حسب الحالة.
+      </div>
+
+      <!-- ========== asyncio.to_thread ========== -->
+      <div class="section-title">asyncio.to_thread</div>
+
+      <p>
+        أحياناً تحتاج لتشغيل كود <strong>متزامن (synchronous)</strong> — مثل دالة
+        <span class="inline-code">time.sleep()</span> أو مكتبة غير متوافقة مع AsyncIO —
+        دون حجب الـ event loop. الدالة <span class="inline-code">asyncio.to_thread()</span>
+        (مضافة في Python 3.9) تشغّل الكود المتزامن في <strong>thread pool</strong> منفصل،
+        مما يمنع حجب الـ event loop.
+      </p>
+
+      <div class="code-block"><span class="kw">import</span> asyncio
+<span class="kw">import</span> time
+
+<span class="kw">def</span> <span class="fn">blocking_io</span>():
+    <span class="cm"># محاكاة عملية I/O متزامنة (مثل قراءة ملف أو طلب HTTP بمكتبة غير async)</span>
+    <span class="fn">print</span>(<span class="str">"بدء عملية متزامنة..."</span>)
+    time.<span class="fn">sleep</span>(<span class="num">3</span>)  <span class="cm"># هذا سيحجب الخيط العادي!</span>
+    <span class="kw">return</span> <span class="str">"بيانات من عملية متزامنة"</span>
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="str">"قبل to_thread"</span>)
+    result = <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">to_thread</span>(<span class="fn">blocking_io</span>)
+    <span class="fn">print</span>(<span class="str">f"بعد to_thread: {result}"</span>)
+
+<span class="kw">asyncio</span>.<span class="fn">run</span>(<span class="fn">main</span>())</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p><code>asyncio.to_thread()</code> تشغّل دالة متزامنة في <strong>thread pool</strong> منفصل. هذا يسمح للـ event loop بمواصلة تشغيل مهام أخرى أثناء انتظار اكتمال الدالة المتزامنة. استخدمها عندما تضطر لاستخدام مكتبة غير غير متزامنة (مثل <code>requests</code> بدلاً من <code>aiohttp</code>) أو للتعامل مع عمليات I/O لا تدعم async.</p></div>
+
+      <p>
+        <span class="inline-code">asyncio.to_thread()</span> تستخدم
+        <span class="inline-code">loop.run_in_executor(None, func, ...)</span> داخلياً.
+        الفرق أن <span class="inline-code">to_thread()</span> أبسط وتُستخدم للـ default
+        thread pool.
+      </p>
+
+      <!-- ========== Practical Example ========== -->
+      <div class="section-title">مثال عملي: طلبات HTTP غير متزامنة</div>
+
+      <p>
+        من أكثر الاستخدامات شيوعاً لـ AsyncIO هو إرسال طلبات HTTP متعددة بشكل متزامن
+        لتسريع جلب البيانات من APIs. بدلاً من إرسال طلب والانتظار، ثم إرسال الثاني،
+        يمكنك إرسالها كلها معاً والانتظار لجميع النتائج. المكتبة الأشهر لذلك هي
+        <span class="inline-code">aiohttp</span>.
+      </p>
+
+      <div class="code-block"><span class="kw">import</span> asyncio
+<span class="kw">import</span> aiohttp
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">fetch_url</span>(session, url):
+    <span class="kw">async</span> <span class="kw">with</span> session.<span class="fn">get</span>(url) <span class="kw">as</span> response:
+        <span class="kw">return</span> <span class="kw">await</span> response.<span class="fn">text</span>()
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    urls = [
+        <span class="str">"https://jsonplaceholder.typicode.com/posts/1"</span>,
+        <span class="str">"https://jsonplaceholder.typicode.com/posts/2"</span>,
+        <span class="str">"https://jsonplaceholder.typicode.com/posts/3"</span>,
+    ]
+
+    <span class="kw">async</span> <span class="kw">with</span> aiohttp.ClientSession() <span class="kw">as</span> session:
+        tasks = [<span class="kw">asyncio</span>.<span class="fn">create_task</span>(<span class="fn">fetch_url</span>(session, url)) <span class="kw">for</span> url <span class="kw">in</span> urls]
+        results = <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">gather</span>(*tasks)
+
+    <span class="kw">for</span> url, html <span class="kw">in</span> <span class="bu">zip</span>(urls, results):
+        <span class="fn">print</span>(<span class="str">f"{url}: {len(html)} حرف"</span>)
+
+<span class="kw">asyncio</span>.<span class="fn">run</span>(<span class="fn">main</span>())</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>هذا النمط <strong>الأساسي</strong> للعمل مع طلبات HTTP غير متزامنة: ننشئ جلسة (session) باستخدام <code>async with</code>، نُنشئ قائمة مهام (tasks) لكل URL، نجمع النتائج بـ <code>asyncio.gather()</code>. بدلاً من انتظار كل طلب 0.5 ثانية بالتسلسل (إجمالي 1.5 ثانية لـ 3 طلبات)، تعمل الطلبات بشكل متزامن — كلها تنتهي في ~0.5 ثانية.</p></div>
+
+      <div class="note">
+        <strong>💡 ملاحظة:</strong> إذا لم تكن تستطيع تثبيت <span class="inline-code">aiohttp</span>،
+        يمكنك استخدام <span class="inline-code">httpx</span> مع
+        <span class="inline-code">httpx.AsyncClient()</span> — واجهة مشابهة جداً.
+        أو استخدم <span class="inline-code">asyncio.to_thread()</span> مع مكتبة
+        <span class="inline-code">requests</span> العادية للحل السريع.
+      </div>
+
+      <!-- ========== Common Pitfalls ========== -->
+      <div class="section-title">أخطاء شائعة (Common Pitfalls)</div>
+
+      <p>
+        AsyncIO رائع لكنه يأتي مع مجموعة من الأخطاء التي يقع فيها المبتدئون وحتى
+        المطورون ذوو الخبرة. إليك أبرزها:
+      </p>
+
+      <h3 class="subsection-title">1. عدم استخدام await مع كوروتين</h3>
+      <p>
+        هذا أكثر خطأ شائع. عندما تستدعي كوروتين بدون <span class="inline-code">await</span>،
+        لا يتم تشغيله — بل تحصل على كائن كوروتين (<code>&lt;coroutine object&gt;</code>)
+        ولن يشتغل أبداً.
+      </p>
+
+      <div class="code-block"><span class="cm"># ❌ خطأ: نسيان await</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">foo</span>():
+    <span class="kw">return</span> <span class="num">42</span>
+
+<span class="fn">foo</span>()  <span class="cm"># هذا لا يفعل شيئاً! يُعيد كائن كوروتين</span>
+
+<span class="cm"># ✅ صحيح:</span>
+result = <span class="kw">await</span> <span class="fn">foo</span>()
+<span class="fn">print</span>(result)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>عند استدعاء دالة مُعرّفة بـ <code>async def</code>، تُعيد كائن <strong>كوروتين</strong> — لا يتم تنفيذ أي كود داخلها حتى تستخدم <code>await</code>. نسيان <code>await</code> لا يُسبب خطأ (إلا إذا تجاهلت التحذير <code>RuntimeWarning: coroutine never awaited</code>) — الكوروتين يبقى معلقاً إلى الأبد!</p></div>
+
+      <h3 class="subsection-title">2. حجب الـ Event Loop</h3>
+      <p>
+        استخدام دوال متزامنة تحجب الخيط (مثل <span class="inline-code">time.sleep()</span>
+        أو حلقات حسابية طويلة) <strong>تجمّد</strong> الـ event loop بأكمله — لا يمكن
+        تشغيل أي مهمة أخرى حتى تنتهي العملية.
+      </p>
+
+      <div class="code-block"><span class="cm"># ❌ خطأ: حجب الـ event loop</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">bad</span>():
+    <span class="kw">import</span> time
+    time.<span class="fn">sleep</span>(<span class="num">5</span>)  <span class="cm"># يجمّد كل شيء!</span>
+    <span class="fn">print</span>(<span class="str">"انتهى"</span>)
+
+<span class="cm"># ✅ صحيح: استخدام asyncio.sleep</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">good</span>():
+    <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">sleep</span>(<span class="num">5</span>)
+    <span class="fn">print</span>(<span class="str">"انتهى"</span>)
+
+<span class="cm"># ✅ للكود المتزامن الاضطراري: استخدم to_thread</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">better</span>():
+    result = <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">to_thread</span>(time.<span class="fn">sleep</span>, <span class="num">5</span>)
+    <span class="fn">print</span>(<span class="str">"انتهى"</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>الـ <strong>Event Loop</strong> يعمل في خيط واحد. أي كود متزامن يحجب هذا الخيط يوقف جميع المهام غير المتزامنة الأخرى. استخدم دائماً بدائل AsyncIO مثل <code>asyncio.sleep()</code>. إذا اضطررت لاستخدام كود متزامن، لفه بـ <code>asyncio.to_thread()</code> ليُشغّل في خيط منفصل.</p></div>
+
+      <h3 class="subsection-title">3. خلط الكود المتزامن وغير المتزامن</h3>
+      <p>
+        لا يمكن استدعاء كوروتين من داخل دالة عادية (غير async) بدون استخدام
+        <span class="inline-code">asyncio.run()</span>. ولا يمكن استخدام
+        <span class="inline-code">await</span> خارج <span class="inline-code">async def</span>.
+      </p>
+
+      <div class="code-block"><span class="cm"># ❌ خطأ: await خارج async def</span>
+<span class="kw">def</span> <span class="fn">regular_func</span>():
+    result = <span class="kw">await</span> <span class="fn">some_coroutine</span>()  <span class="cm"># SyntaxError!</span>
+
+<span class="cm"># ✅ صحيح: استخدم asyncio.run في الدوال العادية</span>
+<span class="kw">def</span> <span class="fn">regular_func</span>():
+    result = <span class="kw">asyncio</span>.<span class="fn">run</span>(<span class="fn">some_coroutine</span>())
+
+<span class="cm"># ❌ خطأ: استدعاء asyncio.run داخل كوروتين قيد التشغيل</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">nested</span>():
+    <span class="kw">await</span> <span class="kw">asyncio</span>.<span class="fn">run</span>(<span class="fn">another_coro</span>())  <span class="cm"># RuntimeError!</span>
+
+<span class="cm"># ✅ صحيح: await مباشرة</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">nested</span>():
+    <span class="kw">await</span> <span class="fn">another_coro</span>()</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>هناك <strong>قاعدة ذهبية</strong>: <code>await</code> يعمل فقط داخل <code>async def</code>. <code>asyncio.run()</code> يعمل فقط خارج أي كوروتين قيد التشغيل — يُستخدم مرة واحدة كنقطة دخول للبرنامج غير المتزامن. إذا كنت داخل كوروتين وتحتاج لتشغيل كوروتين آخر، استخدم <code>await</code> مباشرة.</p></div>
+
+      <h3 class="subsection-title">4. استخدام async مع دوال غير مناسبة</h3>
+      <p>
+        AsyncIO لا يُسرّع الـ CPU-bound code. إذا كان لديك عملية حسابية ثقيلة
+        (مثل معالجة صور أو تحليل بيانات ضخمة)، فإن تشغيلها في كوروتين لن يفيد —
+        بل قد يبطئ الأمور بسبب الـ overhead. للمهام الحسابية، استخدم
+        <span class="inline-code">multiprocessing</span> أو
+        <span class="inline-code">concurrent.futures.ProcessPoolExecutor</span>.
+      </p>
+
+      <div class="note">
+        <strong>💡 القاعدة البسيطة:</strong> إذا كانت مهمتك تنتظر شيئاً (شبكة، ملف،
+        قاعدة بيانات) → استخدم AsyncIO. إذا كانت مهمتك تحسب شيئاً (حلقات، عمليات
+        رياضية، معالجة بيانات) → استخدم الـ threads أو الـ processes.
+      </div>
+
+      <h3 class="subsection-title">5. عدم التعامل مع الاستثناءات في المهام</h3>
+      <p>
+        إذا رفع كوروتين قيد التشغيل (كـ Task) استثناءً ولم يتم التعامل معه،
+        سيُخزّن الاستثناء في الـ Task. عند استدعاء <span class="inline-code">await</span>
+        على الـ Task، سيُعاد رفع الاستثناء. إذا لم تستخدم <span class="inline-code">await</span>
+        أبداً، سيظهر الاستثناء كـ <span class="inline-code">RuntimeWarning</span>
+        عند جمع القمامة (garbage collection).
+      </p>
+
+      <div class="code-block"><span class="cm"># ❌ خطر: استثناء غير مُعالَج في مهمة خلفية</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    task = <span class="kw">asyncio</span>.<span class="fn">create_task</span>(<span class="fn">faulty_coro</span>())
+    <span class="cm"># لم نستخدم await task — قد نفتقد الاستثناء!</span>
+
+<span class="cm"># ✅ صحيح: التعامل مع الاستثناءات</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    task = <span class="kw">asyncio</span>.<span class="fn">create_task</span>(<span class="fn">faulty_coro</span>())
+    <span class="kw">try</span>:
+        result = <span class="kw">await</span> task
+    <span class="kw">except</span> Exception <span class="kw">as</span> e:
+        <span class="fn">print</span>(<span class="str">f"حدث خطأ: {e}"</span>)</div>
+
+      <div class="explanation-box"><strong>شرح الكود:</strong><p>عند إنشاء Task بـ <code>create_task()</code>، أي استثناء داخله يُخزّن في كائن الـ Task. إذا لم تستخدم <code>await task</code> (أو <code>task.exception()</code>)، قد لا تكتشف الفشل أبداً. استخدم <code>await</code> على مهامك الخلفية في نقطة ما، أو استخدم <code>task.add_done_callback()</code> للتعامل معها.</p></div>
+
+      <!-- ========== Summary ========== -->
+      <div class="summary-box">
+        <h3>📝 ملخص AsyncIO</h3>
+        <p>في هذا الدليل تعلمت:</p>
+        <ul>
+          <li><strong>البرمجة غير المتزامنة</strong> — تُستخدم للمهام I/O bound (الشبكة، الملفات، قواعد البيانات)</li>
+          <li><strong>الكوروتينات (Coroutines)</strong> — تُعرّف بـ <span class="inline-code">async def</span> وتُشغّل بـ <span class="inline-code">await</span></li>
+          <li><strong>Event Loop</strong> — القلب النابض لـ AsyncIO، يدير جدولة المهام</li>
+          <li><strong>المهام (Tasks)</strong> — <span class="inline-code">asyncio.create_task()</span> لتشغيل كوروتينات بالخلفية</li>
+          <li><strong>asyncio.gather</strong> — تشغيل عدة كوروتينات بالتوازي وجمع النتائج</li>
+          <li><strong>مديري السياق غير المتزامنين</strong> — <span class="inline-code">async with</span> مع <span class="inline-code">__aenter__</span>/<span class="inline-code">__aexit__</span></li>
+          <li><strong>المُكرّرات غير المتزامنة</strong> — <span class="inline-code">async for</span> مع async generators</li>
+          <li><strong>التايم آوت</strong> — <span class="inline-code">asyncio.wait_for()</span> و <span class="inline-code">asyncio.TimeoutError</span></li>
+          <li><strong>to_thread</strong> — تشغيل كود متزامن دون حجب الـ event loop</li>
+          <li><strong>الأخطاء الشائعة</strong> — نسيان await، حجب الـ loop، خلط sync/async</li>
+        </ul>
+      </div>
+
+      <div class="note">
+        <strong>💡 نصيحة أخيرة:</strong> ابدأ ببطء. اكتب كوروتيناً واحداً بسيطاً باستخدام
+        <span class="inline-code">asyncio.sleep()</span>. ثم جرب <span class="inline-code">create_task()</span>
+        مع مهمتين. ثم انتقل إلى <span class="inline-code">gather()</span>. لا تحاول فهم
+        كل شيء دفعة واحدة — AsyncIO يحتاج بعض الوقت لتستوعب طريقة التفكير غير المتزامنة.
+        الخطأ الأكثر فائدة يمكنك فعله: <strong>انس await</strong> مرة واحدة — ستفهم
+        الدرس للأبد! 😄
+      </div>
+
+      <div class="exercise">
+        <strong>🏋️ تمرين عملي:</strong> اكتب برنامجاً غير متزامناً يقوم بالآتي:
+        <br>1. يُعرِّف 3 كوروتينات، كل واحد يطبع اسمه وينتظر مدة مختلفة (1، 2، 3 ثوانٍ)
+        <br>2. يشغّلها جميعاً باستخدام <span class="inline-code">asyncio.gather()</span>
+        <br>3. يقيس الوقت الإجمالي باستخدام <span class="inline-code">time.perf_counter()</span>
+        <br>4. أضف كوروتين رابع يرفع استثناءً واستخدم <span class="inline-code">return_exceptions=True</span>
+        <br>🔍 هل الوقت الإجمالي ~3 ثوانٍ أم ~6 ثوانٍ؟ لماذا؟
+      </div>
+
+      <div class="footer">
+        <p>دورة بايثون المكثفة - AsyncIO - البرمجة غير المتزامنة</p>
+        <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('sidebarToggle');
+
+  function updateSidebar() {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('open');
+    } else {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+  updateSidebar();
+  window.addEventListener('resize', updateSidebar);
+
+  toggle.addEventListener('click', function() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.toggle('sidebar-active');
+    } else {
+      sidebar.classList.toggle('open');
+    }
+  });
+
+  /* For mobile: close sidebar when tapping content */
+  document.querySelector('.main-content').addEventListener('click', function() {
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    }
+  });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+    }
+  });
+document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='📋';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='✅';btn.classList.add('copied');setTimeout(function(){btn.textContent='📋';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
+</script>
+
+</body>
+</html>
