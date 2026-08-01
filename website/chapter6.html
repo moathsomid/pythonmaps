@@ -4,274 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الفصل 6: القواميس - دورة بايثون المكثفة</title>
-<style>
-  :root {
-    --primary: #58a6ff;
-    --primary-light: #79c0ff;
-    --secondary: #00b4d8;
-    --accent: #ffd166;
-    --bg: #0d1117;
-    --sidebar-bg: #161b22;
-    --sidebar-text: #c9d1d9;
-    --card-bg: #1c2128;
-    --text: #e6edf3;
-    --text-light: #8b949e;
-    --code-bg: #1e1e2e;
-    --border: #30363d;
-    --shadow: 0 2px 20px rgba(0,0,0,0.3);
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.8;
-    display: flex;
-    min-height: 100vh;
-  }
-  .sidebar {
-    width: 320px;
-    background: var(--sidebar-bg);
-    color: var(--sidebar-text);
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100vh;
-    overflow-y: auto;
-    z-index: 1000;
-    transition: transform 0.3s ease;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-  }
-  .sidebar-header {
-    padding: 25px 20px;
-    background: linear-gradient(135deg, #1f3a5f, #0d1117);
-    text-align: center;
-    border-bottom: 3px solid var(--accent);
-  }
-  .sidebar-header h1 { font-size: 20px; color: #fff; margin-bottom: 5px; }
-  .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.8); }
-  .sidebar-nav { padding: 15px 0; }
-  .sidebar-nav a {
-    display: block;
-    padding: 10px 20px;
-    color: var(--sidebar-text);
-    text-decoration: none;
-    font-size: 14px;
-    border-right: 3px solid transparent;
-    transition: all 0.2s;
-  }
-  .sidebar-nav a:hover {
-    background: rgba(255,255,255,0.08);
-    border-right-color: var(--secondary);
-    color: #fff;
-  }
-  .sidebar-nav .part-label {
-    padding: 12px 20px 6px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .sidebar-nav .chapter-link { padding-right: 35px; font-size: 13px; }
-  .sidebar-nav .chapter-link.active {
-    background: rgba(255,255,255,0.12);
-    border-right-color: var(--accent);
-    color: #fff;
-  }
-  .sidebar-toggle {
-    display: block;
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    z-index: 1100;
-    background: var(--primary);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    width: 45px;
-    height: 45px;
-    font-size: 22px;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  }
-  .main-content { margin-right: 0; flex: 1; padding: 0; min-height: 100vh; transition: margin-right 0.3s ease; }
-  body.sidebar-active .main-content { margin-right: 320px; }
-  .chapter-page { padding: 0; }
-  .chapter-header {
-    background: linear-gradient(135deg, #0a1929, #1a3a5c);
-    color: #fff;
-    padding: 40px 50px;
-  }
-  .chapter-header .part-badge {
-    display: inline-block;
-    background: var(--accent);
-    color: var(--sidebar-bg);
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-  .chapter-header h1 { font-size: 32px; margin-bottom: 8px; }
-  .chapter-header p { opacity: 0.85; font-size: 16px; }
-  .chapter-content { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
-  .section-title {
-    font-size: 24px;
-    color: var(--primary);
-    margin: 35px 0 15px;
-    padding-bottom: 8px;
-    border-bottom: 3px solid var(--secondary);
-  }
-  .subsection-title {
-    font-size: 18px;
-    color: var(--primary-light);
-    margin: 25px 0 12px;
-  }
-  .chapter-content p { margin-bottom: 15px; font-size: 16px; }
-  .chapter-content ul, .chapter-content ol { margin: 10px 0 15px 35px; }
-  .chapter-content li { margin-bottom: 8px; font-size: 15px; }
-  .code-block {
-    background: var(--code-bg);
-    color: #cdd6f4;
-    border-radius: 10px;
-    padding: 0;
-    margin: 15px 0 20px;
-    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
-    font-size: 14px;
-    line-height: 1.7;
-    overflow-x: auto;
-    direction: ltr;
-    text-align: left;
-    position: relative;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  .code-block .kw { color: #cba6f7; }
-  .code-block .fn { color: #89b4fa; }
-  .code-block .str { color: #a6e3a1; }
-  .code-block .cm { color: #6c7086; }
-  .code-block .num { color: #fab387; }
-  .code-block .op { color: #89dceb; }
-  .code-block .bu { color: #f38ba8; }
-  .code-block ol { list-style: none; padding: 12px 0; margin: 0; counter-reset: line; white-space: normal; }
-  .code-block ol li { counter-increment: line; padding: 1px 22px 1px 55px; position: relative; min-height: 22px; font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,0.03); }
-  .code-block ol li::before { content: counter(line); position: absolute; left: 10px; width: 32px; text-align: right; padding-right: 12px; color: #6c7086; font-size: 12px; border-right: 1px solid #30363d; user-select: none; }
-  .code-block ol li:nth-child(even) { background: rgba(255,255,255,0.015); }
-  .code-block ol li:hover { background: rgba(255,255,255,0.05); }
-  .explanation-box {
-    background: #151d28;
-    border: 1px solid #1e3a5f;
-    border-right: 4px solid #58a6ff;
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin: 16px 0;
-    color: #c9d1d9;
-    font-size: 14px;
-    line-height: 1.8;
-  }
-  .explanation-box strong { color: #58a6ff; display: block; margin-bottom: 8px; font-size: 15px; }
-  .explanation-box p { margin: 0; }
-  .explanation-box code { background: #1c2128; padding: 2px 6px; border-radius: 4px; color: #f0c674; font-size: 13px; }
-  .inline-code {
-    background: #2d333b;
-    color: #e6edf3;
-    padding: 2px 7px;
-    border-radius: 4px;
-    font-family: 'Fira Code', monospace;
-    font-size: 14px;
-    direction: ltr;
-    unicode-bidi: embed;
-  }
-  .note {
-    background: #0c2d6b;
-    border-right: 4px solid var(--primary);
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin: 15px 0;
-  }
-  .note strong { color: var(--primary); }
-  .warning {
-    background: #3d2e00;
-    border-right: 4px solid #ff9800;
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin: 15px 0;
-  }
-  .exercise {
-    background: #0a3d1a;
-    border-right: 4px solid #22c55e;
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin: 15px 0;
-  }
-  .exercise strong { color: #4ade80; }
-  .summary-box {
-    background: linear-gradient(135deg, #0c2d6b, #0d1117);
-    border: 2px solid var(--primary-light);
-    border-radius: 12px;
-    padding: 25px 30px;
-    margin: 30px 0;
-  }
-  .summary-box h3 { color: var(--primary); margin-bottom: 10px; }
-  .summary-box ul { margin: 0; }
-  .footer {
-    text-align: center;
-    padding: 30px;
-    color: var(--text-light);
-    font-size: 13px;
-    border-top: 1px solid var(--border);
-    margin-top: 40px;
-  }
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--primary);
-    text-decoration: none;
-    font-size: 14px;
-    margin-bottom: 20px;
-  }
-  .back-link:hover { text-decoration: underline; }
-  @media (max-width: 767px) {
-    .sidebar { transform: translateX(320px); width: 280px; }
-    .sidebar.open { transform: translateX(0); }
-    .main-content { margin-right: 0; }
-    .chapter-header { padding: 30px 25px; }
-    .chapter-header h1 { font-size: 24px; }
-    .chapter-content { padding: 25px; }
-  }
-    /* Desktop sidebar collapse */
-  @media (min-width: 768px) {
-    .sidebar { transform: translateX(320px); pointer-events: none; }
-    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
-    body.sidebar-active .main-content { margin-right: 0; }
-    .sidebar-toggle { right: 15px; }
-    body.sidebar-active .sidebar-toggle { right: 335px; }
-  }
-
-  .sidebar::-webkit-scrollbar { width: 6px; }
-    /* Desktop sidebar collapse */
-  @media (min-width: 768px) {
-    .sidebar { transform: translateX(320px); pointer-events: none; }
-    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
-    body.sidebar-active .main-content { margin-right: 0; }
-    .sidebar-toggle { right: 15px; }
-    body.sidebar-active .sidebar-toggle { right: 335px; }
-  }
-
-  .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
-    /* Desktop sidebar collapse */
-  @media (min-width: 768px) {
-    .sidebar { transform: translateX(320px); pointer-events: none; }
-    body.sidebar-active .sidebar { transform: none; pointer-events: auto; }
-    body.sidebar-active .main-content { margin-right: 0; }
-    .sidebar-toggle { right: 15px; }
-    body.sidebar-active .sidebar-toggle { right: 335px; }
-  }
-
-  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -290,25 +23,50 @@
     <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
     <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
     <a href="chapter5.html" class="chapter-link">5. جمل if</a>
-    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter6.html" class="chapter-link" style="color:#ffd166;font-weight:700;">6. القواميس</a>
     <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
     <a href="chapter8.html" class="chapter-link">8. الدوال</a>
     <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
     <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
     <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
     <div class="part-label">⚙️ Core Engineering</div>
+    <a href="python_advanced.html" class="chapter-link">🐍 Python Advanced</a>
     <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
     <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="postgresql.html" class="chapter-link">PostgreSQL متقدم</a>
     <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
     <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
-    <div class="part-label">🚀 مواضيع متقدمة</div>
-    <a href="oop.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🔷 البرمجة كائنية التوجه OOP</a>
-    <div class="part-label">🚀 الجزء الثاني: المشاريع</div>
+    <a href="docker.html" class="chapter-link">Docker - الحاويات</a>
+    <div class="part-label">🚀 Backend + AI</div>
+    <a href="fastapi.html" class="chapter-link">FastAPI - تطبيقات الويب</a>
+    <a href="redis.html" class="chapter-link">Redis - التخزين المؤقت</a>
+    <a href="ai_fundamentals.html" class="chapter-link">🤖 أساسيات الذكاء الاصطناعي</a>
+    <div class="part-label">🧠 Agent Engineering</div>
+    <a href="rag.html" class="chapter-link">RAG - التوليد المعزز بالاسترجاع</a>
+    <a href="vector_databases.html" class="chapter-link">Vector Databases - Qdrant</a>
+    <a href="ollama.html" class="chapter-link">Ollama - النماذج المحلية</a>
+    <a href="langchain.html" class="chapter-link">LangChain - بناء تطبيقات LLM</a>
+    <a href="langgraph.html" class="chapter-link">LangGraph - الرسوم البيانية</a>
+    <a href="agents.html" class="chapter-link">🤖 وكلاء الذكاء الاصطناعي</a>
+    <div class="part-label">⚙️ MLOps Foundations</div>
+    <a href="mlflow.html" class="chapter-link">MLflow - تتبع التجارب</a>
+    <a href="cicd.html" class="chapter-link">CI/CD - GitHub Actions</a>
+    <a href="aws.html" class="chapter-link">AWS - EC2 + S3 + IAM</a>
+    <div class="part-label">🔷 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 المشاريع</div>
     <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
     <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
     <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <a href="project_data_api.html" class="chapter-link">المشروع 4: Data API Platform</a>
+    <a href="project_ai_doc_chat.html" class="chapter-link">المشروع 5: AI Document Chat</a>
+    <a href="project_ai_platform.html" class="chapter-link">المشروع 6: AI Platform Deployment</a>
+    <div class="part-label">📎 تمارين إضافية</div>
+    <a href="exercises.html" class="chapter-link">📝 تمارين + حلول</a>
     <div class="part-label">📎 الملاحق</div>
     <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+    <div class="part-label">🗺️ الخريطة</div>
+    <a href="../roadmap.html" class="chapter-link">🗺️ الخطة الأسبوعية — 104 أسبوعاً</a>
   </nav>
 </div>
 
@@ -1036,40 +794,7 @@ settings[<span class="str">'color'</span>] = <span class="str">'green'</span>
   </div>
 </div>
 
-<script>
-  var sidebar = document.getElementById('sidebar');
-  var toggle = document.getElementById('sidebarToggle');
-
-  function updateSidebar() {
-    if (window.innerWidth >= 768) {
-      sidebar.classList.remove('open');
-    } else {
-      document.body.classList.remove('sidebar-active');
-    }
-  }
-  updateSidebar();
-  window.addEventListener('resize', updateSidebar);
-
-  toggle.addEventListener('click', function() {
-    if (window.innerWidth >= 768) {
-      document.body.classList.toggle('sidebar-active');
-    } else {
-      sidebar.classList.toggle('open');
-    }
-  });
-
-  /* For mobile: close sidebar when tapping content */
-  document.querySelector('.main-content').addEventListener('click', function() {
-    if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
-      sidebar.classList.remove('open');
-    }
-  });
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
-    if (link.getAttribute('href') === currentPage) { link.classList.add('active'); }
-  });
-document.querySelectorAll('.code-block').forEach(function(b){if(b.querySelector('ol'))return;var lines=b.innerHTML.split('\n');var ol=document.createElement('ol');lines.forEach(function(l){var li=document.createElement('li');li.innerHTML=l;ol.appendChild(li)});b.innerHTML='';b.appendChild(ol)});(function(){var s=document.createElement('style');s.textContent='.code-block{position:relative}.copy-btn{position:absolute;top:8px;left:8px;background:#30363d;color:#8b949e;border:1px solid #444;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;z-index:1}.copy-btn:hover{background:#3d444d;color:#e6edf3}.copy-btn.copied{background:#1a6d37;color:#fff;border-color:#22c55e}';document.head.appendChild(s);document.querySelectorAll('.code-block').forEach(function(b){var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='\ud83d\udccb';btn.addEventListener('click',function(){var c=b.cloneNode(true);var cb=c.querySelector('.copy-btn');if(cb)cb.remove();code=c.textContent.trim();navigator.clipboard.writeText(code).then(function(){btn.textContent='\u2705';btn.classList.add('copied');setTimeout(function(){btn.textContent='\ud83d\udccb';btn.classList.remove('copied')},1500)})});b.appendChild(btn)})})();
-</script>
+<script src="main.js"></script>
 
 </body>
 </html>

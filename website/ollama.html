@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ollama - النماذج المحلية - دورة بايثون المكثفة</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="python_advanced.html" class="chapter-link">🐍 Python Advanced</a>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="postgresql.html" class="chapter-link">PostgreSQL متقدم</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <a href="docker.html" class="chapter-link">Docker - الحاويات</a>
+    <div class="part-label">🚀 Backend + AI</div>
+    <a href="fastapi.html" class="chapter-link">FastAPI - تطبيقات الويب</a>
+    <a href="redis.html" class="chapter-link">Redis - التخزين المؤقت</a>
+    <a href="ai_fundamentals.html" class="chapter-link">🤖 أساسيات الذكاء الاصطناعي</a>
+    <div class="part-label">🧠 Agent Engineering</div>
+    <a href="rag.html" class="chapter-link">RAG - التوليد المعزز بالاسترجاع</a>
+    <a href="vector_databases.html" class="chapter-link">Vector Databases - Qdrant</a>
+    <a href="ollama.html" class="chapter-link" style="color:#ffd166;font-weight:700;">Ollama - النماذج المحلية</a>
+    <a href="langchain.html" class="chapter-link">LangChain - بناء تطبيقات LLM</a>
+    <a href="langgraph.html" class="chapter-link">LangGraph - الرسوم البيانية</a>
+    <a href="agents.html" class="chapter-link">🤖 وكلاء الذكاء الاصطناعي</a>
+    <div class="part-label">⚙️ MLOps Foundations</div>
+    <a href="mlflow.html" class="chapter-link">MLflow - تتبع التجارب</a>
+    <a href="cicd.html" class="chapter-link">CI/CD - GitHub Actions</a>
+    <a href="aws.html" class="chapter-link">AWS - EC2 + S3 + IAM</a>
+    <div class="part-label">🔷 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <a href="project_data_api.html" class="chapter-link">المشروع 4: Data API Platform</a>
+    <a href="project_ai_doc_chat.html" class="chapter-link">المشروع 5: AI Document Chat</a>
+    <a href="project_ai_platform.html" class="chapter-link">المشروع 6: AI Platform Deployment</a>
+    <div class="part-label">📎 تمارين إضافية</div>
+    <a href="exercises.html" class="chapter-link">📝 تمارين + حلول</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+    <div class="part-label">🗺️ الخريطة</div>
+    <a href="../roadmap.html" class="chapter-link">🗺️ الخطة الأسبوعية — 104 أسبوعاً</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">🧠 Agent Engineering</span>
+      <h1>Ollama — تشغيل النماذج محلياً</h1>
+      <p>شغّل نماذج LLM على جهازك: خصوصية، مجانية، وبدون إنترنت</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        <strong>Ollama</strong> أداة تجعل تشغيل نماذج اللغة الكبيرة محلياً أمراً في غاية السهولة —
+        أمر واحد لتشغيل أي نموذج مفتوح (Llama, Qwen, Mistral, Phi...). مميزات هذا النهج:
+        بياناتك لا تغادر جهازك، لا تكاليف API، ويعمل حتى بدون إنترنت.
+      </p>
+
+      <div class="note">
+        <strong>أين تبدأ؟</strong> ابدأ بنموذج خفيف مثل <span class="inline-code">llama3.2</span> (3B)
+        أو <span class="inline-code">phi3:mini</span> — يعملان على أجهزة بلا GPU. جرّب النماذج العربية مثل
+        <span class="inline-code">qwen2.5</span> و <span class="inline-code">jaal:7b</span> للأداء العربي.
+      </div>
+
+      <h2 class="section-title">1. التثبيت وإدارة النماذج</h2>
+
+      <div class="code-block">
+<span class="cm"># Linux</span>
+curl -fsSL https://ollama.com/install.sh | sh
+
+<span class="cm"># macOS / Windows: حمّل من الموقع الرسمي ollama.com</span>
+
+<span class="cm"># سحب وتشغيل نموذج (ينزّل عند أول تشغيل)</span>
+ollama run llama3.2
+
+<span class="cm"># أوامر إدارة النماذج</span>
+ollama pull qwen2.5      <span class="cm"># تنزيل نموذج دون تشغيله</span>
+ollama list              <span class="cm"># النماذج المحمّلة</span>
+ollama rm llama3.2       <span class="cm"># حذف نموذج</span>
+ollama ps                <span class="cm"># النماذج العاملة حالياً</span>
+      </div>
+
+      <div class="note">
+        <strong>🔍 كيف يعمل؟</strong> <span class="inline-code">ollama run</span> يفتح محادثة تفاعلية في الطرفية.
+        النموذج يُحمَّل في الذاكرة عند أول استخدام ويبقى للطلبات التالية — لاحظ <span class="inline-code">ollama ps</span>
+        لترى الذاكرة المستخدمة.
+      </div>
+
+      <h2 class="section-title">2. التكميم (Quantization) — GGUF</h2>
+
+      <p>النماذج المفتوحة تُنشر بصيغة <span class="inline-code">GGUF</span> مع مستويات تكميم مختلفة. التكميم يقلص الأوزان (مثلاً من 16-bit إلى 4-bit) فيقل الحجم ويقل استهلاك الذاكرة — مقابل خسارة طفيفة في الجودة. الفائدة: نموذج 7B يعمل على 8GB RAM بفضل التكميم.</p>
+
+      <div class="code-block">
+<span class="cm"># الأسماء في Ollama تشمل مستوى التكميم: q4_0, q5_K_M, q8_0...</span>
+ollama pull llama3.2:3b-q4_0    <span class="cm"># ~2GB</span>
+ollama pull llama3.2:3b-q8_0    <span class="cm"># ~3.4GB — أدق لكن أثقل</span>
+
+<span class="cm"># القاعدة: q4 أو q5 متوازنة جيداً. q8 أدق للمهام الدقيقة.</span>
+      </div>
+
+      <div class="warning">
+        <strong>⚠️ ملاحظة:</strong> التكميم الأقل لا يعني دائماً أداء أسوأ بكثير — لمعظم المهام q4_0 ممتاز.
+        جرّب الأحجام وقارن الجودة على مهمتك الفعلية بدلاً من الافتراضات.
+      </div>
+
+      <h2 class="section-title">3. الدمج مع بايثون — API</h2>
+
+      <p>Ollama يشغّل خادماً محلياً (localhost:11434) يتوافق مع صيغة OpenAI — يمكنك استخدام <span class="inline-code">openai</span> أو <span class="inline-code">requests</span> مباشرة.</p>
+
+      <div class="code-block">
+<span class="cm"># طريقة 1: مكتبة ollama</span>
+pip install ollama
+
+<span class="kw">import</span> <span class="bu">ollama</span>
+response = ollama.chat(
+    model=<span class="str">"llama3.2"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"اكتب جملة عن الذكاء الاصطناعي بالعربية"</span>}],
+)
+<span class="bu">print</span>(response[<span class="str">"message"</span>][<span class="str">"content"</span>])
+      </div>
+
+      <div class="code-block">
+<span class="cm"># طريقة 2: API متوافق مع OpenAI (streaming)</span>
+<span class="kw">from</span> <span class="bu">openai</span> <span class="kw">import</span> OpenAI
+
+client = OpenAI(base_url=<span class="str">"http://localhost:11434/v1"</span>, api_key=<span class="str">"ollama"</span>)
+
+stream = client.chat.completions.create(
+    model=<span class="str">"qwen2.5"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"اشرح الـ RAG باختصار"</span>}],
+    stream=<span class="kw">True</span>,
+)
+<span class="kw">for</span> chunk <span class="kw">in</span> stream:
+    <span class="bu">print</span>(chunk.choices[<span class="num">0</span>].delta.content <span class="kw">or</span> <span class="str">""</span>, end=<span class="str">""</span>)
+      </div>
+
+      <div class="note">
+        <strong>💡 تدفق (Streaming):</strong> بهذه الطريقة تظهر الكلمات فور توليدها بدل انتظار الإجابة كاملة —
+        تجربة المستخدم أفضل بكثير في تطبيقات الدردشة.
+      </div>
+
+      <h2 class="section-title">4. النماذج العربية</h2>
+
+      <p>بعض النماذج مدربة على العربية بشكل أفضل. للبحث عن نماذج عربية في Ollama استخدم المكتبة الرسمية.</p>
+
+      <div class="code-block">
+ollama pull qwen2.5:7b      <span class="cm"># قوي في العربية</span>
+ollama pull jaal:7b         <span class="cm"># نموذج عربي مخصص</span>
+ollama pull arablama:7b     <span class="cm"># عربي</span>
+      </div>
+
+      <h2 class="section-title">5. LoRA — ضبط دقيق خفيف</h2>
+
+      <p>لو احتجت نموذجاً يفهم بياناتك الخاصة، <strong>LoRA</strong> (Low-Rank Adaptation) هو أخف طرق الضبط الدقيق: يدرّب طبقات صغيرة إضافية بدل كل الأوزان — أسرع وأرخص بكثير. يمكن إنشاء <span class="inline-code">Modelfile</span> لإضافة ضبط على نموذج Ollama.</p>
+
+      <div class="code-block">
+<span class="cm"># Modelfile — إنشاء نسخة معدلة من نموذج</span>
+<span class="cm"># من الأساس: llama3.2</span>
+SYSTEM <span class="str">"""[المساعد] أنت خبير تسويق عربي. أجب دائماً بالعربية الفصحى."""</span>
+PARAMETER temperature <span class="num">0.7</span>
+PARAMETER num_ctx <span class="num">4096</span>
+
+<span class="cm"># البناء والاستخدام</span>
+ollama create my-marketing-assistant -f Modelfile
+ollama run my-marketing-assistant
+      </div>
+
+      <h2 class="section-title">6. التمارين</h2>
+
+      <div class="exercise">
+        <strong>تمرين 1: تشغيل النموذج</strong><br>
+        شغّل llama3.2 محلياً واطرح عليه 5 أسئلة بالعربية وقيّم جودة الإجابات.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 2: مقارنة التكميم</strong><br>
+        قارن إجابات q4_0 و q8_0 على نفس السؤال ولاحظ فرق الجودة والحجم.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 3: تطبيق دردشة</strong><br>
+        ابنِ تطبيق دردشة بسيط بـ FastAPI + Ollama مع بث الإجابات (streaming).
+      </div>
+
+      <div class="summary-box">
+        <h3>📝 ملخص Ollama</h3>
+        <ul>
+          <li><strong>Ollama</strong>: يشغّل نماذج LLM محلياً بسهولة تامة</li>
+          <li><strong>GGUF / Quantization</strong>: تقليص النماذج لتعمل على أجهزة محدودة</li>
+          <li><strong>API</strong>: متوافق مع OpenAI على localhost:11434</li>
+          <li><strong>Streaming</strong>: بث الإجابات لتحسين التجربة</li>
+          <li><strong>LoRA / Modelfile</strong>: تخصيص النموذج لمهمتك</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>

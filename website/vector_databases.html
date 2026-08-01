@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vector Databases - Qdrant - دورة بايثون المكثفة</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="python_advanced.html" class="chapter-link">🐍 Python Advanced</a>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="postgresql.html" class="chapter-link">PostgreSQL متقدم</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <a href="docker.html" class="chapter-link">Docker - الحاويات</a>
+    <div class="part-label">🚀 Backend + AI</div>
+    <a href="fastapi.html" class="chapter-link">FastAPI - تطبيقات الويب</a>
+    <a href="redis.html" class="chapter-link">Redis - التخزين المؤقت</a>
+    <a href="ai_fundamentals.html" class="chapter-link">🤖 أساسيات الذكاء الاصطناعي</a>
+    <div class="part-label">🧠 Agent Engineering</div>
+    <a href="rag.html" class="chapter-link">RAG - التوليد المعزز بالاسترجاع</a>
+    <a href="vector_databases.html" class="chapter-link" style="color:#ffd166;font-weight:700;">Vector Databases - Qdrant</a>
+    <a href="ollama.html" class="chapter-link">Ollama - النماذج المحلية</a>
+    <a href="langchain.html" class="chapter-link">LangChain - بناء تطبيقات LLM</a>
+    <a href="langgraph.html" class="chapter-link">LangGraph - الرسوم البيانية</a>
+    <a href="agents.html" class="chapter-link">🤖 وكلاء الذكاء الاصطناعي</a>
+    <div class="part-label">⚙️ MLOps Foundations</div>
+    <a href="mlflow.html" class="chapter-link">MLflow - تتبع التجارب</a>
+    <a href="cicd.html" class="chapter-link">CI/CD - GitHub Actions</a>
+    <a href="aws.html" class="chapter-link">AWS - EC2 + S3 + IAM</a>
+    <div class="part-label">🔷 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <a href="project_data_api.html" class="chapter-link">المشروع 4: Data API Platform</a>
+    <a href="project_ai_doc_chat.html" class="chapter-link">المشروع 5: AI Document Chat</a>
+    <a href="project_ai_platform.html" class="chapter-link">المشروع 6: AI Platform Deployment</a>
+    <div class="part-label">📎 تمارين إضافية</div>
+    <a href="exercises.html" class="chapter-link">📝 تمارين + حلول</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+    <div class="part-label">🗺️ الخريطة</div>
+    <a href="../roadmap.html" class="chapter-link">🗺️ الخطة الأسبوعية — 104 أسبوعاً</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">🧠 Agent Engineering</span>
+      <h1>Vector Databases — قواعد بيانات المتجهات مع Qdrant</h1>
+      <p>تخزين وبحث المتجهات بسرعة — العمود الفقري لأي نظام RAG</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        قواعد بيانات المتجهات صُممت لمشكلة واحدة: البحث عن <strong>المتشابه</strong> وليس المتطابق.
+        بدلاً من مطابقة الأرقام والنصوص حرفياً، تقارن المتجهات بمعناها. هذه هي الآلية التي تجعل
+        أنظمة RAG تبحث في ملايين المستندات خلال أجزاء من الثانية.
+      </p>
+
+      <div class="note">
+        <strong>لماذا Qdrant؟</strong> مفتوحة المصدر، سريعة، تدعم التصفية (Payload filtering) بقوة،
+        وتدعم البحث الهجين (متجه + نص) في نفس القاعدة. تتوفر سحابية مجاناً للتجربة.
+      </div>
+
+      <h2 class="section-title">1. التضمين (Embeddings) باختصار</h2>
+
+      <p>قبل أي قاعدة متجهات، تحتاج نموذج تضمين يحول النص إلى مصفوفة أرقام. المتجهات القريبة معنوياً تكون قريبة عددياً — هذا هو أساس كل شيء.</p>
+
+      <div class="code-block">
+pip install qdrant-client sentence-transformers
+
+<span class="kw">from</span> <span class="bu">sentence_transformers</span> <span class="kw">import</span> SentenceTransformer
+
+model = SentenceTransformer(<span class="str">"sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"</span>)
+
+vec = model.encode(<span class="str">"ما هو الذكاء الاصطناعي؟"</span>)
+<span class="bu">print</span>(vec.shape)   <span class="cm"># (384,) — متجه من 384 رقم</span>
+      </div>
+
+      <div class="note">
+        <strong>💡 تنويه:</strong> قرّب (Normalize) المتجهات قبل التخزين إذا كنت ستقيس بالـ cosine — أو أعلنها لـ Qdrant وسيحسبها لك.
+        إعادة استخدام نفس نموذج التضمين عند البحث إلزامية، وإلا فستقارن أرقاماً لا معنى لها.
+      </div>
+
+      <h2 class="section-title">2. تشغيل Qdrant</h2>
+
+      <p>أسهل طريقة للتجربة محلياً: عبر Docker. كل الأوامر بعدها تعمل بنفس الطريقة على السحابة.</p>
+
+      <div class="code-block">
+<span class="cm"># تشغيل Qdrant عبر Docker</span>
+docker run -p 6333:6333 -p 6334:6334 -v $(pwd)/qdrant_storage:/qdrant/storage qdrant/qdrant
+
+<span class="cm"># الواجهة: http://localhost:6333  |  الـ Dashboard: http://localhost:6333/dashboard</span>
+      </div>
+
+      <h2 class="section-title">3. إنشاء Collection وإضافة نقاط</h2>
+
+      <p>الـ <strong>Collection</strong> تشبه الجدول في قاعدة البيانات العادية، والـ <strong>Point</strong> تشبه الصف — كل نقطة تحمل متجهاً وبايلود (بيانات وصفية) اختيارياً.</p>
+
+      <div class="code-block">
+<span class="kw">from</span> <span class="bu">qdrant_client</span> <span class="kw">import</span> QdrantClient
+<span class="kw">from</span> <span class="bu">qdrant_client.models</span> <span class="kw">import</span> VectorParams, Distance, PointStruct
+
+client = QdrantClient(<span class="str">"localhost"</span>, port=<span class="num">6333</span>)
+
+<span class="cm"># إنشاء مجموعة</span>
+client.create_collection(
+    collection_name=<span class="str">"documents"</span>,
+    vectors_config=VectorParams(size=<span class="num">384</span>, distance=Distance.COSINE),
+)
+
+<span class="cm"># إضافة نقاط (متجه + بايلود)</span>
+points = [
+    PointStruct(id=<span class="num">1</span>, vector=model.encode(<span class="str">"البحث عن المعلومات ضروري"</span>),
+                payload={<span class="str">"title"</span>: <span class="str">"مقدمة"</span>, <span class="str">"author"</span>: <span class="str">"سارة"</span>}),
+    PointStruct(id=<span class="num">2</span>, vector=model.encode(<span class="str">"قواعد المتجهات تسرع البحث"</span>),
+                payload={<span class="str">"title"</span>: <span class="str">"Qdrant"</span>, <span class="str">"author"</span>: <span class="str">"أحمد"</span>}),
+]
+client.upsert(collection_name=<span class="str">"documents"</span>, points=points)
+      </div>
+
+      <div class="note">
+        <strong>🔍 كيف يعمل؟</strong> Distance.COSINE يقيس التشابه بالزاوية بين المتجهات — الأكثر شيوعاً للنصوص.
+        البايلود (payload) هو بيانات وصفية تُحفظ مع كل نقطة (عنوان، مؤلف، تاريخ...) وتُستخدم لاحقاً للتصفية.
+      </div>
+
+      <h2 class="section-title">4. البحث والتصفية</h2>
+
+      <p>القوة الحقيقية في Qdrant: دمج البحث المتجه مع التصفية على البايلود في استعلام واحد سريع.</p>
+
+      <div class="code-block">
+<span class="cm"># بحث بسيط</span>
+hits = client.search(
+    collection_name=<span class="str">"documents"</span>,
+    query_vector=model.encode(<span class="str">"أسرع طريقة للبحث"</span>),
+    limit=<span class="num">3</span>,
+)
+
+<span class="cm"># بحث مع تصفية على البايلود</span>
+hits = client.query_points(
+    collection_name=<span class="str">"documents"</span>,
+    query=model.encode(<span class="str">"البحث"</span>),
+    query_filter=Filter(
+        must=[FieldCondition(key=<span class="str">"author"</span>, match=MatchValue(value=<span class="str">"أحمد"</span>))]
+    ),
+    limit=<span class="num">5</span>,
+).points
+
+<span class="kw">for</span> hit <span class="kw">in</span> hits:
+    <span class="bu">print</span>(hit.payload, hit.score)
+      </div>
+
+      <h2 class="section-title">5. الفهارس وضبط الأداء</h2>
+
+      <p>للتعامل مع ملايين المتجهات، تعتمد Qdrant على خوارزمية <span class="inline-code">HNSW</span> التي تضحي بقليل من الدقة مقابل سرعة هائلة. كما يجب إنشاء فهارس على حقول البايلود التي تصفّي بها كثيراً.</p>
+
+      <div class="code-block">
+<span class="cm"># HNSW هو الفهرس الافتراضي — يمكنك ضبط معاملاته عند الإنشاء</span>
+client.create_collection(
+    collection_name=<span class="str">"big"</span>,
+    vectors_config=VectorParams(size=<span class="num">384</span>, distance=Distance.COSINE),
+    hnsw_config=HnswConfigDiff(
+        m=<span class="num">16</span>,          <span class="cm"># روابط كل عقدة — أعلى = أدق وأبطأ</span>
+        ef_construct=<span class="num">100</span>, <span class="cm"># جودة البناء</span>
+    ),
+)
+
+<span class="cm"># فهرس بايلود للتصفية السريعة</span>
+client.create_payload_index(
+    collection_name=<span class="str">"documents"</span>,
+    field_name=<span class="str">"author"</span>,
+    field_schema=PayloadSchemaType.KEYWORD,
+)
+      </div>
+
+      <div class="warning">
+        <strong>⚠️ أداء:</strong> ef_construct أعلى = بناء أدق لكنه أبطأ. ضع فهرساً على كل حقل بايلود تصفّي به كثيراً، وإلا سيمسح Qdrant كل النقاط للتصفية (مسح كامل).
+      </div>
+
+      <h2 class="section-title">6. FAISS مقابل Qdrant</h2>
+
+      <p>كثيراً ما يسأل المبتدئون: ما الفرق؟ كلاهما يبحث في المتجهات، لكن السياق مختلف.</p>
+
+      <ul>
+        <li><strong>FAISS</strong>: مكتبة من Facebook — داخل ذاكرة جهازك، ممتازة للنماذج والبحث السريع في ذاكرة محدودة، بلا خادم</li>
+        <li><strong>Qdrant</strong>: قاعدة بيانات كاملة — خادم، تخزين دائم، تصفية بايلود، تعدد مستخدمين، وتدعم البحث الهجين</li>
+        <li><strong>القاعدة</strong>: للتطبيق المنتج والمشاركة بين مستخدمين → Qdrant. للتجارب المحلية والنماذج → FAISS</li>
+      </ul>
+
+      <h2 class="section-title">7. التمارين</h2>
+
+      <div class="exercise">
+        <strong>تمرين 1: مجموعة 100k</strong><br>
+        حوّل 100 ألف مستند لمتجهات وارفعها على Qdrant ثم ابحث فيها وقس زمن الاستجابة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 2: تصفية بايلود</strong><br>
+        أضف بايلود (تاريخ، تصنيف، لغة) وابنِ بحثاً مصفّى: "أحدث المقالات التقنية فقط".
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 3: ضبط HNSW</strong><br>
+        قارن سرعة ودقة البحث مع قيم m و ef_construct مختلفة على نفس البيانات.
+      </div>
+
+      <div class="summary-box">
+        <h3>📝 ملخص Vector Databases</h3>
+        <ul>
+          <li><strong>Qdrant</strong>: قاعدة بيانات متجهات مفتوحة المصدر سريعة</li>
+          <li><strong>Collection/Point</strong>: الجدول/الصف في قاعدة المتجهات</li>
+          <li><strong>Payload</strong>: بيانات وصفية تُستخدم للتصفية أثناء البحث</li>
+          <li><strong>HNSW</strong>: الفهرس الافتراضي — مقايضة سرعة مقابل دقة</li>
+          <li><strong>الاستخدام</strong>: Qdrant للتطبيقات المنتجة، FAISS للتجارب المحلية</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG - التوليد المعزز بالاسترجاع - دورة بايثون المكثفة</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="python_advanced.html" class="chapter-link">🐍 Python Advanced</a>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="postgresql.html" class="chapter-link">PostgreSQL متقدم</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <a href="docker.html" class="chapter-link">Docker - الحاويات</a>
+    <div class="part-label">🚀 Backend + AI</div>
+    <a href="fastapi.html" class="chapter-link">FastAPI - تطبيقات الويب</a>
+    <a href="redis.html" class="chapter-link">Redis - التخزين المؤقت</a>
+    <a href="ai_fundamentals.html" class="chapter-link">🤖 أساسيات الذكاء الاصطناعي</a>
+    <div class="part-label">🧠 Agent Engineering</div>
+    <a href="rag.html" class="chapter-link" style="color:#ffd166;font-weight:700;">RAG - التوليد المعزز بالاسترجاع</a>
+    <a href="vector_databases.html" class="chapter-link">Vector Databases - Qdrant</a>
+    <a href="ollama.html" class="chapter-link">Ollama - النماذج المحلية</a>
+    <a href="langchain.html" class="chapter-link">LangChain - بناء تطبيقات LLM</a>
+    <a href="langgraph.html" class="chapter-link">LangGraph - الرسوم البيانية</a>
+    <a href="agents.html" class="chapter-link">🤖 وكلاء الذكاء الاصطناعي</a>
+    <div class="part-label">⚙️ MLOps Foundations</div>
+    <a href="mlflow.html" class="chapter-link">MLflow - تتبع التجارب</a>
+    <a href="cicd.html" class="chapter-link">CI/CD - GitHub Actions</a>
+    <a href="aws.html" class="chapter-link">AWS - EC2 + S3 + IAM</a>
+    <div class="part-label">🔷 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 المشاريع</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <a href="project_data_api.html" class="chapter-link">المشروع 4: Data API Platform</a>
+    <a href="project_ai_doc_chat.html" class="chapter-link">المشروع 5: AI Document Chat</a>
+    <a href="project_ai_platform.html" class="chapter-link">المشروع 6: AI Platform Deployment</a>
+    <div class="part-label">📎 تمارين إضافية</div>
+    <a href="exercises.html" class="chapter-link">📝 تمارين + حلول</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+    <div class="part-label">🗺️ الخريطة</div>
+    <a href="../roadmap.html" class="chapter-link">🗺️ الخطة الأسبوعية — 104 أسبوعاً</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">🧠 Agent Engineering</span>
+      <h1>RAG — التوليد المعزز بالاسترجاع</h1>
+      <p>Retrieval Augmented Generation — بناء أنظمة إجابة تعتمد على بياناتك الخاصة</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        <strong>RAG</strong> (Retrieval-Augmented Generation) هو أشهر Pattern في الذكاء الاصطناعي التطبيقي 2024-2026.
+        الفكرة بسيطة: قبل أن يولد نموذج اللغة (LLM) الإجابة، نسترجي له مقاطع ذات صلة من قاعدة معرفة خاصة بنا،
+        ونضعها في سياق السؤال. بهذا يجاوب النموذج بناءً على <strong>بياناتك أنت</strong>، وليس على تدريبه العام فقط.
+      </p>
+
+      <div class="note">
+        <strong>لماذا RAG؟</strong> النموذج العام لا يعرف بياناتك السرية أو منتجاتك أو مستندات شركتك.
+        RAG يحل ثلاث مشاكل: حداثة المعلومات، الخصوصية، وتقليل الهلاوس (Hallucination) لأن النموذج يرد اعتماداً على نصوص فعلية.
+      </div>
+
+      <h2 class="section-title">1. معمارية RAG الأساسية</h2>
+
+      <p>أي نظام RAG له مرحلتان كبيرتان: مرحلة <strong>الإدخال (Ingestion)</strong> التي تُبنى مرة واحدة، ومرحلة <strong>الاستعلام (Query)</strong> التي تحدث في كل سؤال.</p>
+
+      <ul>
+        <li><strong>التقسيم Chunking</strong>: تقسيم المستندات إلى أجزاء صغيرة (chunks)</li>
+        <li><strong>التضمين Embedding</strong>: تحويل كل جزء إلى متجه (vector)</li>
+        <li><strong>التخزين Storage</strong>: حفظ المتجهات في قاعدة بيانات متجهات (Vector DB)</li>
+        <li><strong>الاسترجاع Retrieval</strong>: عند السؤال، تحويله لمتجه وبحث الأقرب</li>
+        <li><strong>التوليد Generation</strong>: تمرير السؤال + الأجزاء المسترجعة للنموذج</li>
+      </ul>
+
+      <div class="code-block">
+<span class="cm"># تثبيت المكتبات</span>
+pip install langchain langchain-openai langchain-community chromadb sentence-transformers
+      </div>
+
+      <h2 class="section-title">2. تقسيم المستندات (Chunking)</h2>
+
+      <p>جودة التقسيم تحدد جودة الاسترجاع. جزء صغير جداً يفوّت السياق، وجزء كبير جداً يجلب معلومات لا علاقة لها بالسؤال. القاعدة الذهبية: جرب أحجاماً مختلفة (256، 512، 1024) وقس النتيجة.</p>
+
+      <div class="code-block">
+<span class="cm"># RecursiveCharacterTextSplitter — الأكثر استخداماً</span>
+<span class="kw">from</span> <span class="bu">langchain_text_splitters</span> <span class="kw">import</span> RecursiveCharacterTextSplitter
+
+text = open(<span class="str">'report.txt'</span>).read()
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=<span class="num">512</span>,
+    chunk_overlap=<span class="num">50</span>,   <span class="cm"># تداخل بين الأجزاء للحفاظ على السياق</span>
+    separators=[<span class="str">"\n\n"</span>, <span class="str">"\n"</span>, <span class="str">". "</span>, <span class="str">" "</span>],
+)
+chunks = splitter.split_text(text)
+<span class="bu">print</span>(<span class="str">f"عدد الأجزاء: {len(chunks)}"</span>)
+      </div>
+
+      <div class="note">
+        <strong>💡 متى تختار أي حجم؟</strong> مستندات فنية طويلة → 1024. أسئلة وأجوبة قصيرة → 256.
+        استخدم overlap حوالي 10-20% من الحجم لضمان عدم قطع المعنى عند الحدود.
+      </div>
+
+      <h2 class="section-title">3. التضمين والاسترجاع (Embedding + Retrieval)</h2>
+
+      <p>نحول كل جزء إلى متجه باستخدام نموذج تضمين، ونخزنه في قاعدة بيانات متجهات. عند السؤال، نبحث عن المتجهات الأقرب تشابهاً (cosine similarity).</p>
+
+      <div class="code-block">
+<span class="kw">from</span> <span class="bu">langchain_community.embeddings</span> <span class="kw">import</span> HuggingFaceEmbeddings
+<span class="kw">from</span> <span class="bu">langchain_community.vectorstores</span> <span class="kw">import</span> Chroma
+
+embeddings = HuggingFaceEmbeddings(model_name=<span class="str">"sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"</span>)
+
+<span class="cm"># بناء المتجر وتخزين الأجزاء</span>
+vectorstore = Chroma.from_texts(chunks, embedding=embeddings)
+
+<span class="cm"># الاستعلام</span>
+question = <span class="str">"ما هي أهداف المبيعات للربع الثالث؟"</span>
+results = vectorstore.similarity_search(question, k=<span class="num">4</span>)  <span class="cm"># أفضل 4 أجزاء</span>
+<span class="kw">for</span> i, r <span class="kw">in</span> <span class="bu">enumerate</span>(results):
+    <span class="bu">print</span>(<span class="str">f"--- النتيجة {i+1} ---"</span>)
+    <span class="bu">print</span>(r.page_content[:<span class="num">200</span>])
+      </div>
+
+      <div class="note"><strong>🔍 كيف يعمل؟</strong> نموذج التضمين يحول النص إلى متجه رقمي بحيث تتقارب المتجهات ذات المعنى المتشابه. cosine similarity يقيس الزاوية بين المتجهين — القيمة الأقرب إلى 1 تعني تشابهاً أكبر. <span class="inline-code">k=4</span> يعني أننا نسترجي أفضل 4 أجزاء فقط — الأجزاء الأقرب سؤالاً.</div>
+
+      <h2 class="section-title">4. توليد الإجابة (Generation)</h2>
+
+      <p>نمرر السؤال مع الأجزاء المسترجعة كنص سياق للنموذج، ونطلب منه الإجابة بناءً على هذا السياق فقط — دون معلومات خارجية.</p>
+
+      <div class="code-block">
+<span class="kw">from</span> <span class="bu">langchain_openai</span> <span class="kw">import</span> ChatOpenAI
+<span class="kw">from</span> <span class="bu">langchain_core.prompts</span> <span class="kw">import</span> ChatPromptTemplate
+
+llm = ChatOpenAI(model=<span class="str">"gpt-4o-mini"</span>)
+
+prompt = ChatPromptTemplate.from_messages([
+    (<span class="str">"system"</span>, <span class="str">"""أجب بالعربية بناءً على السياق التالي فقط.
+    إذا لم تجد الإجابة في السياق، قل: "لا أستطيع الإجابة من البيانات المتاحة".
+    لا تخترع معلومات خارج السياق.
+
+    السياق:
+    {context}"""</span>),
+    (<span class="str">"human"</span>, <span class="str">"{question}"</span>),
+])
+
+<span class="cm"># دمج الأجزاء المسترجعة في نص سياق واحد</span>
+context = <span class="str">"\n\n"</span>.join(r.page_content <span class="kw">for</span> r <span class="kw">in</span> results)
+
+response = llm.invoke(prompt.format(context=context, question=question))
+<span class="bu">print</span>(response.content)
+      </div>
+
+      <div class="warning">
+        <strong>⚠️ مهم:</strong> بدون تعليمات "أجب من السياق فقط" سيجيب النموذج من معرفته العامة وقد يهلوس.
+        حدد دائماً سلوك النموذج عندما لا يجد الإجابة.
+      </div>
+
+      <h2 class="section-title">5. تحسين الاسترجاع — Hybrid Search + Reranking</h2>
+
+      <p>البحث المتجه وحده قد يفشل مع الأرقام والأسماء الدقيقة. الحل هو <strong>البحث الهجين</strong>: دمج البحث المتجه (المعنى) مع البحث النصي (الكلمات الدقيقة) باستخدام BM25، ثم <strong>إعادة الترتيب</strong> بنموذج cross-encoder يقيّم الأزواج (سؤال، جزء) بدقة أعلى.</p>
+
+      <div class="code-block">
+<span class="kw">from</span> <span class="bu">rank_bm25</span> <span class="kw">import</span> BM25Okapi
+<span class="kw">from</span> <span class="bu">sentence_transformers</span> <span class="kw">import</span> CrossEncoder
+
+<span class="cm"># 1) النتائج المتجهة</span>
+dense_results = vectorstore.similarity_search(question, k=<span class="num">10</span>)
+
+<span class="cm"># 2) النتائج النصية (BM25)</span>
+tokenized = [chunk.split() <span class="kw">for</span> chunk <span class="kw">in</span> chunks]
+bm25 = BM25Okapi(tokenized)
+bm25_hits = bm25.get_top_n(question.split(), chunks, n=<span class="num">10</span>)
+
+<span class="cm"># 3) إعادة الترتيب بالـ cross-encoder على النتائج المدمجة</span>
+reranker = CrossEncoder(<span class="str">"cross-encoder/ms-marco-MiniLM-L-6-v2"</span>)
+candidates = <span class="bu">list</span>(<span class="bu">dict.fromkeys</span>(dense_results + bm25_hits))
+pairs = [(question, c) <span class="kw">for</span> c <span class="kw">in</span> candidates]
+scores = reranker.predict(pairs)
+<span class="cm"># ترتيب تنازلي حسب النتيجة</span>
+ranked = [c <span class="kw">for</span> _, c <span class="kw">in</span> <span class="bu">sorted</span>(<span class="bu">zip</span>(scores, candidates), reverse=<span class="kw">True</span>)]
+top = ranked[:<span class="num">4</span>]
+      </div>
+
+      <div class="note">
+        <strong>💡 لماذا Reranking؟</strong> البحث المتجه سريع لكنه تقريبي. الـ cross-encoder يقيّم كل زوج (سؤال، جزء) بدقة أعلى لكنه بطيء — لذلك نعيد ترتيب أفضل 10-20 نتيجة فقط، لا كل المكتبة.
+        عادة يرفع الدقة 10-20%.
+      </div>
+
+      <h2 class="section-title">6. تقييم نظام RAG</h2>
+
+      <p>كيف تعرف أن نظامك يعمل فعلاً؟ لا تكتفِ بالانطباع — استخدم مقاييس موضوعية. أشهر مكتبة: <span class="inline-code">RAGAS</span>.</p>
+
+      <ul>
+        <li><strong>Faithfulness</strong>: هل الإجابة مخلصة للسياق (لا هلاوس)؟</li>
+        <li><strong>Answer Relevancy</strong>: هل الإجابة مناسبة للسؤال؟</li>
+        <li><strong>Context Precision/Recall</strong>: هل الأجزاء المسترجعة دقيقة وكاملة؟</li>
+      </ul>
+
+      <div class="code-block">
+pip install ragas
+
+<span class="cm"># مثال: تقييم مجموعة من الأسئلة مع الإجابات والسياقات المرجعية</span>
+<span class="kw">from</span> <span class="bu">datasets</span> <span class="kw">import</span> Dataset
+<span class="kw">from</span> <span class="bu">ragas</span> <span class="kw">import</span> evaluate
+<span class="kw">from</span> <span class="bu">ragas.metrics</span> <span class="kw">import</span> faithfulness, answer_relevancy
+
+data = {
+    <span class="str">"question"</span>: [<span class="str">"ما هي مبيعات الربع الثالث؟"</span>],
+    <span class="str">"answer"</span>: [<span class="str">"المبيعات بلغت 5 مليون ريال."</span>],
+    <span class="str">"contexts"</span>: [[<span class="str">"حققت المبيعات 5 مليون ريال في الربع الثالث."</span>]],
+    <span class="str">"ground_truth"</span>: [<span class="str">"بلغت المبيعات 5 مليون ريال."</span>],
+}
+ds = Dataset.from_dict(data)
+result = evaluate(ds, metrics=[faithfulness, answer_relevancy])
+<span class="bu">print</span>(result)
+      </div>
+
+      <h2 class="section-title">7. التمارين</h2>
+
+      <div class="exercise">
+        <strong>تمرين 1: RAG على مقالات</strong><br>
+        حمّل 10 مقالات عربية عن الذكاء الاصطناعي، ابنِ نظام RAG يجيب عن أسئلتك منها.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 2: مقارنة chunk sizes</strong><br>
+        جرّب أحجام 256 و 512 و 1024 وقارن نتائج الاسترجاع على نفس الأسئلة.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 3: RAGAS</strong><br>
+        قيّم نظامك بـ RAGAS على 20 سؤالاً وسجّل faithfulness و answer_relevancy. حسّن حتى تصل لـ 85%+.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 4: Hybrid + Rerank</strong><br>
+        أضف BM25 و cross-encoder إلى نظامك وقارن الدقة قبل وبعد.
+      </div>
+
+      <div class="summary-box">
+        <h3>📝 ملخص RAG</h3>
+        <ul>
+          <li><strong>RAG</strong> = استرجاع الأجزاء ذات الصلة + توليد الإجابة منها</li>
+          <li><strong>Chunking</strong>: قسّم المستندات بحجم 256-1024 مع overlap</li>
+          <li><strong>Embeddings</strong>: تحويل النص لمتجه، والبحث بالـ cosine similarity</li>
+          <li><strong>Hybrid search</strong>: دمج البحث المتجه مع النصي (BM25)</li>
+          <li><strong>Reranking</strong>: cross-encoder يحسّن الترتيب 10-20%</li>
+          <li><strong>Evaluation</strong>: RAGAS يقيس faithfulness و relevancy</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
