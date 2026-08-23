@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أنظمة Multi-Agent - دورة بايثون المكثفة</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <a href="../roadmap.html" style="font-weight:600;color:#00d4ff;">🗺️ الخطة — حسب الدروس</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="python_advanced.html" class="chapter-link">🐍 Python Advanced</a>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="postgresql.html" class="chapter-link">PostgreSQL متقدم</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <a href="docker.html" class="chapter-link">Docker - الحاويات</a>
+    <div class="part-label">🚀 Backend + AI</div>
+    <a href="fastapi.html" class="chapter-link">FastAPI - تطبيقات الويب</a>
+    <a href="redis.html" class="chapter-link">Redis - التخزين المؤقت</a>
+    <a href="ai_fundamentals.html" class="chapter-link">🤖 أساسيات الذكاء الاصطناعي</a>
+    <div class="part-label">🧠 Agent Engineering</div>
+    <a href="rag.html" class="chapter-link">RAG - التوليد المعزز بالاسترجاع</a>
+    <a href="vector_databases.html" class="chapter-link">Vector Databases - Qdrant</a>
+    <a href="ollama.html" class="chapter-link">Ollama - النماذج المحلية</a>
+    <a href="langchain.html" class="chapter-link">LangChain - بناء تطبيقات LLM</a>
+    <a href="langgraph.html" class="chapter-link">LangGraph - الرسوم البيانية</a>
+    <a href="agents.html" class="chapter-link">🤖 وكلاء الذكاء الاصطناعي</a>
+    <div class="part-label">⚙️ MLOps Foundations</div>
+    <a href="mlflow.html" class="chapter-link">MLflow - تتبع التجارب</a>
+    <a href="cicd.html" class="chapter-link">CI/CD - GitHub Actions</a>
+    <a href="aws.html" class="chapter-link">AWS - EC2 + S3 + IAM</a>
+    <div class="part-label">🔷 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 المشاريع - السنة الأولى</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <a href="project_data_api.html" class="chapter-link">المشروع 4: Data API Platform</a>
+    <a href="project_ai_doc_chat.html" class="chapter-link">المشروع 5: AI Document Chat</a>
+    <a href="project_ai_platform.html" class="chapter-link">المشروع 6: AI Platform Deployment</a>
+    <div class="part-label">🧠 السنة الثانية - Advanced AI</div>
+    <a href="multi_agents.html" class="chapter-link" style="color:#ffd166;font-weight:700;">🧠 أنظمة Multi-Agent</a>
+    <a href="websockets.html" class="chapter-link">WebSockets بعمق</a>
+    <a href="message_queues.html" class="chapter-link">Message Queues - Redis/Celery</a>
+    <a href="event_driven.html" class="chapter-link">Event-Driven Architecture</a>
+    <a href="streaming_llm.html" class="chapter-link">Streaming - استجابات LLM</a>
+    <a href="specialized_agents.html" class="chapter-link">وكلاء متخصصون - Research/Review</a>
+    <a href="project_ai_research.html" class="chapter-link">مشروع: Multi-Agent Research</a>
+    <div class="part-label">🏗️ السنة الثانية — Infrastructure</div>
+    <a href="kubernetes.html" class="chapter-link">Kubernetes + Helm</a>
+    <a href="observability.html" class="chapter-link">Observability - Monitoring</a>
+    <a href="infra_dashboard.html" class="chapter-link">مشروع: AI Infra Dashboard</a>
+    <a href="security_perf.html" class="chapter-link">Security + Performance</a>
+    <div class="part-label">🚀 السنة الثانية — Career</div>
+    <a href="code_quality.html" class="chapter-link">إعادة هيكلة + جودة الكود</a>
+    <a href="career_digital.html" class="chapter-link">الظهور الرقمي + LinkedIn</a>
+    <a href="interview_prep.html" class="chapter-link">الاستعداد للمقابلات</a>
+    <a href="career_launch.html" class="chapter-link">إطلاق + Freelance</a>
+    <div class="part-label">📎 تمارين إضافية</div>
+    <a href="exercises.html" class="chapter-link">📝 تمارين + حلول</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">🧠 السنة الثانية — Advanced AI</span>
+      <h1>أنظمة Multi-Agent</h1>
+      <p>الأسابيع 57-60: من Agent واحد إلى فريق وكلاء يتعاونون — أنماط، تنسيق، ذاكرة طويلة المدى، وتواصل</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+      <p>
+        بعد أن أتقنت بناء Agent واحد، حان وقت <strong>القفزة الحقيقية</strong>: أنظمة Multi-Agent
+        حيث يتعاون عدة وكلاء كلٌّ في تخصصه لتنفيذ مهام معقدة. هذا هو الفرق بين تطبيق AI بسيط
+        ونظام AI متكامل يحل مشاكل حقيقية.
+      </p>
+
+      <div class="note">
+        <strong>🎯 لماذا Multi-Agent؟</strong> وكيل واحد يملك معرفة عامة لكنه ضعيف في التخصص.
+        فريق وكلاء = تخصص لكل وكيل + تقسيم المهام + مراجعة النتائج. النتائج أدق بكثير.
+      </div>
+
+      <h2 class="section-title">1. متى تحتاج Multi-Agent؟</h2>
+
+      <p>ليس كل شيء يحتاج فريق وكلاء. القاعدة الذهبية: <strong>ابدأ بوكيل واحد، وأضف وكلاء فقط عندما يكون هناك تقسيم طبيعي للمهام</strong>.</p>
+
+      <ul>
+        <li><strong>نعم</strong>: بحث علمي (جمع + تحليل + مراجعة)، كود معقد (كتابة + مراجعة + اختبار)، محادثة متعددة التخصصات</li>
+        <li><strong>لا</strong>: أسئلة عامة، مهمة واحدة بسيطة، عندما يزيد التواصل عن المهمة نفسها</li>
+      </ul>
+
+      <h2 class="section-title">2. أنماط Multi-Agent الشهيرة</h2>
+
+      <ul>
+        <li><strong>Supervisor / Orchestrator</strong>: وكيل رئيسي يوزع المهام على وكلاء متخصصين (الأكثر شيوعاً)</li>
+        <li><strong>Pipeline / Chain</strong>: كل وكيل يمرر ناتجه للوكيل التالي (جمع → تحليل → تقرير)</li>
+        <li><strong>Hierarchy</strong>: وكلاء تحت وكلاء — تنسيق متعدد المستويات</li>
+        <li><strong>Swarm / Collaborative</strong>: وكلاء متساوون يتشاركون الحالة ويتعاونون بحرية</li>
+        <li><strong>Debate / Critique</strong>: وكلاء يناقشون ويقيّمون إجابات بعضهم (يرفع الجودة)</li>
+      </ul>
+
+      <h2 class="section-title">3. التنسيق مع LangGraph</h2>
+
+      <p>LangGraph هو الخيار الأمثل لأنظمة Multi-Agent لأنه يدير <strong>الحالة المشتركة</strong> و<strong>التدفق الشرطي</strong> بشكل صريح.</p>
+
+      <div class="code-block">
+<span class="cm"># تنسيق: Supervisor يوزع على Research و Writer</span>
+<span class="kw">from</span> <span class="bu">langgraph.graph</span> <span class="kw">import</span> StateGraph, END
+<span class="kw">import</span> <span class="bu">operator</span>
+<span class="kw">from</span> <span class="bu">typing</span> <span class="kw">import</span> TypedDict, <span class="bu">list</span>
+
+<span class="kw">class</span> <span class="fn">State</span>(TypedDict):
+    task: <span class="bu">str</span>
+    research: <span class="bu">str</span>
+    report: <span class="bu">str</span>
+
+<span class="kw">def</span> <span class="fn">supervisor</span>(state):
+    <span class="kw">return</span> {<span class="str">"task"</span>: <span class="str">"اجمع المعلومات عن سوق السيارات الكهربائية"</span>}
+
+<span class="kw">def</span> <span class="fn">researcher</span>(state):
+    <span class="cm"># وكيل متخصص في البحث</span>
+    <span class="kw">return</span> {<span class="str">"research"</span>: <span class="str">"سوق السيارات الكهربائية نما 40% في 2025..."</span>}
+
+<span class="kw">def</span> <span class="fn">writer</span>(state):
+    <span class="cm"># وكيل متخصص في الكتابة</span>
+    <span class="kw">return</span> {<span class="str">"report"</span>: <span class="str">f"تقرير مبني على: {state['research']}"</span>}
+
+graph = StateGraph(State)
+graph.add_node(<span class="str">"supervisor"</span>, supervisor)
+graph.add_node(<span class="str">"researcher"</span>, researcher)
+graph.add_node(<span class="str">"writer"</span>, writer)
+graph.set_entry_point(<span class="str">"supervisor"</span>)
+graph.add_edge(<span class="str">"supervisor"</span>, <span class="str">"researcher"</span>)
+graph.add_edge(<span class="str">"researcher"</span>, <span class="str">"writer"</span>)
+graph.add_edge(<span class="str">"writer"</span>, END)
+app = graph.compile()
+      </div>
+
+      <div class="note">
+        <strong>💡 المفتاح:</strong> الحالة المشتركة (state) هي ما يجعل الوكلاء "يتواصلون". كل وكيل يقرأ ما كتبه السابق ويضيف عليه.
+      </div>
+
+      <h2 class="section-title">4. التوجيه الشرطي (Conditional Routing)</h2>
+
+      <p>أقوى ميزة: القرار بين الوكلاء يُتخذ ديناميكياً حسب الحالة — مثل مسار إنساني حقيقي.</p>
+
+      <div class="code-block">
+<span class="kw">def</span> <span class="fn">router</span>(state):
+    <span class="cm"># لو الطلب عن كود → Coding Agent، لو بحث → Research Agent</span>
+    <span class="kw">if</span> <span class="str">"كود"</span> <span class="kw">in</span> state[<span class="str">"task"</span>] <span class="kw">or</span> <span class="str">"برمج"</span> <span class="kw">in</span> state[<span class="str">"task"</span>]:
+        <span class="kw">return</span> <span class="str">"coding"</span>
+    <span class="kw">if</span> <span class="str">"حلل"</span> <span class="kw">in</span> state[<span class="str">"task"</span>] <span class="kw">or</span> <span class="str">"ابحث"</span> <span class="kw">in</span> state[<span class="str">"task"</span>]:
+        <span class="kw">return</span> <span class="str">"research"</span>
+    <span class="kw">return</span> <span class="str">"general"</span>
+
+graph.add_conditional_edges(<span class="str">"supervisor"</span>, router,
+    {<span class="str">"coding"</span>: <span class="str">"coding_agent"</span>, <span class="str">"research"</span>: <span class="str">"researcher"</span>, <span class="str">"general"</span>: <span class="str">"general_agent"</span>})
+      </div>
+
+      <h2 class="section-title">5. الذاكرة طويلة المدى (Long-term Memory)</h2>
+
+      <p>الوكلاء بحاجة لذاكرة تتجاوز الجلسة الواحدة: تفضيلات المستخدم، تاريخ المهام، معرفة متراكمة.</p>
+
+      <ul>
+        <li><strong>Qdrant / Vector DB</strong>: تخزين الذكريات كمتجهات واسترجاع الأهم عند الحاجة</li>
+        <li><strong>Redis</strong>: ذاكرة جلسة سريعة (session state)</li>
+        <li><strong>PostgreSQL</strong>: تاريخ دائم وموثوق للذكريات المهمة</li>
+      </ul>
+
+      <div class="code-block">
+<span class="cm"># نموذج ذاكرة بسيط مع Qdrant</span>
+<span class="kw">from</span> <span class="bu">qdrant_client</span> <span class="kw">import</span> QdrantClient
+client = QdrantClient(url=<span class="str">"http://localhost:6333"</span>)
+
+<span class="kw">def</span> <span class="fn">save_memory</span>(user_id, text, embedding):
+    client.upsert(
+        collection_name=<span class="str">"memories"</span>,
+        points=[{
+            <span class="str">"id"</span>: <span class="bu">hash</span>(text),
+            <span class="str">"vector"</span>: embedding,
+            <span class="str">"payload"</span>: {<span class="str">"user_id"</span>: user_id, <span class="str">"text"</span>: text, <span class="str">"time"</span>: <span class="bu">time</span>.time()}
+        }])
+
+<span class="kw">def</span> <span class="fn">recall</span>(query_embedding, user_id, top=<span class="num">5</span>):
+    hits = client.search(collection_name=<span class="str">"memories"</span>,
+        query_vector=query_embedding, query_filter={<span class="str">"must"</span>: [{<span class="str">"key"</span>: <span class="str">"user_id"</span>, <span class="str">"match"</span>: {<span class="str">"value"</span>: user_id}}]}, limit=top)
+    <span class="kw">return</span> [h.payload[<span class="str">"text"</span>] <span class="kw">for</span> h <span class="kw">in</span> hits]
+      </div>
+
+      <h2 class="section-title">6. تواصل الوكلاء (Agent Communication)</h2>
+
+      <p>طرق التواصل بين الوكلاء:</p>
+
+      <ul>
+        <li><strong>عبر الحالة (state)</strong>: الأكثر استخداماً في LangGraph — بسيط وموثوق</li>
+        <li><strong>عبر الرسائل (message passing)</strong>: وكلاء يرسلون رسائل مباشرة لبعضهم</li>
+        <li><strong>عبر الأحداث (events/queues)</strong>: Redis Pub/Sub أو Celery — تدفق غير متزامن</li>
+      </ul>
+
+      <div class="warning">
+        <strong>⚠️ خطأ شائع:</strong> تسمية كل Agent جديد دون داعٍ حقيقي. الوكيل الواحد المزوّد بأدوات (tools) جيدة أحياناً أفضل من 3 وكلاء يتواصلون بطيئاً.
+      </div>
+
+      <h2 class="section-title">7. التمارين</h2>
+
+      <div class="exercise">
+        <strong>تمرين 1: Supervisor + 2 وكلاء</strong><br>
+        ابنِ نظاماً: وكيل Research يجمع، ووكيل Writer يكتب تقريراً، وSupervisor يوجّه. شغّله على موضوع تحبه.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 2: توجيه شرطي</strong><br>
+        أضف router يفصل: طلبات الكود → coding agent، طلبات البحث → research agent.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 3: ذاكرة طويلة المدى</strong><br>
+        أضف Qdrant لحفظ تفضيلات المستخدم واسترجاعها في المحادثات التالية.
+      </div>
+
+      <div class="summary-box">
+        <h3>📝 ملخص أنظمة Multi-Agent</h3>
+        <ul>
+          <li><strong>أنماط</strong>: Supervisor، Pipeline، Hierarchy، Swarm، Debate</li>
+          <li><strong>LangGraph</strong> يدير الحالة والتوجيه الشرطي والتدفق</li>
+          <li><strong>ذاكرة طويلة المدى</strong> عبر Qdrant/Redis/PostgreSQL</li>
+          <li><strong>القاعدة</strong>: ابدأ بوكيل واحد وأضف فقط عند الحاجة الحقيقية</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>

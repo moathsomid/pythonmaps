@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الظهور الرقمي + LinkedIn - دورة بايثون المكثفة</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <a href="../roadmap.html" style="font-weight:600;color:#00d4ff;">🗺️ الخطة — حسب الدروس</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="python_advanced.html" class="chapter-link">🐍 Python Advanced</a>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="postgresql.html" class="chapter-link">PostgreSQL متقدم</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <a href="docker.html" class="chapter-link">Docker - الحاويات</a>
+    <div class="part-label">🚀 Backend + AI</div>
+    <a href="fastapi.html" class="chapter-link">FastAPI - تطبيقات الويب</a>
+    <a href="redis.html" class="chapter-link">Redis - التخزين المؤقت</a>
+    <a href="ai_fundamentals.html" class="chapter-link">🤖 أساسيات الذكاء الاصطناعي</a>
+    <div class="part-label">🧠 Agent Engineering</div>
+    <a href="rag.html" class="chapter-link">RAG - التوليد المعزز بالاسترجاع</a>
+    <a href="vector_databases.html" class="chapter-link">Vector Databases - Qdrant</a>
+    <a href="ollama.html" class="chapter-link">Ollama - النماذج المحلية</a>
+    <a href="langchain.html" class="chapter-link">LangChain - بناء تطبيقات LLM</a>
+    <a href="langgraph.html" class="chapter-link">LangGraph - الرسوم البيانية</a>
+    <a href="agents.html" class="chapter-link">🤖 وكلاء الذكاء الاصطناعي</a>
+    <div class="part-label">⚙️ MLOps Foundations</div>
+    <a href="mlflow.html" class="chapter-link">MLflow - تتبع التجارب</a>
+    <a href="cicd.html" class="chapter-link">CI/CD - GitHub Actions</a>
+    <a href="aws.html" class="chapter-link">AWS - EC2 + S3 + IAM</a>
+    <div class="part-label">🔷 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 المشاريع - السنة الأولى</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <a href="project_data_api.html" class="chapter-link">المشروع 4: Data API Platform</a>
+    <a href="project_ai_doc_chat.html" class="chapter-link">المشروع 5: AI Document Chat</a>
+    <a href="project_ai_platform.html" class="chapter-link">المشروع 6: AI Platform Deployment</a>
+    <div class="part-label">🧠 السنة الثانية - Advanced AI</div>
+    <a href="multi_agents.html" class="chapter-link">🧠 أنظمة Multi-Agent</a>
+    <a href="websockets.html" class="chapter-link">WebSockets بعمق</a>
+    <a href="message_queues.html" class="chapter-link">Message Queues - Redis/Celery</a>
+    <a href="event_driven.html" class="chapter-link">Event-Driven Architecture</a>
+    <a href="streaming_llm.html" class="chapter-link">Streaming - استجابات LLM</a>
+    <a href="specialized_agents.html" class="chapter-link">وكلاء متخصصون - Research/Review</a>
+    <a href="project_ai_research.html" class="chapter-link">مشروع: Multi-Agent Research</a>
+    <div class="part-label">🏗️ السنة الثانية — Infrastructure</div>
+    <a href="kubernetes.html" class="chapter-link">Kubernetes + Helm</a>
+    <a href="observability.html" class="chapter-link">Observability - Monitoring</a>
+    <a href="infra_dashboard.html" class="chapter-link">مشروع: AI Infra Dashboard</a>
+    <a href="security_perf.html" class="chapter-link">Security + Performance</a>
+    <div class="part-label">🚀 السنة الثانية — Career</div>
+    <a href="code_quality.html" class="chapter-link">إعادة هيكلة + جودة الكود</a>
+    <a href="career_digital.html" class="chapter-link" style="color:#ffd166;font-weight:700;">الظهور الرقمي + LinkedIn</a>
+    <a href="interview_prep.html" class="chapter-link">الاستعداد للمقابلات</a>
+    <a href="career_launch.html" class="chapter-link">إطلاق + Freelance</a>
+    <div class="part-label">📎 تمارين إضافية</div>
+    <a href="exercises.html" class="chapter-link">📝 تمارين + حلول</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">🚀 السنة الثانية — Career</span>
+      <h1>الظهور الرقمي + LinkedIn</h1>
+      <p>الأسابيع 93-96: ابنِ بصمتك الرقمية كمتخصص AI</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+
+      <p>
+        في سوق العمل، من يبحث عنك يرى: LinkedIn + GitHub + محتواك. هذه الأسابيع تحولك من
+        "شخص يتعلم" إلى "متخصص AI مرئي".
+      </p>
+
+      <h2 class="section-title">1. ملف LinkedIn احترافي</h2>
+
+      <ul>
+        <li><strong>العنوان</strong>: "AI Engineer | RAG & Agents | Python" وليس "طالب/باحث عن عمل"</li>
+        <li><strong>النبذة</strong>: ماذا تقدم + ماذا تحل + أمثلة أرقام</li>
+        <li><strong>المشاريع</strong>: قائمة مشاريعك مع روابط ونتائج</li>
+        <li><strong>الشهادات</strong>: أي دورات وأنشطة تطوعية</li>
+        <li><strong>الصورة</strong>: احترافية واضحة</li>
+      </ul>
+
+      <h2 class="section-title">2. حساب GitHub احترافي</h2>
+
+      <div class="code-block">
+<span class="cm"># ملف README الخاص بك فوق الصفحة (username/username)</span>
+# 👋 مرحباً، أنا [اسمك]
+## 🚀 مهندس AI — RAG، Agents، Backend
+
+### 🛠️ التقنيات
+Python • FastAPI • LangChain • Qdrant • Docker • AWS
+
+### 📌 أهم المشاريع
+- [AI Platform] (رابط) — منصة أسئلة على مستنداتك
+- [Data API] (رابط) — API متكامل
+
+### 📈 إحصائيات
+[قابل للربط بمقاييس GitHub]
+      </div>
+
+      <div class="note">
+        <strong>💡 تثبيت المشاريع:</strong> ثبت 3-6 مشاريع (pinned) على صفحتك الرئيسية — هي أول ما يراه المقابِليون. كل مشروع: README رائع + live demo + لقطات.
+      </div>
+
+      <h2 class="section-title">3. النشر على GitHub Pages</h2>
+
+      <p>كما فعلنا مع هذه الدورة: كل مشروع يتحول لصفحة حية يشاركها الرابط. هذا أصدق دليل على مهارتك من أي شهادة.</p>
+
+      <div class="code-block">
+<span class="cm"># خطوات سريعة</span>
+git init && git add . && git commit -m <span class="str">"initial"</span>
+git branch -M main
+git remote add origin https://github.com/user/project.git
+git push -u origin main
+
+<span class="cm"># ثم: Settings → Pages → Deploy from branch (main) ✓</span>
+      </div>
+
+      <h2 class="section-title">4. الكتابة التقنية (Technical Writing)</h2>
+
+      <p>اكتب 2-4 مقالات/منشورات عن ما بنيته: "كيف بنيت نظام RAG بـ 200 سطر". هذا يبني سلطتك ويجذب الفرص.</p>
+
+      <ul>
+        <li>منصة: LinkedIn Articles أو مدونة أو Dev.to</li>
+        <li>الموضوع: مشكلة حقيقية حليتها + الكود + الدروس</li>
+        <li>الانتظام: منشور كل أسبوعين على الأقل</li>
+      </ul>
+
+      <h2 class="section-title">5. الشبكات والمجتمع</h2>
+
+      <ul>
+        <li>انضم لمجتمعات AI عربية وعالمية (Discord، Slack، Telegram)</li>
+        <li>ساهم بجواب مفيد أسبوعياً (Stack Overflow، GitHub Issues)</li>
+        <li>حضّر مشروعك مفتوح المصدر واطلب مراجعات كود</li>
+      </ul>
+
+      <h2 class="section-title">6. التمارين</h2>
+
+      <div class="exercise">
+        <strong>تمرين 1: ملف LinkedIn</strong><br>
+        أعد كتابة عناوينك وملفك بالكامل بهوية AI Engineer مع مشاريعك.
+      </div>
+
+      <div class="exercise">
+        <strong>تمرين 2: مقال تقني</strong><br>
+        اكتب أول مقال عن أحد مشاريعك وانشره على LinkedIn أو مدونة.
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>

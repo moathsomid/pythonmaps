@@ -3,830 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الخطة الأسبوعية — Applied AI Engineer</title>
+<title>الخطة الدراسية — Applied AI Engineer</title>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg:#070b14;--bg2:#0d1520;--bg3:#162033;--card:#1a2744;--card-hover:#223354;
+  :root{--bg:#070b14;--bg2:#0d1520;--bg3:#162033;--card:#1a2744;--card-hover:#223354;
     --accent:#00d4ff;--accent2:#a855f7;--accent3:#fbbf24;--accent4:#34d399;--accent5:#f87171;
     --text:#e8edf5;--text-dim:#8899bb;--text-bright:#f0f4ff;--border:#253b5c;
-    --radius:16px;--radius-sm:10px;
-  }
+    --radius:16px;--radius-sm:10px;}
   html{scroll-behavior:smooth}
-  body{
-    font-family:'Noto Naskh Arabic','Noto Sans Arabic','Traditional Arabic',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);
-    line-height:1.8;overflow-x:hidden;
-  }
-  ::-webkit-scrollbar{width:6px}
-  ::-webkit-scrollbar-track{background:var(--bg)}
-  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-  ::-webkit-scrollbar-thumb:hover{background:var(--accent)}
-
+  body{font-family:'Noto Naskh Arabic','Noto Sans Arabic','Traditional Arabic',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;overflow-x:hidden}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--accent)}
   #progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:99999;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));transform-origin:0 50%;scale:0 1;transition:scale .15s}
   canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-
-  nav{
-    position:sticky;top:0;z-index:9999;background:rgba(7,11,20,.85);backdrop-filter:blur(20px);
-    border-bottom:1px solid var(--border);padding:0 20px;height:52px;
-    display:flex;align-items:center;gap:16px;direction:ltr;
-  }
+  nav{position:sticky;top:0;z-index:9999;background:rgba(7,11,20,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;gap:16px}
   nav .logo{font-weight:800;font-size:.85rem;white-space:nowrap;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
   nav .links{display:flex;gap:4px;flex:1;overflow-x:auto}
   nav .links a{color:var(--text-dim);text-decoration:none;font-size:.68rem;padding:4px 10px;border-radius:6px;transition:.2s;font-weight:600;white-space:nowrap}
   nav .links a:hover,nav .links a.active{color:var(--text);background:var(--card)}
-  #overall-progress{font-size:.7rem;font-weight:700;color:var(--accent4);white-space:nowrap;direction:rtl}
-
+  #overall-progress{font-size:.7rem;font-weight:700;color:var(--accent4);white-space:nowrap}
   section{position:relative;z-index:1;padding:36px 24px}
   .wrap{max-width:1100px;margin:0 auto}
-
-  .hero{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 40px}
-  .hero h1{font-size:clamp(1.6rem,4.5vw,2.8rem);font-weight:900;line-height:1.3}
+  .hero{min-height:55vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:70px 24px 24px}
+  .hero h1{font-size:clamp(1.6rem,4.5vw,2.8rem);font-weight:900;line-height:1.4}
   .hero h1 .g{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-  .hero p{color:var(--text-dim);max-width:500px;margin:12px auto 24px;font-size:.95rem}
+  .hero p{color:var(--text-dim);max-width:640px;margin:14px auto 26px;font-size:.95rem}
   .hero .cta{display:inline-block;padding:10px 32px;border-radius:60px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;text-decoration:none;font-weight:700;box-shadow:0 4px 24px rgba(0,212,255,.25);transition:.3s}
   .hero .cta:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(0,212,255,.35)}
-
-  .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:20px 0 32px}
+  .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:20px 0 26px}
   .stats-bar .s{background:var(--card);border-radius:var(--radius-sm);padding:14px 10px;text-align:center;border:1px solid var(--border)}
   .stats-bar .s .n{font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
   .stats-bar .s .l{font-size:.7rem;color:var(--text-dim)}
-
   .sec-label{font-size:.68rem;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:4px;text-transform:uppercase}
   .sec-title{font-size:clamp(1.2rem,2.8vw,1.8rem);font-weight:800;margin-bottom:6px}
-  .sec-sub{color:var(--text-dim);font-size:.9rem;margin-bottom:28px}
-
-  .month{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:16px;overflow:hidden;transition:.3s}
-  .month:hover{border-color:var(--accent)}
-  .month-header{padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;user-select:none}
-  .month-header:hover{background:var(--card-hover)}
-  .month-header .left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .month-header .m-progress{font-size:.72rem;font-weight:700;color:var(--accent4);min-width:44px}
-  .month-header h3{font-size:.92rem;font-weight:700}
-  .month-header .m-phase{font-size:.66rem;color:var(--accent2);font-weight:600}
-  .month-header .arrow{transition:.3s;color:var(--text-dim);font-size:.75rem}
-  .month.open .month-header .arrow{transform:rotate(180deg)}
-  .month-body{display:none}
-  .month.open .month-body{display:block}
-  .month .m-bar{height:3px;background:var(--bg3)}
-  .month .m-bar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent4),var(--accent));transition:width .5s}
-
-  .week{
-    padding:12px 18px;border-top:1px solid var(--border);
-    display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;
-    transition:.2s;cursor:pointer;
-  }
-  .week:hover{background:var(--card-hover)}
-  .week.done{opacity:.55}
-  .week.done .w-content h4,.week.done .w-content p,.week.done .w-content ul{text-decoration:line-through;text-decoration-color:rgba(52,211,153,.3)}
-  .week .w-check{
-    width:22px;height:22px;border-radius:5px;
-    border:2px solid var(--border);background:var(--bg3);
-    cursor:pointer;display:flex;align-items:center;justify-content:center;
-    transition:.2s;margin-top:2px;font-size:.7rem;color:var(--accent4);
-    z-index:2;
-  }
-  .week .w-check:hover{border-color:var(--accent4)}
-  .week.done .w-check{background:var(--accent4);border-color:var(--accent4);color:#000}
-  .week .w-content{min-width:0}
-  .week .w-content .w-head{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
-  .week .w-content .w-num{font-size:.68rem;font-weight:700;color:var(--accent);background:rgba(0,212,255,.08);padding:1px 8px;border-radius:4px}
-  .week .w-content h4{font-size:.86rem;font-weight:700}
-  .week .w-content p{color:var(--text-dim);font-size:.78rem;margin-top:1px}
-  .week .w-content ul{list-style:none;padding:0;margin-top:2px}
-  .week .w-content ul li{font-size:.75rem;color:var(--text-dim);padding:1px 0;padding-right:14px;position:relative}
-  .week .w-content ul li::before{content:'•';position:absolute;right:0;color:var(--accent2)}
-  .week .tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
-  .week .tags span{font-size:.6rem;padding:1px 7px;border-radius:4px;background:var(--bg3);color:var(--text-dim);font-family:'Ubuntu Mono','Fira Code','Courier New',monospace}
-
-  .btn-clear{background:var(--card);border:1px solid var(--border);color:var(--text-dim);padding:6px 18px;border-radius:8px;cursor:pointer;font-family:'Noto Naskh Arabic','Noto Sans Arabic',Tahoma,Arial,sans-serif;font-weight:600;font-size:.75rem;transition:.2s;margin-bottom:12px}
-  .btn-clear:hover{background:var(--card-hover);color:var(--accent5);border-color:var(--accent5)}
-
-  /* MODAL */
-  .modal-overlay{
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,.75);backdrop-filter:blur(10px);
-    z-index:99998;display:none;align-items:center;justify-content:center;
-    padding:20px;overflow-y:auto;
-  }
-  .modal-overlay.show{display:flex}
-  .modal-box{
-    background:var(--card);border-radius:var(--radius);
-    border:1px solid var(--border);
-    max-width:700px;width:100%;max-height:85vh;overflow-y:auto;
-    padding:28px 32px;position:relative;direction:rtl;
-  }
-  .modal-box .m-close{
-    position:sticky;top:0;float:left;z-index:1;
-    background:var(--bg3);border:none;border-radius:50%;
-    width:32px;height:32px;display:flex;align-items:center;justify-content:center;
-    color:var(--text-dim);font-size:1.1rem;cursor:pointer;transition:.2s;
-  }
-  .modal-box .m-close:hover{background:var(--accent5);color:#fff}
-  .modal-box .m-badge{
-    display:inline-block;font-size:.65rem;font-weight:700;color:var(--accent);
-    background:rgba(0,212,255,.1);padding:2px 10px;border-radius:4px;margin-bottom:4px;
-  }
-  .modal-box h2{font-size:1.2rem;font-weight:800;margin-bottom:4px}
-  .modal-box .m-desc{color:var(--text-dim);font-size:.85rem;margin-bottom:12px}
-  .modal-box .m-check{display:flex;align-items:center;gap:8px;margin-bottom:14px}
-  .modal-box .m-check label{font-size:.82rem;font-weight:600;cursor:pointer}
-  .modal-box .m-check input{width:18px;height:18px;accent-color:var(--accent4);cursor:pointer}
-
-  .modal-box .m-section{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
-  .modal-box .m-section .m-s-title{font-size:.78rem;font-weight:700;color:var(--accent3);margin-bottom:6px;display:flex;align-items:center;gap:6px}
-  .modal-box .m-section ul{list-style:none;padding:0}
-  .modal-box .m-section ul li{font-size:.8rem;color:var(--text-dim);padding:3px 0;padding-right:16px;position:relative}
-  .modal-box .m-section ul li::before{content:'▸';position:absolute;right:0;color:var(--accent2)}
-  .modal-box .m-section ul li strong{color:var(--text)}
-  .modal-box .m-section p{font-size:.8rem;color:var(--text-dim);line-height:1.7}
-  .modal-box .m-tags{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
-  .modal-box .m-tags span{font-size:.65rem;padding:2px 8px;border-radius:4px;background:var(--bg3);color:var(--accent);font-family:'Ubuntu Mono','Fira Code','Courier New',monospace}
-  .modal-box .m-measure{
-    background:rgba(52,211,153,.08);border-right:3px solid var(--accent4);
-    padding:10px 14px;border-radius:6px;margin:12px 0;
-    font-size:.78rem;color:var(--accent4);
-  }
-  .modal-box .m-tip{
-    background:rgba(251,191,36,.08);border-right:3px solid var(--accent3);
-    padding:10px 14px;border-radius:6px;margin:8px 0;
-    font-size:.78rem;color:var(--accent3);
-  }
-  .modal-box .m-path{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
-  .modal-box .m-path span{padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:600}
-  .modal-box .m-path .prev{background:rgba(100,116,139,.2);color:#94a3b8}
-  .modal-box .m-path .current{background:rgba(0,212,255,.15);color:var(--accent);border:1px solid rgba(0,212,255,.3)}
-  .modal-box .m-path .next{background:rgba(168,85,247,.1);color:var(--accent2)}
-  .modal-box .m-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
-  @media(max-width:500px){.modal-box .m-grid{grid-template-columns:1fr}}
-  .modal-box .m-card{background:var(--bg3);border-radius:8px;padding:10px 14px;border:1px solid var(--border)}
-  .modal-box .m-card .mc-l{font-size:.65rem;color:var(--text-dim);margin-bottom:2px}
-  .modal-box .m-card .mc-v{font-size:.82rem;font-weight:700}
-  .modal-box .m-warn{background:rgba(248,113,113,.08);border-right:3px solid var(--accent5);padding:10px 14px;border-radius:6px;margin:8px 0;font-size:.78rem;color:var(--accent5)}
-  .modal-box .m-resource{background:var(--bg3);border-radius:6px;padding:8px 12px;margin:4px 0;font-size:.78rem;color:var(--text-dim);display:flex;align-items:center;gap:8px}
-  .modal-box .m-resource::before{content:'📚';font-size:.8rem}
-  .modal-box .m-section p strong,.modal-box .m-section ul li strong{color:var(--text)}
-
+  .sec-sub{color:var(--text-dim);font-size:.9rem;margin-bottom:22px}
+  .group{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:14px;overflow:hidden;transition:.3s}
+  .group:hover{border-color:var(--accent)}
+  .group-header{padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;user-select:none}
+  .group-header:hover{background:var(--card-hover)}
+  .group-header .g-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .group-header .g-emoji{font-size:1.1rem}
+  .group-header h3{font-size:.92rem;font-weight:700}
+  .group-header .g-progress{font-size:.72rem;font-weight:700;color:var(--accent4);min-width:44px}
+  .group-header .arrow{transition:.3s;color:var(--text-dim);font-size:.75rem}
+  .group.open .group-header .arrow{transform:rotate(180deg)}
+  .group-body{display:none}
+  .group.open .group-body{display:block}
+  .g-bar{height:3px;background:var(--bg3)}
+  .g-bar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent4),var(--accent));transition:width .5s}
+  .lessons{display:grid;gap:8px;padding:12px 14px}
+  .lesson{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:var(--radius-sm);background:var(--bg2);border:1px solid var(--border);transition:.2s}
+  .lesson:hover{border-color:var(--accent)}
+  .lesson .l-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--accent4);transition:.2s}
+  .lesson.done{opacity:.6}
+  .lesson.done .l-check{background:var(--accent4);border-color:var(--accent4);color:#000}
+  .lesson.done .l-title{text-decoration:line-through;text-decoration-color:rgba(52,211,153,.3)}
+  .lesson .l-title{font-size:.85rem;font-weight:700}
+  .lesson .l-weeks{font-size:.66rem;color:var(--accent);background:rgba(0,212,255,.08);display:inline-block;padding:1px 8px;border-radius:4px;margin-top:2px}
+  .lesson .l-open{font-size:.7rem;font-weight:700;color:var(--accent3);text-decoration:none;background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.3);padding:4px 12px;border-radius:6px;transition:.2s;white-space:nowrap}
+  .lesson .l-open:hover{background:rgba(250,204,21,.2)}
+  .btn-clear{display:inline-block;padding:8px 20px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-size:.78rem;font-weight:600;transition:.2s}
+  .btn-clear:hover{border-color:var(--accent5);color:var(--accent5)}
   footer{text-align:center;padding:28px 24px;border-top:1px solid var(--border);color:var(--text-dim);font-size:.75rem}
-
   @media(max-width:640px){
-    nav{padding:0 10px;height:44px;gap:6px}
-    nav .links a{font-size:.55rem;padding:3px 6px}
-    nav .logo{font-size:.65rem}
-    section{padding:20px 10px}
-    .wrap{padding:0 4px}
-    .month-header{padding:10px 14px}
-    .week{padding:10px 14px;grid-template-columns:26px 1fr;gap:6px}
-    .modal-box{padding:20px 18px;margin:10px}
+    nav{padding:0 10px;height:44px;gap:6px}nav .links a{font-size:.55rem;padding:3px 6px}nav .logo{font-size:.65rem}
+    section{padding:20px 10px}.wrap{padding:0 4px}.group-header{padding:10px 14px}.lesson{padding:8px 10px;grid-template-columns:24px 1fr}
+    .lesson .l-open{display:none}
   }
 </style>
 </head>
 <body>
-
 <div id="progress"></div>
 <canvas id="bg-canvas"></canvas>
-
-<nav>
-  <div class="logo">◈ AI Roadmap</div>
-  <div class="links">
-    <a href="index.html">🏠 الرئيسية</a>
-    <a href="#overview">نظرة</a>
-    <a href="#year1">السنة 1</a>
-    <a href="#year2">السنة 2</a>
-  </div>
-  <div id="overall-progress">التقدم: 0%</div>
-</nav>
-
+<nav><div class="logo">◈ AI Roadmap</div><div class="links"><a href="index.html">🏠 الرئيسية</a><a href="#overview">نظرة</a><a href="#year1">السنة 1</a><a href="#year2">السنة 2</a></div><div id="overall-progress">التقدم: 0%</div></nav>
 <section class="hero">
-  <h1>خطة <span class="g">104 أسبوعاً</span> تفاعلية<br>لتصبح Applied AI Engineer</h1>
-  <p>كل أسبوع: شرح تفصيلي + مهام + نصائح + ما تحتاج تثبيته + اقتراحات. اضغط على أي أسبوع لفتح النافذة الكاملة.</p>
-  <a href="#overview" class="cta">🚀 ابدأ</a>
+<h1>خطة <span class="g">52 درساً</span> تفاعلية<br>لتصبح Applied AI Engineer</h1>
+<p>كل درس في الموقع له مكانه في الخطة. اضغط على أي درس لفتحه مباشرة، وعلّم على الدروس المنجزة لتتبع تقدمك عبر السنتين.</p>
+<a href="#overview" class="cta">🚀 ابدأ</a>
 </section>
-
-<section id="overview">
-  <div class="wrap">
-    <div class="sec-label">نظرة عامة</div>
-    <h2 class="sec-title">الرحلة الكاملة — 104 أسبوعاً</h2>
-    <p class="sec-sub">سنتان ÷ 24 شهراً ÷ 8 مراحل. كل أسبوع له نافذة خاصة فيه: شرح، مهام، نصائح، تثبيت، وقياس.</p>
-    <div class="stats-bar">
-      <div class="s"><div class="n">104</div><div class="l">أسبوع</div></div>
-      <div class="s"><div class="n">8</div><div class="l">مراحل</div></div>
-      <div class="s"><div class="n">5</div><div class="l">مشاريع</div></div>
-      <div class="s"><div class="n">12</div><div class="l">تقنية</div></div>
-    </div>
-    <button class="btn-clear" onclick="if(confirm('إعادة تعيين كل التقدم؟')){localStorage.removeItem('ai-roadmap3');location.reload()}">🔄 إعادة تعيين التقدم</button>
-  </div>
-</section>
-
-<section id="year1">
-  <div class="wrap">
-    <div class="sec-label">السنة الأولى — 56 أسبوعاً</div>
-    <h2 class="sec-title">التحول إلى مهندس حقيقي</h2>
-    <p class="sec-sub">كل شهر = 4 أسابيع مكثفة. اضغط على الشهر لفتحه ← اضغط على الأسبوع لفتح النافذة.</p>
-    <div id="y1"></div>
-  </div>
-</section>
-
-<section id="year2">
-  <div class="wrap">
-    <div class="sec-label">السنة الثانية — 48 أسبوعاً</div>
-    <h2 class="sec-title">الدخول للمستوى القوي</h2>
-    <p class="sec-sub">أنظمة متقدمة، بنية تحتية، وتجهيز لسوق العمل.</p>
-    <div id="y2"></div>
-  </div>
-</section>
-
-<footer>
-  <p>بناها <strong style="color:var(--text)">Builder</strong> لمستقبل <strong style="color:var(--accent)">AI</strong> — 2026 → 2028</p>
-</footer>
-
-<!-- MODAL -->
-<div class="modal-overlay" id="modal">
-  <div class="modal-box" id="modal-box">
-    <button class="m-close" onclick="closeModal()">✕</button>
-    <div id="modal-content"></div>
-  </div>
+<section id="overview"><div class="wrap">
+<div class="sec-label">نظرة عامة</div>
+<h2 class="sec-title">الرحلة الكاملة — 52 درساً على الموقع</h2>
+<p class="sec-sub">تنظيم كامل يطابق قائمة الموقع: كل مجموعة قسم، وكل درس مرتبط بصفحته مباشرة مع أسابيعه الأصلية (104 أسبوعاً).</p>
+<div class="stats-bar">
+<div class="s"><div class="n">52</div><div class="l">درساً</div></div>
+<div class="s"><div class="n">2</div><div class="l">سنتان</div></div>
+<div class="s"><div class="n">10</div><div class="l">أقسام</div></div>
+<div class="s"><div class="n">104</div><div class="l">أسبوعاً</div></div>
 </div>
-
+<button class="btn-clear" onclick="if(confirm('إعادة تعيين كل التقدم؟')){localStorage.removeItem('ai-roadmap-lessons');location.reload()}">🔄 إعادة تعيين التقدم</button>
+</div></section>
+<section id="year1"><div class="wrap">
+<div class="sec-label">السنة الأولى</div><h2 class="sec-title">التحول إلى مهندس حقيقي</h2>
+<p class="sec-sub">اضغط على القسم لفتحه ← علّم على الدرس بعد إنجازه ← افتحه من الموقع.</p>
+<div id="y1"></div></div></section>
+<section id="year2"><div class="wrap">
+<div class="sec-label">السنة الثانية</div><h2 class="sec-title">الدخول إلى المستوى القوي</h2>
+<p class="sec-sub">أنظمة متقدمة، بنية تحتية، وتجهيز لسوق العمل.</p>
+<div id="y2"></div></div></section>
+<footer><p>بناها <strong style="color:var(--text)">Builder</strong> لمستقبل <strong style="color:var(--accent)">AI</strong> — 2026 → 2028</p></footer>
 <script>
-  // === CANVAS BG ===
-  (function(){
-    const c=document.getElementById('bg-canvas'),cx=c.getContext('2d');let w,h,pts=[];
-    function sz(){w=c.width=innerWidth;h=c.height=innerHeight}
-    addEventListener('resize',sz);sz();
-    class Pt{
-      constructor(){this.reset()}
-      reset(){this.x=Math.random()*w;this.y=Math.random()*h;this.r=Math.random()*2+.4;this.dx=(Math.random()-.5)*.3;this.dy=(Math.random()-.5)*.3;this.a=Math.random()*.3+.05}
-      upd(){this.x+=this.dx;this.y+=this.dy;if(this.x<0||this.x>w)this.dx*=-1;if(this.y<0||this.y>h)this.dy*=-1}
-      dr(){cx.beginPath();cx.arc(this.x,this.y,this.r,0,Math.PI*2);cx.fillStyle=`rgba(0,212,255,${this.a})`;cx.fill()}
-    }
-    for(let i=0;i<70;i++)pts.push(new Pt());
-    function ln(){for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,212,255,${.03*(1-d/120)})`;cx.lineWidth=.5;cx.stroke()}}}
-    function anim(){cx.clearRect(0,0,w,h);pts.forEach(p=>{p.upd();p.dr()});ln();requestAnimationFrame(anim)}
-    anim()
-  })();
+var Y1C = `<div class="group"><div class="group-header" onclick="this.closest('.group').classList.toggle('open')"><div class="g-left"><span class="g-emoji">📘</span><h3>الجزء الأول: الأساسيات</h3></div><span class="g-progress">0/0</span><span class="arrow">▾</span></div><div class="g-bar"><div class="fill" style="width:0%"></div></div><div class="group-body"><div class="lessons"><div class="lesson" data-lesson="chapter1.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('chapter1.html')"></span><div class="l-info"><div class="l-title">1. البدء مع بايثون</div><div class="l-weeks"></div></div><a class="l-open" href="website/chapter1.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="chapter2.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('chapter2.html')"></span><div class="l-info"><div class="l-title">2. المتغيرات وأنواع البيانات البسيطة</div><div class="l-weeks"></div></div><a class="l-open" href="website/chapter2.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="chapter3.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('chapter3.html')"></span><div class="l-info"><div class="l-title">3. مقدمة إلى القوائم</div><div class="l-weeks"></div></div><a class="l-open" href="website/chapter3.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="chapter4.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('chapter4.html')"></span><div class="l-info"><div class="l-title">4. التعامل مع القوائم</div><div class="l-weeks"></div></div><a class="l-open" href="website/chapter4.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="chapter5.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('chapter5.html')"></span><div class="l-info"><div class="l-title">5. جمل if</div><div class="l-weeks"></div></div><a class="l-open" href="website/chapter5.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="chapter6.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('chapter6.html')"></span><div class="l-info"><div class="l-title">6. القواميس</div><div class="l-weeks"></div></div><a class="l-open" href="website/chapter6.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="chapter7.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('chapter7.html')"></span><div class="l-info"><div class="l-title">7. إدخال المستخدم وحلقات while</div><div class="l-weeks"></div></div><a class="l-open" href="website/chapter7.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="chapter8.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('chapter8.html')"></span><div class="l-info"><div class="l-title">8. الدوال</div><div class="l-weeks"></div></div><a class="l-open" href="website/chapter8.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="chapter9.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('chapter9.html')"></span><div class="l-info"><div class="l-title">9. الكلاسات</div><div class="l-weeks"></div></div><a class="l-open" href="website/chapter9.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="chapter10.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('chapter10.html')"></span><div class="l-info"><div class="l-title">10. الملفات والاستثناءات</div><div class="l-weeks"></div></div><a class="l-open" href="website/chapter10.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="chapter11.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('chapter11.html')"></span><div class="l-info"><div class="l-title">11. اختبار الكود</div><div class="l-weeks"></div></div><a class="l-open" href="website/chapter11.html" title="فتح الدرس">فتح الدرس ↩</a></div></div></div></div>
+<div class="group"><div class="group-header" onclick="this.closest('.group').classList.toggle('open')"><div class="g-left"><span class="g-emoji">⚙️</span><h3>Core Engineering</h3></div><span class="g-progress">0/0</span><span class="arrow">▾</span></div><div class="g-bar"><div class="fill" style="width:0%"></div></div><div class="group-body"><div class="lessons"><div class="lesson" data-lesson="python_advanced.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('python_advanced.html')"></span><div class="l-info"><div class="l-title">Python Advanced</div><div class="l-weeks">أسابيع 4</div></div><a class="l-open" href="website/python_advanced.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="asyncio.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('asyncio.html')"></span><div class="l-info"><div class="l-title">AsyncIO - البرمجة غير المتزامنة</div><div class="l-weeks">أسابيع 3</div></div><a class="l-open" href="website/asyncio.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="sql.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('sql.html')"></span><div class="l-info"><div class="l-title">SQL - قواعد البيانات</div><div class="l-weeks">أسابيع 5</div></div><a class="l-open" href="website/sql.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="postgresql.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('postgresql.html')"></span><div class="l-info"><div class="l-title">PostgreSQL متقدم</div><div class="l-weeks">أسابيع 6-7, 13-14, 18</div></div><a class="l-open" href="website/postgresql.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="linux.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('linux.html')"></span><div class="l-info"><div class="l-title">Linux - سطر الأوامر</div><div class="l-weeks">أسابيع 8-9, 15</div></div><a class="l-open" href="website/linux.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="git.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('git.html')"></span><div class="l-info"><div class="l-title">Git/GitHub - التحكم بالنسخ</div><div class="l-weeks">أسابيع 10, 16</div></div><a class="l-open" href="website/git.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="docker.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('docker.html')"></span><div class="l-info"><div class="l-title">Docker - الحاويات</div><div class="l-weeks">أسابيع 20, 25-26</div></div><a class="l-open" href="website/docker.html" title="فتح الدرس">فتح الدرس ↩</a></div></div></div></div>
+<div class="group"><div class="group-header" onclick="this.closest('.group').classList.toggle('open')"><div class="g-left"><span class="g-emoji">🚀</span><h3>Backend + AI</h3></div><span class="g-progress">0/0</span><span class="arrow">▾</span></div><div class="g-bar"><div class="fill" style="width:0%"></div></div><div class="group-body"><div class="lessons"><div class="lesson" data-lesson="fastapi.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('fastapi.html')"></span><div class="l-info"><div class="l-title">FastAPI - تطبيقات الويب</div><div class="l-weeks">أسابيع 17, 19, 21-22</div></div><a class="l-open" href="website/fastapi.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="redis.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('redis.html')"></span><div class="l-info"><div class="l-title">Redis - التخزين المؤقت</div><div class="l-weeks">أسابيع 23</div></div><a class="l-open" href="website/redis.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="ai_fundamentals.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('ai_fundamentals.html')"></span><div class="l-info"><div class="l-title">أساسيات الذكاء الاصطناعي</div><div class="l-weeks">أسابيع 27, 31</div></div><a class="l-open" href="website/ai_fundamentals.html" title="فتح الدرس">فتح الدرس ↩</a></div></div></div></div>
+<div class="group"><div class="group-header" onclick="this.closest('.group').classList.toggle('open')"><div class="g-left"><span class="g-emoji">🧠</span><h3>Agent Engineering</h3></div><span class="g-progress">0/0</span><span class="arrow">▾</span></div><div class="g-bar"><div class="fill" style="width:0%"></div></div><div class="group-body"><div class="lessons"><div class="lesson" data-lesson="rag.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('rag.html')"></span><div class="l-info"><div class="l-title">RAG - التوليد المعزز بالاسترجاع</div><div class="l-weeks">أسابيع 33, 35</div></div><a class="l-open" href="website/rag.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="vector_databases.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('vector_databases.html')"></span><div class="l-info"><div class="l-title">Vector Databases - Qdrant</div><div class="l-weeks">أسابيع 28, 34</div></div><a class="l-open" href="website/vector_databases.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="ollama.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('ollama.html')"></span><div class="l-info"><div class="l-title">Ollama - النماذج المحلية</div><div class="l-weeks">أسابيع 36</div></div><a class="l-open" href="website/ollama.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="langchain.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('langchain.html')"></span><div class="l-info"><div class="l-title">LangChain - بناء تطبيقات LLM</div><div class="l-weeks">أسابيع 37-38</div></div><a class="l-open" href="website/langchain.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="langgraph.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('langgraph.html')"></span><div class="l-info"><div class="l-title">LangGraph - الرسوم البيانية</div><div class="l-weeks">أسابيع 39-40</div></div><a class="l-open" href="website/langgraph.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="agents.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('agents.html')"></span><div class="l-info"><div class="l-title">وكلاء الذكاء الاصطناعي</div><div class="l-weeks">أسابيع 41-44</div></div><a class="l-open" href="website/agents.html" title="فتح الدرس">فتح الدرس ↩</a></div></div></div></div>
+<div class="group"><div class="group-header" onclick="this.closest('.group').classList.toggle('open')"><div class="g-left"><span class="g-emoji">⚙️</span><h3>MLOps Foundations</h3></div><span class="g-progress">0/0</span><span class="arrow">▾</span></div><div class="g-bar"><div class="fill" style="width:0%"></div></div><div class="group-body"><div class="lessons"><div class="lesson" data-lesson="mlflow.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('mlflow.html')"></span><div class="l-info"><div class="l-title">MLflow - تتبع التجارب</div><div class="l-weeks">أسابيع 45-48</div></div><a class="l-open" href="website/mlflow.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="cicd.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('cicd.html')"></span><div class="l-info"><div class="l-title">CI/CD - GitHub Actions</div><div class="l-weeks">أسابيع 49-50</div></div><a class="l-open" href="website/cicd.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="aws.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('aws.html')"></span><div class="l-info"><div class="l-title">AWS - EC2 + S3 + IAM</div><div class="l-weeks">أسابيع 51-52</div></div><a class="l-open" href="website/aws.html" title="فتح الدرس">فتح الدرس ↩</a></div></div></div></div>
+<div class="group"><div class="group-header" onclick="this.closest('.group').classList.toggle('open')"><div class="g-left"><span class="g-emoji">🔷</span><h3>مواضيع متقدمة</h3></div><span class="g-progress">0/0</span><span class="arrow">▾</span></div><div class="g-bar"><div class="fill" style="width:0%"></div></div><div class="group-body"><div class="lessons"><div class="lesson" data-lesson="oop.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('oop.html')"></span><div class="l-info"><div class="l-title">البرمجة كائنية التوجه OOP</div><div class="l-weeks">أسابيع 1-2</div></div><a class="l-open" href="website/oop.html" title="فتح الدرس">فتح الدرس ↩</a></div></div></div></div>
+<div class="group"><div class="group-header" onclick="this.closest('.group').classList.toggle('open')"><div class="g-left"><span class="g-emoji">🚀</span><h3>المشاريع - السنة الأولى</h3></div><span class="g-progress">0/0</span><span class="arrow">▾</span></div><div class="g-bar"><div class="fill" style="width:0%"></div></div><div class="group-body"><div class="lessons"><div class="lesson" data-lesson="project1.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('project1.html')"></span><div class="l-info"><div class="l-title">المشروع 1: غزو الفضائيين</div><div class="l-weeks"></div></div><a class="l-open" href="website/project1.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="project2.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('project2.html')"></span><div class="l-info"><div class="l-title">المشروع 2: تصور البيانات</div><div class="l-weeks"></div></div><a class="l-open" href="website/project2.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="project3.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('project3.html')"></span><div class="l-info"><div class="l-title">المشروع 3: تطبيقات الويب</div><div class="l-weeks"></div></div><a class="l-open" href="website/project3.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="project_data_api.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('project_data_api.html')"></span><div class="l-info"><div class="l-title">المشروع 4: Data API Platform</div><div class="l-weeks">أسابيع 11-12, 24</div></div><a class="l-open" href="website/project_data_api.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="project_ai_doc_chat.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('project_ai_doc_chat.html')"></span><div class="l-info"><div class="l-title">المشروع 5: AI Document Chat</div><div class="l-weeks">أسابيع 29-30, 32</div></div><a class="l-open" href="website/project_ai_doc_chat.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="project_ai_platform.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('project_ai_platform.html')"></span><div class="l-info"><div class="l-title">المشروع 6: AI Platform Deployment</div><div class="l-weeks">أسابيع 53-56</div></div><a class="l-open" href="website/project_ai_platform.html" title="فتح الدرس">فتح الدرس ↩</a></div></div></div></div>`;
+var Y2C = `<div class="group"><div class="group-header" onclick="this.closest('.group').classList.toggle('open')"><div class="g-left"><span class="g-emoji">🧠</span><h3>السنة الثانية - Advanced AI</h3></div><span class="g-progress">0/0</span><span class="arrow">▾</span></div><div class="g-bar"><div class="fill" style="width:0%"></div></div><div class="group-body"><div class="lessons"><div class="lesson" data-lesson="multi_agents.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('multi_agents.html')"></span><div class="l-info"><div class="l-title">أنظمة Multi-Agent</div><div class="l-weeks">أسابيع 57-60</div></div><a class="l-open" href="website/multi_agents.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="websockets.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('websockets.html')"></span><div class="l-info"><div class="l-title">WebSockets بعمق</div><div class="l-weeks">أسابيع 61</div></div><a class="l-open" href="website/websockets.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="message_queues.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('message_queues.html')"></span><div class="l-info"><div class="l-title">Message Queues - Redis/Celery</div><div class="l-weeks">أسابيع 62</div></div><a class="l-open" href="website/message_queues.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="event_driven.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('event_driven.html')"></span><div class="l-info"><div class="l-title">Event-Driven Architecture</div><div class="l-weeks">أسابيع 63</div></div><a class="l-open" href="website/event_driven.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="streaming_llm.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('streaming_llm.html')"></span><div class="l-info"><div class="l-title">Streaming - استجابات LLM</div><div class="l-weeks">أسابيع 64</div></div><a class="l-open" href="website/streaming_llm.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="specialized_agents.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('specialized_agents.html')"></span><div class="l-info"><div class="l-title">وكلاء متخصصون</div><div class="l-weeks">أسابيع 65-68</div></div><a class="l-open" href="website/specialized_agents.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="project_ai_research.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('project_ai_research.html')"></span><div class="l-info"><div class="l-title">مشروع Multi-Agent Research</div><div class="l-weeks">أسابيع 69-72</div></div><a class="l-open" href="website/project_ai_research.html" title="فتح الدرس">فتح الدرس ↩</a></div></div></div></div>
+<div class="group"><div class="group-header" onclick="this.closest('.group').classList.toggle('open')"><div class="g-left"><span class="g-emoji">🏗️</span><h3>السنة الثانية — Infrastructure</h3></div><span class="g-progress">0/0</span><span class="arrow">▾</span></div><div class="g-bar"><div class="fill" style="width:0%"></div></div><div class="group-body"><div class="lessons"><div class="lesson" data-lesson="kubernetes.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('kubernetes.html')"></span><div class="l-info"><div class="l-title">Kubernetes + Helm</div><div class="l-weeks">أسابيع 73-76</div></div><a class="l-open" href="website/kubernetes.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="observability.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('observability.html')"></span><div class="l-info"><div class="l-title">Observability - Monitoring</div><div class="l-weeks">أسابيع 77-80</div></div><a class="l-open" href="website/observability.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="infra_dashboard.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('infra_dashboard.html')"></span><div class="l-info"><div class="l-title">مشروع AI Infra Dashboard</div><div class="l-weeks">أسابيع 81-84</div></div><a class="l-open" href="website/infra_dashboard.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="security_perf.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('security_perf.html')"></span><div class="l-info"><div class="l-title">Security + Performance</div><div class="l-weeks">أسابيع 85-88</div></div><a class="l-open" href="website/security_perf.html" title="فتح الدرس">فتح الدرس ↩</a></div></div></div></div>
+<div class="group"><div class="group-header" onclick="this.closest('.group').classList.toggle('open')"><div class="g-left"><span class="g-emoji">🚀</span><h3>السنة الثانية — Career</h3></div><span class="g-progress">0/0</span><span class="arrow">▾</span></div><div class="g-bar"><div class="fill" style="width:0%"></div></div><div class="group-body"><div class="lessons"><div class="lesson" data-lesson="code_quality.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('code_quality.html')"></span><div class="l-info"><div class="l-title">إعادة هيكلة + جودة الكود</div><div class="l-weeks">أسابيع 89-92</div></div><a class="l-open" href="website/code_quality.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="career_digital.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('career_digital.html')"></span><div class="l-info"><div class="l-title">الظهور الرقمي + LinkedIn</div><div class="l-weeks">أسابيع 93-96</div></div><a class="l-open" href="website/career_digital.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="interview_prep.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('interview_prep.html')"></span><div class="l-info"><div class="l-title">الاستعداد للمقابلات</div><div class="l-weeks">أسابيع 97-100</div></div><a class="l-open" href="website/interview_prep.html" title="فتح الدرس">فتح الدرس ↩</a></div><div class="lesson" data-lesson="career_launch.html"><span class="l-check" onclick="event.stopPropagation();toggleLesson('career_launch.html')"></span><div class="l-info"><div class="l-title">إطلاق + Freelance</div><div class="l-weeks">أسابيع 101-104</div></div><a class="l-open" href="website/career_launch.html" title="فتح الدرس">فتح الدرس ↩</a></div></div></div></div>`;
 
-  // === PROGRESS BAR ===
-  addEventListener('scroll',()=>{const s=scrollY,d=document.documentElement.scrollHeight-innerHeight;document.getElementById('progress').style.scale=`${d>0?s/d:0} 1`});
-
-  // === DATA ===
-  const weeksData = {
-    // YEAR 1 — MONTH 1
-    1: {
-      title:"مراجعة أساسيات Python + OOP",desc:"Classes, inheritance, polymorphism, dunder methods, decorators",
-      tasks:["Classes و inheritance بعمق","Property decorators, classmethod, staticmethod","Dunder methods (__str__, __repr__, __call__)","Decorators و closures"],
-      tags:["Python","OOP"],measure:"تبني 3 classes مترابطة مع decorators",time:"10-14 ساعة",
-      install:"Python 3.11+، VS Code / PyCharm، virtualenv",
-      details:"هذا الأسبوع تبني أساس Python المتين. OOP هو العمود الفقري لأي نظام كبير. ركز على فهم الفرق بين class و instance، وكيف تستخدم inheritance بذكاء (ليس لمجرد التوريث). Decorators من أقوى ميزات Python — استخدمها لتزيين functions و classes.\n\n📌 الخطوات العملية:\n1. شاهد مقدمة عن OOP في Python\n2. اكتب كل concept في ملف منفصل\n3. ادمج المفاهيم في مشروع صغير\n4. اختبر كل class باختبارات صغيرة\n\nالفهم العميق لـ OOP يفرق بين مبرمج ومهندس برمجيات.",
-      tips:["لا تحفظ الكود — افهم لماذا نستخدم OOP","كل class تسويه، اسأل: هل هذا ضروري؟","اختبر كل class باختبارات صغيرة مع assert","اقرأ كود مكتوب باحترافية (FastAPI, SQLAlchemy source)"],
-      suggest:"ابحث عن مشروع صغير (مثل Todo app) وحوله إلى OOP كامل. حاول تطبيق inheritance و composition في نفس المشروع.",
-      why:"Python هي اللغة الرسمية للذكاء الاصطناعي. OOP هو أسلوب تنظيم الكود في المشاريع الكبيرة. أي نظام AI كبير (مثل LangChain أو Transformers) مبني على OOP. بدون إتقان OOP، ستجد صعوبة في فهم وتعديل الكود الموجود.",
-      practice:"ابنِ نظام إدارة مكتبة: class Book, Library, Member مع علاقات inheritance (Member ← StudentMember, PremiumMember). أضف decorators للـ logging و timing."
-    },
-    2: {
-      title:"OOP متقدم + Design Patterns",desc:"Abstract classes, protocols, composition, factory/singleton patterns",
-      tasks:["ABC و Protocol في Python","Factory و Singleton patterns","Composition vs Inheritance","Dependency injection يدوي"],
-      tags:["OOP","Patterns"],measure:"تطبق Factory + DI في مشروع صغير",
-      install:"نفس بيئة الأسبوع الماضي + مكتبة abc",details:"Design Patterns هي حلول جاهزة لمشاكل متكررة. ركز على فهم متى تستخدم كل pattern. Factory pattern رائع لإنشاء objects بشكل ديناميكي. Singleton مفيد ولكن استخدمه بحذر.",
-      tips:["افهم الـ pattern بتمارين صغيرة أولاً","أغلب المشاكل تحل بـ composition مش inheritance","لا تطبق pattern لمجرد التطبيق — اسأل هل هناك مشكلة حقيقية يحلها؟"],suggest:"طبّق Factory pattern لإنشاء أنواع مختلفة من Database connectors (PostgreSQL, SQLite, MySQL)"
-    },
-    3: {
-      title:"AsyncIO بعمق",desc:"Event loop, coroutines, tasks, async context managers",
-      tasks:["Coroutines و Tasks","Async context managers","asyncio.gather, wait, create_task","Async file I/O و aiohttp"],
-      tags:["AsyncIO","Python"],measure:"تبني async scraper يعالج 50 URL في ثوان",
-      install:"aiohttp, aiofiles",details:"AsyncIO من أهم مهارات AI Engineer. نماذج LLM و APIs كلها async. افهم event loop — هو القلب. await = غير الـ control للـ event loop لحين انتهاء العملية.",
-      tips:["لا تستخدم time.sleep() في async — استخدم asyncio.sleep","افهم الفرق بين concurrency و parallelism","استخدم asyncio.gather للتشغيل المتوازي"],suggest:"ابنِ async web scraper يجمع عناوين من 50 صفحة في أقل من 3 ثوانٍ"
-    },
-    4: {
-      title:"Typing + Logging + Errors",desc:"Type hints كاملة, logging struct, exception hierarchy",
-      tasks:["Type hints: Optional, Union, Literal, TypedDict","Logging: handlers, formatters, rotation","Exception hierarchy مخصصة","Pydantic basics"],
-      tags:["Typing","Logging"],measure:"تكتب module بـ type hints كامل + logging",
-      install:"pydantic, structlog (اختياري)",details:"Type hints يحول Python من لغة ديناميكية إلى شبه static. IDE بيفهم كودك أفضل، والأخطاء بتقل. Logging مهارة إدارية مهمة — أول ما تشغل برنامج في production، logging هو عيونك.",
-      tips:["استخدم mypy أو pyright للتحقق من types","logging أفضل من print بمليون مرة","صمم exception classes خاصة بتطبيقك"],suggest:"أضف typing + logging كامل لمشروع صغير عندك"
-    },
-    5: {
-      title:"SQL — من الصفر للاحتراف",desc:"SELECT, JOINs, GROUP BY, subqueries, CRUD",
-      tasks:["SELECT مع WHERE, ORDER BY, LIMIT","JOINs (INNER, LEFT, RIGHT, FULL)","GROUP BY + HAVING","Subqueries في SELECT و FROM و WHERE"],
-      tags:["SQL","PostgreSQL"],measure:"تكتب 10 queries معقدة على database تجريبي",time:"8-12 ساعة",
-      install:"PostgreSQL (Docker: `docker run --name pg -e POSTGRES_PASSWORD=pass -p 5432:5432 postgres`) + DBeaver أو psql",
-      details:"SQL لغة أساسية لا غنى عنها. JOINs هم أكثر شيء ستستخدمه. GROUP BY هو سر التقارير. تدرب على dataset حقيقي (مثل Northwind أو Chinook).\n\n📌 ركز على فهم:\n• كيف تجمع جدولين (JOIN)\n• كيف تصفي وتجميع (WHERE + GROUP BY)\n• كيف تكتب queries داخل queries (Subqueries)",
-      tips:["تخيل كل query على أنها sets (مجموعات)","تعلم EXPLAIN ANALYZE من البداية","اكتب queries يدوياً لا تعتمد على ORM دائماً"],
-      suggest:"حمّل Chinook database وحلل 10 استفسارات عمل مختلفة",
-      why:"البيانات الحقيقية موجودة في قواعد بيانات. SQL هو الطريقة الوحيدة للتعامل معها. في أي وظيفة AI، ستكتب SQL يومياً لتحليل البيانات، بناء datasets، وإنشاء تقارير. JOINs هم مهارتك اليومية رقم 1.",
-      practice:"حمّل Chinook database (قاعدة متجر موسيقى) واكتب queries لتحليل: أكثر 5 ألبوم مبيعاً، إجمالي مبيعات كل موظف، العملاء حسب الدولة. استخدم JOINs المختلفة لكل query."
-    },
-    6: {
-      title:"SQL متقدم — CTE + Window Functions",desc:"WITH, ROW_NUMBER, RANK, LAG/LEAD, recursive CTE",
-      tasks:["CTE (WITH) لتنظيم queries","Window functions: ROW_NUMBER, RANK, DENSE_RANK","LAG, LEAD, FIRST_VALUE","Recursive CTE"],
-      tags:["SQL","PostgreSQL"],measure:"تحل 5 مسائل SQL متقدمة باستخدام CTE + Windows",
-      install:"نفس البيئة",details:"Window functions تغير طريقة تفكيرك في SQL. CTE تجعل queries المعقدة قابلة للقراءة. Recursive CTE قوية جداً للـ hierarchies (مثل شجرة الأقسام في شركة).",
-      tips:["Window functions لا تجمع الصفوف — بل تضيف عمود لكل صف","CTE تحسّن readability بشكل كبير","تدرب على Recursive CTE بهياكل شجرية"],suggest:"حلل بيانات رواتب موظفين واحسب المرتب التراكمي والترتيب لكل قسم"
-    },
-    7: {
-      title:"SQL — Indexing + Optimization",desc:"EXPLAIN ANALYZE, index types, query tuning",
-      tasks:["EXPLAIN ANALYZE قراءة وفهم","B-tree, Hash, GIN indexes","Composite indexes","Query optimization عملي"],
-      tags:["SQL","Performance"],measure:"تحسن query من 5 ثوانٍ إلى < 100ms",
-      install:"نفس البيئة + pg_stat_statements تفعيل",details:"Indexing هو الفرق بين تطبيق بطيء وسريع. EXPLAIN ANALYZE أفضل صديق لك. تعلم قراءة execution plan كأنها خريطة.",
-      tips:["لا تضع index على كل عمود — يبطئ الـ writes","استخدم composite indexes للـ queries المتكررة","GIN للـ full-text و JSONB"],suggest:"خذ query بطيئة وحسنها باستخدام indexes + تحليل EXPLAIN"
-    },
-    8: {
-      title:"Linux — Bash + Permissions",desc:"Terminal, filesystem, permissions, pipes, scripting",
-      tasks:["Bash basics: ls, grep, awk, sed, find","Permissions: chmod, chown, umask","Pipes و redirection","Bash scripting (variables, loops, functions)"],
-      tags:["Linux","Bash"],measure:"تكتب bash script ينظف logs قديمة",
-      install:"Ubuntu VM / WSL2 / أي VPS",details:"Linux هو نظام تشغيل الـ cloud. 99% من سيرفرات العالم تشتغل عليه. Bash scripting مهارة يومية. grep, awk, sed أقوى من أي GUI.",
-      tips:["تعلم touch typing لأوامر Linux","استخدم man command لقراءة documentation","اكتب bash script بدلاً من تنفيذ أوامر يدوية"],suggest:"اكتب script ينظف logs أقدم من 7 أيام ويضغطها backup"
-    },
-    9: {
-      title:"Linux — Processes + SSH + Systemd",desc:"Process management, SSH keys, systemd services",
-      tasks:["ps, top, htop, kill, signals","SSH keys, config, tunneling","systemd: units, services, timers","Networking: netstat, ss, curl"],
-      tags:["Linux","SSH"],measure:"تشغل Python service على systemd عن بعد",
-      install:"نفس البيئة",details:"SSH هو الباب للسيرفر. systemd هو نظام التشغيل الحديث. فهم processes management ضروري لإدارة التطبيقات.",
-      tips:["استخدم SSH keys بدلاً من passwords","تعلم tmux أو screen لجلسات بعيدة","systemd logs مع journalctl"],suggest:"شغّل Flask/FastAPI app كـ systemd service على VPS"
-    },
-    10: {
-      title:"Git/GitHub — تحكم احترافي",desc:"Branches, rebase, merge, PR workflow, GitHub Actions",
-      tasks:["Git reset, revert, stash","Rebase vs Merge","Pull Requests + code review","GitHub Actions basics"],
-      tags:["Git","GitHub"],measure:"تعمل PR مع review + GitHub Actions",
-      install:"Git, GitHub account",details:"Git هو نظام التحكم بالنسخ. Rebase يبقي التاريخ نظيفاً. Pull Requests هي طريقة التعاون.",
-      tips:["Commit مبكراً وكثيراً","اكتب commit messages مفهومة","ما تعمل force push على shared branches"],suggest:"ساهم في مشروع مفتوح المصدر بـ PR واحد"
-    },
-    11: {
-      title:"مشروع: Data API Platform (1)",desc:"FastAPI scaffold + PostgreSQL + CRUD endpoints",
-      tasks:["FastAPI project structure","Pydantic models + SQLAlchemy","CRUD endpoints + migration (Alembic)","Authentication basics (JWT)"],
-      tags:["FastAPI","PostgreSQL"],measure:"API مع auth و 3 endpoints يعمل",
-      install:"FastAPI, SQLAlchemy, Alembic, PyJWT, uvicorn",details:"هذا باكورة مشاريعك. FastAPI هو أفضل إطار Backend للـ AI. SQLAlchemy ORM قوي جداً. Alembic للـ migrations.",
-      tips:["نظّم المشروع: routers/, models/, schemas/, services/","Pydantic لـ validation of input/output","JWT مع refresh token"],suggest:"أضف endpoint يرفع CSV ويحلله إحصائياً"
-    },
-    12: {
-      title:"مشروع: Data API Platform (2)",desc:"CSV upload, analytics endpoints, testing, deployment",
-      tasks:["CSV upload + parsing + validation","Analytics endpoints (aggregations)","Testing مع pytest","Deployment على EC2"],
-      tags:["FastAPI","Deploy"],measure:"مشروع API live على EC2",
-      install:"pytest, httpx, Docker, AWS account",details:"إكمال المشروع ونشره. Testing يضمن جودة الكود. Deployment يعلّمك DevOps.",
-      tips:["اختبر API endpoints مع httpx","Dockerize التطبيق","استخدم GitHub Actions للـ deploy"],suggest:"أضف Grafana dashboard لمراقبة API"
-    },
-    // MONTH 2
-    13: {title:"SQL Design + Normalization",desc:"Normal forms, schema design, relationships, migrations",tasks:["1NF, 2NF, 3NF, BCNF","Schema design من الصفر","Foreign keys + constraints","Alembic migrations متقدمة"],tags:["SQL","Design"],measure:"تصمم schema لـ 10 tables مترابطة",install:"نفس البيئة",details:"Schema design أساس كل تطبيق. Normalization تمنع duplication. Denormalization أحياناً ضروري للـ performance.",tips:["ارسم ER diagram قبل الكتابة","فكر في queries اللي راح تسويها","normalize أولاً ثم denormalize إذا احتجت"],suggest:"صمم schema لنظام إدارة مدرسة (students, teachers, classes, grades)"},
-    14: {title:"PostgreSQL Advanced",desc:"JSONB, full-text search, triggers, extensions",tasks:["JSONB: store, query, index","Full-text search (tsvector, tsquery)","Triggers + stored procedures","PostgreSQL extensions"],tags:["PostgreSQL"],measure:"تبني full-text search على 100k document",install:"PostgreSQL + some extensions",details:"PostgreSQL ليس مجرد database — هو platform. JSONB يخليك تدمج NoSQL مع SQL. Full-text search يغنيك عن Elasticsearch كثيراً.",tips:["JSONB مع GIN index سريع جداً","tsvector + tsquery للبحث العربي","Triggers للـ audit logs"],suggest:"ابحث عن كتب إنجليزية وابني full-text search عليها"},
-    15: {title:"Linux Networking + Security",desc:"Firewall, iptables, fail2ban, SSL, reverse proxy",tasks:["UFW / iptables basics","fail2ban تكوين","SSL مع Let's Encrypt","Nginx reverse proxy"],tags:["Linux","Security"],measure:"تؤمّن VPS بـ Nginx + SSL + fail2ban",install:"Ubuntu VPS",details:"الأمن ليس إضافة — هو أساس. fail2ban يمنع الاختراقات التلقائية. Let's Encrypt يعطيك SSL مجاناً.",tips:["أغلق كل المنافذ إلا 80 و 443 و SSH","غيّر SSH port","استخدم CrowdSec بديل fail2ban حديث"],suggest:"اشترِ VPS ($5/month) وأمّنه بالكامل"},
-    16: {title:"Git Workflows + Collaboration",desc:"Git flow, conventional commits, hooks, CI/CD basics",tasks:["Git flow strategies","Conventional commits","Git hooks (pre-commit)","GitHub Actions CI"],tags:["Git","CI/CD"],measure:"CI pipeline مع tests على كل PR",install:"GitHub account",details:"Git flow ينظم التعاون. Conventional commits تجعل الـ git log مقروءاً. pre-commit hooks يمنع الأخطاء قبل الـ commit.",tips:["استخدم commitizen للـ conventional commits","pre-commit مع black, ruff, mypy","GitHub Actions مع matrix testing"],suggest:"أضف pre-commit hooks + CI لأحد مشاريعك"},
-    // MONTH 3
-    17: {title:"Project Sprint — Backend Core",desc:"FastAPI advanced: middleware, background tasks, file handling",tasks:["CORS, middleware, error handlers","Background tasks (BackgroundTasks)","File upload + validation + thumbnails","Rate limiting + pagination"],tags:["FastAPI","Backend"],measure:"API مع middleware + rate limiting",install:"FastAPI, slowapi, Pillow",details:"Background tasks لتوليد التقارير. Rate limiting يحمي API من سوء الاستخدام. Middleware يعالج كل request.",tips:["استخدم middleware للتسجيل والأمان","BackgroundTasks للعمليات الخفيفة","Celery للعمليات الثقيلة"],suggest:"API مع file upload + thumbnail generation + rate limit"},
-    18: {title:"Project Sprint — Data Layer",desc:"SQLAlchemy advanced, relationships, query optimization",tasks:["SQLAlchemy relationships + eager/lazy loading","Alembic migrations متعددة","Query optimization + N+1 حل","Connection pooling"],tags:["SQLAlchemy","PostgreSQL"],measure:"تحل N+1 problem وتحسن queries",install:"SQLAlchemy 2.x",details:"N+1 problem مشهور في ORMs. Eager loading يحلها بـ joined/in subquery. Connection pooling مع PgBouncer.",tips:["استخدم .joinedload() للـ relationships","SQLAlchemy 2.0 style (async)","راقب queries بالسجل"],suggest:"حلل N+1 queries في مشروعك وصححها"},
-    19: {title:"Project Sprint — Auth + Testing",desc:"JWT, OAuth2, permissions, pytest كامل",tasks:["JWT access + refresh tokens","OAuth2 flow","Role-based permissions","Pytest: fixtures, mocks, coverage"],tags:["Auth","Testing"],measure:"تكتب tests تغطي 80%+",install:"pytest, pytest-cov, httpx",details:"Auth من أصعب وأهم الأجزاء. OAuth2 قياسي الآن. Testing مع pytest سريع وممتع.",tips:["اختبر الـ auth scenarios أولاً (login, refresh, expired)","pytest fixtures للـ database setup","غطّي الـ edge cases"],suggest:"أضف role-based access (admin, user, viewer) + tests"},
-    20: {title:"Project — Deployment + Polish",desc:"Dockerize, deploy on AWS, monitoring, docs",tasks:["Dockerfile + docker-compose","EC2 deployment","Basic monitoring (health checks, logs)","API docs (OpenAPI, README)"],tags:["Docker","Deploy"],measure:"مشروع live على AWS + docs",install:"Docker, AWS account, Docker Hub",details:"Docker يحل مشكلة \"it works on my machine\". Deploy على AWS هو الـ endgame.",tips:["Multi-stage builds لتقليل حجم الصورة","Health checks ليعرف Docker متى container جاهز","OpenAPI docs تلقائية مع FastAPI"],suggest:"انشر المشروع وأرسل الرابط لصديق يختبره"},
-    // MONTH 4
-    21: {title:"FastAPI — Full Stack",desc:"Dependencies, security, WebSockets, background tasks",tasks:["Dependency injection متقدم","Security: OAuth2, API keys","WebSockets basics","Background tasks + Celery intro"],tags:["FastAPI","WebSocket"],measure:"تبني WebSocket endpoint + background task",time:"10-14 ساعة",install:"fastapi, websockets, Celery + Redis",details:"Dependency injection يجعل الكود قابل للاختبار. WebSocket للـ real-time. Celery للـ tasks.\n\n📌 المشروع المصغر هذا الأسبوع:\n1. API مع DI لـ database sessions + auth\n2. WebSocket endpoint للإشعارات الفورية\n3. Background task باستخدام Celesty\n4. دمج كل شيء مع Docker Compose",tips:["Dependencies للـ auth و الـ db sessions","WebSocket مع JWT auth","Celery مع Redis broker"],suggest:"Chat system بسيط مع WebSocket + Celery للـ message processing",why:"FastAPI هو الإطار الأسرع نمواً في Backend. شركات AI الكبيرة تستخدمه. WebSocket أساسي للـ real-time. Celery للـ tasks الخلفية (مثل معالجة PDF).",
-practice:"ابنِ تطبيق إشعارات فورية: User يسجل، admin يبث إشعار، WebSocket يوصل الإشعار للمستخدم مباشرة. أضف مهمة خلفية ترسل إيميل تأكيد بعد التسجيل."},
-    22: {title:"FastAPI — Performance + Production",desc:"Gunicorn, uvicorn, workers, caching, rate limiting",tasks:["Gunicorn + uvicorn workers","Response caching strategies","Rate limiting مع slowapi","Load testing (locust/artillery)"],tags:["FastAPI","Performance"],measure:"تحقق 1000+ req/s تحت load test",install:"gunicorn, locust, redis",details:"Gunicorn يدير workers. Uvicorn سريع. Redis caching يخفف الضغط عن database.",tips:["عدد workers = 2 × CPU cores + 1","استخدم Redis cache للـ responses المتكررة","Load test قبل launch"],suggest:"Load test مشروعك الحالي وحسنّه يتحمل 2000 req/s"},
-    23: {title:"PostgreSQL Advanced + Redis",desc:"Connection pooling, full-text search, Redis caching",tasks:["PgBouncer connection pooling","Full-text search with ranking","Redis: cache patterns, TTL","Redis: pub/sub + queues"],tags:["PostgreSQL","Redis"],measure:"تبني search + caching layer بـ Redis",install:"PgBouncer, redis-py",details:"PgBouncer يمنع connection leaks. Redis أسرع من PostgreSQL للتخزين المؤقت.",tips:["PgBouncer في transaction mode","Redis cache مع TTL","pub/sub للـ real-time updates"],suggest:"Full-text search API + Redis caching layer"},
-    24: {title:"مراجعة + مشروع دمج",desc:"دمج FastAPI + Redis + PostgreSQL",tasks:["Medium clone API مع full-text search","Redis caching layer","Rate limiting + auth","Performance testing"],tags:["FastAPI","Redis"],measure:"API متكامل مع search و caching",install:"كل ما سبق",details:"مراجعة كل شهر 4 + مشروع دمج يثبت فهمك.",tips:["راجع كل المفاهيم","ابنِ شيئاً يخدم شغفك"],suggest:"Medium clone: articles, users, search, caching"},
-    // MONTH 5
-    25: {title:"Docker بعمق",desc:"Images, layers, multi-stage, networking, volumes",tasks:["Dockerfile: FROM, RUN, COPY, ENTRYPOINT","Multi-stage builds","Docker networking + volumes","Docker Compose متقدم"],tags:["Docker"],measure:"تبني multi-stage Dockerfile + compose",install:"Docker Desktop + Docker Compose",details:"Multi-stage builds = حجم صغير + أمان. Docker Compose يربط services متعددة.",tips:[".dockerignore يقلل context","Multi-stage للـ Python: builder → runner","Health checks ضرورية"],suggest:"Dockerize تطبيق FastAPI + PostgreSQL + Redis في compose واحد"},
-    26: {title:"Docker Compose + Production",desc:"Compose for Dev/Prod, healthchecks, secrets, swarm",tasks:["Docker Compose profiles","Healthchecks + depends_on","Secrets management","Docker Swarm basics"],tags:["Docker","DevOps"],measure:"تضبط compose file production-ready",install:"Docker Swarm (اختياري)",details:"Compose profiles تفرق بين dev و prod. Secrets أفضل من env variables للـ passwords.",tips:["لا تضع secrets في docker-compose.yml","استخدم Docker secrets في Swarm","healthcheck مع curl -f"],suggest:"جهّز Docker Compose production-ready مع secrets + healthchecks"},
-    27: {title:"AI Fundamentals — Transformers",desc:"HuggingFace, pipeline, models, tokenizers, inference",tasks:["HuggingFace pipeline API","Model hub + custom models","Tokenizers: encoding, decoding","Inference: batch, streaming, half-precision"],tags:["AI","Transformers"],measure:"تشغل 3 نماذج مختلفة وتقارن أداءها",install:"transformers, torch, sentencepiece",details:"Transformers غيّرت عالم AI. HuggingFace يجعل الوصول للنماذج سهلاً. فهم tokenization أساسي.",tips:["ابدأ بـ pipeline API أسهل","قارن inference time بين CPU و GPU","استخدم half-precision (fp16) للتسريع"],suggest:"أنشئ API يقارن 3 نماذج تلخيص على نفس النص"},
-    28: {title:"Embeddings + Vector Search",desc:"Embeddings models, cosine similarity, ANN search basics",tasks:["Sentence transformers embeddings","Cosine similarity + dot product","ANN search vs exact search","Embeddings caching + batching"],tags:["Embeddings","Vector"],measure:"تبني search engine يستخدم embeddings",install:"sentence-transformers, faiss, numpy",details:"Embeddings تحول النص إلى أرقام. FAISS أسرع مكتبة بحث.",tips:["Normalize embeddings قبل البحث","Batch processing لتسريع","FAISS index يحدد سرعة البحث"],suggest:"Semantic search engine على 10000 مقالة عربية"},
-    // MONTH 6 — project
-    29: {title:"Document Parsing + Ingestion",desc:"PDF parsing, text extraction, chunking, embedding pipeline",tasks:["PDF parsing (PyMuPDF, pdfplumber)","Text chunking strategies","Embedding pipeline + storage","Async document processing"],tags:["PDF","Chunking"],measure:"تبني pipeline تهضم 100 PDF",install:"PyMuPDF, pdfplumber, tiktoken",details:"Chunking من أهم قرارات RAG. حجم chunk و overlap يؤثر على جودة retrieval.",tips:["جرب chunk sizes مختلفة: 256, 512, 1024","استخدم recursive character splitter","احفظ metadata مع كل chunk"],suggest:"ابنِ pipeline تهضم 100 PDF وتولد chunks + embeddings"},
-    30: {title:"Search + Retrieval System",desc:"Vector search, hybrid search, reranking, filtering",tasks:["Vector similarity search (FAISS/Qdrant)","Hybrid search (keyword + vector)","Reranking مع cross-encoder","Filtering + faceted search"],tags:["Search","RAG"],measure:"تضبط hybrid search بدقة 90%+",install:"qdrant-client, faiss, cross-encoder",details:"Hybrid search = أفضل النتائج. Reranking يرفع الجودة كثيراً.",tips:["BM25 للـ keyword search","RRF (Reciprocal Rank Fusion) يجمع النتائج","Rerank بـ cross-encoder على top-20"],suggest:"أضف hybrid search + reranking لمشروع search عندك"},
-    31: {title:"Arabic NLP + Summarization",desc:"Arabic tokenization, stemming, NER, summarization models",tasks:["Arabic tokenization challenges","Arabic stemming + lemmatization","Arabic NER","Summarization models for Arabic"],tags:["Arabic","NLP"],measure:"نظام يفهم ويبحث بالعربية",install:"camel_tools, stanza, arabert",details:"العربية لغة صعبة للـ NLP. Farasa و camel_tools أدوات ممتازة. Arabic BERT models موجودة.",tips:["Arabic pre-built models من HuggingFace","Farasa للتشكيل والتجذيع","جرب AraBERT و Arabic-MiniLM"],suggest:"ابنِ Arabic text summarizer مقارنة بين 3 نماذج"},
-    32: {title:"Chat Interface + Deployment",desc:"Chat UI, streaming, history, Docker + deploy",tasks:["Chat API (streaming response)","Conversation history + context","Docker Compose كامل","Deploy على AWS"],tags:["Chat","Deploy"],measure:"تشغل chat system live",install:"FastAPI, WebSocket, Docker, AWS",details:"Streaming الـ response يحسّن تجربة المستخدم. History مهم للسياق.",tips:["SSE أو WebSocket للـ streaming","احفظ history مع session ID","Deploy مع domain + SSL"],suggest:"ابنِ document chat UI + deploy live"},
-    // MONTH 7 — RAG
-    33: {title:"RAG Fundamentals",desc:"Chunking, retrieval, generation, evaluation",tasks:["Chunking: fixed, semantic, recursive","Retrieval: dense, sparse, hybrid","Generation: prompt templates, context window","RAG evaluation metrics"],tags:["RAG","Retrieval"],measure:"تبني RAG pipeline مع evaluation",time:"12-16 ساعة",install:"langchain, chromadb/FAISS",details:"RAG = Retrieval + Augmented + Generation. Chunking يحدد جودة الـ retrieval. Evaluation يمنع الـ hallucination.\n\n📌 معمارية RAG الأساسية:\n1. تقسيم المستندات إلى chunks\n2. تحويل chunks إلى embeddings\n3. عند السؤال: تحويله لـ embedding ← بحث في vector store\n4. إرجاع أفضل chunks كـ context للـ LLM\n5. الـ LLM يولد الإجابة بناءً على الـ context فقط\n\n📌 أنواع التقييم:\n• Faithfulness: هل الإجابة مخلصة للـ context؟\n• Answer Relevancy: هل الإجابة مناسبة للسؤال؟\n• Context Precision: هل الـ context دقيق؟",tips:["جرب chunk sizes مختلفة: 256, 512, 1024","Context window = chunk size × عدد chunks","استخدم RAGAS للتقييم"],suggest:"ابنِ RAG على مقالات عربية + قيّم بالـ RAGAS",why:"RAG هو أكثر Pattern استخداماً في AI التطبيقي 2024-2026. أي شركة تريد بناء Chat على بياناتها تحتاج RAG. فهم RAG يفتح لك أبواب وظائف كثيرة.",
-practice:"حمّل 10 مقالات عربية عن الذكاء الاصطناعي. ابنِ RAG يجيب عن أسئلة من هذه المقالات. استخدم 3 أحجام chunk مختلفة وقارن النتائج باستخدام RAGAS."},
-    34: {title:"Qdrant Vector DB",desc:"Collections, vectors, payload, filtering, indexing",tasks:["Qdrant setup (local + Docker)","Collections + vectors config","Payload + filtering","Indexing + performance tuning"],tags:["Qdrant","Vector"],measure:"Qdrant collection مع 100k vectors",install:"qdrant-client, Docker",details:"Qdrant أفضل vector DB من ناحية سرعة وسهولة. Payload filtering قوي جداً.",tips:["استخدم HNSW index للسرعة","Payload index للحقول المصفاة","Qdrant Cloud trial مجاني"],suggest:"ارفع 100k document embeddings على Qdrant + بحث"},
-    35: {title:"RAG متقدم — Reranking + Eval",desc:"Cross-encoder reranking, RAGAS, faithfulness",tasks:["Cross-encoder reranking","RAGAS evaluation framework","Faithfulness + answer relevancy","A/B testing RAG configs"],tags:["RAG","Eval"],measure:"تحسن RAG accuracy بـ 15%+",install:"cross-encoder, ragas",details:"Reranking يرفع الدقة 10-20%. RAGAS يعطي مقاييس موضوعية.",tips:["Rerank top-20 فقط (لأن cross-encoder بطيء)","Faithfulness يمنع الـ hallucination","دائماً قيّم قبل وبعد التغيير"],suggest:"قارن 3 configs RAG مختلفة ووثّق النتائج"},
-    36: {title:"Ollama + Local Models",desc:"Setup, models, quantization, API, custom models",tasks:["Ollama setup + model management","Model quantization (GGUF)","Ollama API integration","Fine-tuning LoRA basics"],tags:["Ollama","Local"],measure:"تشغل LLM محلياً وتدمجه مع API",install:"Ollama, Docker",details:"Local models = خصوصية + توفير. Ollama يجعل تشغيل النماذج المحلية سهلاً. GGUF يقلص الحجم.",tips:["ابدأ بـ llama3.2 أو phi-3 (خفيف)","استخدم API بدل CLI","LoRA fine-tuning لمهمة محددة"],suggest:"شغّل Ollama مع نموذج عربي محلي + API interface"},
-    // MONTH 8 — LangChain
-    37: {title:"LangChain Basics",desc:"Chains, prompts, LLMs, output parsers, memory",tasks:["LLM abstraction + providers","Prompt templates + few-shot","Chains: LLMChain, SequentialChain","Output parsers (JSON, Pydantic)"],tags:["LangChain"],measure:"تبني chain مع memory + output parser",install:"langchain, langchain-community",details:"LangChain يبني تطبيقات LLM بسرعة. Chains تربط خطوات متعددة. Memory يحافظ على السياق.",tips:["افهم المكونات قبل استخدام الـ high-level APIs","Custom prompts أفضل من default","Output parsers مع Pydantic"],suggest:"Chain: input → translate → summarize → JSON output"},
-    38: {title:"LangChain Agents + Tools",desc:"Agents, tools, toolkits, agent types, error handling",tasks:["Agent types: zero-shot, conversational, react","Custom tools definition","Toolkits + multi-tool agents","Agent error handling + retry"],tags:["LangChain","Agents"],measure:"تبني agent مع 3 custom tools",install:"langchain, langchain-experimental",details:"Agents يقررون ماذا يفعلون. Tools هم قدرات الـ agent. ReAct pattern الأقوى.",tips:["صمم tools واضحة وموثقة","Agent مع max_iterations و early_stopping","اختبر agent على edge cases"],suggest:"Agent: search + calculate + summarize بأدوات مخصصة"},
-    39: {title:"LangGraph — State Graphs",desc:"StateGraph, nodes, edges, conditional edges, checkpointing",tasks:["StateGraph basics","Nodes + edges + conditional edges","Checkpointing + persistence","Streaming + callbacks"],tags:["LangGraph"],measure:"تبني state graph بـ 5+ nodes",install:"langgraph",details:"LangGraph يبني workflows معقدة. StateGraph يتحكم بتدفق data. Checkpointing يحفظ التقدم.",tips:["ارسم graph على ورق أولاً","Conditional edges = if/else flow","استخدم persistence مع SQLite"],suggest:"User onboarding flow مع conditional branches"},
-    40: {title:"Memory + Context Management",desc:"Buffer, summary, vector, entity memory, long-term",tasks:["ConversationBufferMemory","ConversationSummaryMemory","Vector memory for long-term","Entity memory + knowledge graph"],tags:["Memory","Agents"],measure:"Agent مع long-term memory",install:"langchain + memory libs",details:"Memory يخلي الـ agent يتذكر. Short-term = buffer. Long-term = vector store. Summary memory للجلسات الطويلة.",tips:["Summary memory يوفر tokens","Vector memory مع Qdrant","Entity memory يستخرج الكيانات"],suggest:"Agent يفتح حساب بنكي مع remember details بين الجلسات"},
-    // MONTH 9 — Data Analyst Agent
-    41: {title:"Agent — CSV + Data Loading",desc:"CSV parsing, data profiling, automatic type detection",tasks:["CSV/Excel parsing + validation","Data profiling (pandas-profiling)","Type detection + infer","Data cleaning agent tools"],tags:["Data","Agent"],measure:"وكيل يقرأ CSV ويحلل types",install:"pandas, ydata-profiling",details:"أول خطوة لوكيل تحليل البيانات: فهم البيانات. pandas-profiling يولد تقريراً كاملاً.",tips:["Validate schema قبل المعالجة","ydata-profiling سريع وجميل","مكتبات cleaning: pandas, pyjanitor"],suggest:"وكيل يقرأ CSV ويولد profiling report"},
-    42: {title:"Agent — Analysis + Statistics",desc:"Statistical analysis, aggregations, correlations, insights",tasks:["Descriptive statistics agent","Correlation + trend detection","Outlier detection","Insight generation with LLM"],tags:["Analysis","Agent"],measure:"وكيل ينتج 5 insights",install:"scipy, statsmodels, scikit-learn",details:"تحليل إحصائي أساسي لأي مهندس AI. LLM يكتب insight understandable.",tips:["استخدم scipy للـ tests الإحصائية","LLM يشرح النتائج بلغة بسيطة","تصور مع plotly"],suggest:"وكيل يحلل dataset ويكتب تقريراً كاملاً بالعربي"},
-    43: {title:"Agent — Visualization + Reports",desc:"Plot generation, chart selection, report formatting",tasks:["Plot generation (matplotlib, plotly)","Automatic chart type selection","Report template generation","PDF/HTML report export"],tags:["Visualization","Reports"],measure:"وكيل يبني dashboard من CSV",install:"plotly, jinja2, weasyprint",details:"التصور يوصّل المعلومة أسرع. Chart selection algorithm يختار النوع المناسب.",tips:["Plotly تفاعلي وجميل","Jinja2 لـ HTML templates","ReportLab أو weasyprint للـ PDF"],suggest:"وكيل يولد PDF report كامل مع graphs من CSV"},
-    44: {title:"Agent — Integration + Deployment",desc:"API integration, async, Docker, deploy",tasks:["FastAPI + Agent integration","Async agent execution","Docker + Qdrant + API compose","Deploy + monitoring"],tags:["Integration","Deploy"],measure:"وكيل deploy كامل مع API",install:"FastAPI, Docker, AWS",details:"تحويل الـ agent إلى خدمة. Async execution للمهام الطويلة.",tips:["Task queue للمهام الطويلة (Celery)","Streaming الـ agent output","Healthcheck للمراقبة"],suggest:"Agent API live مع queue + results"},
-    // MONTH 10 — MLflow
-    45: {title:"MLflow — Tracking",desc:"Experiments, runs, parameters, metrics, artifacts",tasks:["MLflow setup + UI","Log parameters + metrics + artifacts","Nested runs + tags","Auto-logging frameworks"],tags:["MLflow","Tracking"],measure:"10 تجارب مقارنة في MLflow UI",install:"mlflow, scikit-learn",details:"MLflow هو standard لـ experiment tracking. Auto-logging مع frameworks يسهل الحياة.",tips:["استخدم MLflow UI للتصور","Tag التجارب: data_version, model_type","Auto-log مع transformers"],suggest:"درّب 5 نماذج classification وسجّل كل شيء في MLflow"},
-    46: {title:"MLflow — Model Registry",desc:"Model versions, stages, aliases, deployment",tasks:["Model registration + versioning","Stages: staging, production, archive","Model aliases + tags","MLflow model serving"],tags:["MLflow","Registry"],measure:"تدير 3 إصدارات model مع staging/prod",install:"mlflow",details:"Model Registry ينظم دورة حياة النموذج. Staging للاختبار، Production للتشغيل.",tips:["Aliases مفيدة للـ A/B testing","Transition rules: staging → prod","MLflow serving مع Docker"],suggest:"دورة حياة كاملة لنموذج: train → register → staging → prod"},
-    47: {title:"MLflow — Projects + Pipelines",desc:"MLflow projects, reproducibility, pipelines",tasks:["MLflow Projects (MLproject file)","Parameterized runs","Multi-step pipelines","Integration with Docker"],tags:["MLflow","Pipelines"],measure:"تبني MLproject مع 3 steps",install:"mlflow",details:"MLproject = reproducible environment. Multi-step = train → eval → deploy.",tips:["MLproject مع conda/Docker env","Parameters تتحكم بالـ pipeline","MLflow مع Airflow للـ scheduling"],suggest:"MLproject: data prep → train → evaluate → register"},
-    48: {title:"Model Serving + Deployment",desc:"MLflow serving, custom serving, A/B testing, monitoring",tasks:["MLflow model serving locally","Custom serving with FastAPI","A/B testing setup","Model monitoring basics"],tags:["Serving","Deploy"],measure:"تشغل model serving مع A/B test",install:"mlflow, fastapi, prometheus_client",details:"Model serving = API for predictions. A/B testing يقارن إصدارين. Monitoring يراقب الـ drift.",tips:["FastAPI wrapper يعطي تحكم كامل","إضافة logging للـ predictions","Monitor: latency, error rate, drift"],suggest:"FastAPI serving مع A/B testing بين إصدارين + monitoring"},
-    // MONTH 11 — CI/CD + AWS
-    49: {title:"CI/CD — GitHub Actions",desc:"Workflows, jobs, steps, matrix builds, environments",tasks:["GitHub Actions workflow syntax","Matrix builds (multi-python, multi-OS)","Environment secrets + variables","Artifacts + caching"],tags:["CI/CD","GitHub"],measure:"CI pipeline مع test + lint + build",install:"GitHub account",details:"GitHub Actions يبني ويختبر وينشر تلقائياً. Matrix builds يختبر على إصدارات متعددة.",tips:["Cache pip/virtualenv لتسريع","Matrix strategy لاختبار متعدد","Actions marketplace يحتوي آلاف plugins"],suggest:"CI pipeline: lint → test (matrix) → build Docker image"},
-    50: {title:"CI/CD متقدم",desc:"Deploy workflows, manual triggers, reusable workflows",tasks:["Deploy workflows (SSH deploy)","Workflow dispatch (manual trigger)","Reusable workflows","OIDC for AWS auth"],tags:["CI/CD","DevOps"],measure:"CD pipeline تشغل deploy تلقائي",install:"GitHub + AWS",details:"CD pipeline تنشر تلقائياً بعد الـ tests. Reusable workflows تمنع التكرار.",tips:["Deploy مع rsync أو Docker","OIDC بدون access keys في GitHub","Environments تحدد القواعد"],suggest:"CD pipeline: on push to main → deploy to EC2 تلقائياً"},
-    51: {title:"AWS — EC2 + S3",desc:"EC2 types, AMIs, security groups, S3 buckets, policies",tasks:["EC2: instance types, AMI, SG, EBS","S3: buckets, objects, policies, versioning","S3 lifecycle + static hosting","EC2 + S3 integration"],tags:["AWS","EC2"],measure:"تبني EC2 + S3 architecture متكاملة",install:"AWS account",details:"EC2 و S3 هما الخدمتان الأساسيتان. EC2 للحوسبة، S3 للتخزين.",tips:["تعلّم AWS CLI","S3 lifecycle ينقل الملفات تلقائياً لـ Glacier","EC2 + S3 مع instance profile"],suggest:"EC2 يشغل app + S3 للملفات + النسخ الاحتياطي التلقائي"},
-    52: {title:"AWS — IAM + VPC Basics",desc:"IAM roles, policies, VPC, subnets, security",tasks:["IAM users, groups, roles, policies","IAM best practices (least privilege)","VPC: subnets, route tables, NAT","Security groups + NACLs"],tags:["AWS","IAM"],measure:"تضبط IAM policy بأقل الصلاحيات",install:"AWS account",details:"IAM هو بواب الأمن في AWS. Least privilege = خطر أقل. VPC يعزل مواردك.",tips:["IAM roles > IAM users للتطبيقات","استخدم managed policies كبداية","VPC مع public/private subnets"],suggest:"IAM policy: developer access مع قيود على production"},
-    // MONTH 12 — Final Project Y1
-    53: {title:"Project — Architecture + Setup",desc:"System design, Docker, CI/CD pipeline, monitoring plan",tasks:["System architecture design","Docker Compose لجميع services","CI/CD pipeline setup","Monitoring + alerting plan"],tags:["Architecture","Docker"],measure:"تصميم architecture + Docker Compose",install:"Docker, draw.io",details:"خطط قبل البناء. Architecture diagram يمنع المشاكل. Docker Compose يربط كل services.",tips:["ارسم architecture على draw.io","Compose مع profiles: dev, staging, prod","خطط للـ monitoring من البداية"],suggest:"Architecture + Docker Compose لـ AI platform كاملة"},
-    54: {title:"Project — CI/CD + Deployment",desc:"GitHub Actions, automated deploy, rollback, envs",tasks:["CI: test + lint + build","CD: automated deploy to AWS","Rollback strategy","Multi-environment (staging/prod)"],tags:["CI/CD","Deploy"],measure:"Deploy تلقائي من push للمنتج",install:"GitHub Actions, AWS",details:"Rollback strategy ضروري — الخطأ وارد. Multi-environment يفصل الاختبار عن الإنتاج.",tips:["Staging = production mirror","Rollback = إعادة الـ previous version","Environments = different secrets"],suggest:"GitHub Actions: push to prod → auto deploy + rollback"},
-    55: {title:"Project — Monitoring + Logging",desc:"Health checks, metrics, logging, alerting",tasks:["Health check endpoints","Structured logging (structlog)","Metrics (Prometheus + /metrics)","Alerting setup (email/slack)"],tags:["Monitoring","Observability"],measure:"Dashboard + alert يعمل",install:"prometheus_client, grafana, structlog",details:"Observability: logs + metrics + traces. Prometheus يجمع metrics. Grafana يعرضها.",tips:["RED metrics: Rate, Errors, Duration","Structured logging مع JSON","Alert with severity levels"],suggest:"Grafana dashboard + alert إذا ارتفع latency"},
-    56: {title:"Project — Polish + مراجعة السنة",desc:"Security audit, performance, docs, review",tasks:["Security audit (envs, CORS, headers)","Performance tuning + load test","Full documentation + README","مراجعة كل ما تعلمته في سنة"],tags:["Polish","Review"],measure:"مراجعة كاملة + توثيق لكل المشاريع",install:"أدوات audit",details:"المراجعة تثبت التعلم. Documentation هدية لمستقبلك.",tips:["Security audit مع OWASP checklist","Load test مع locust","اكتب ما تعلمته في كل شهر"],suggest:"وثّق رحلتك: تحديات + حلول + نصائح للآخرين"},
-
-    // ===== YEAR 2 =====
-    // MONTH 13
-    57: {title:"Multi-Agent Patterns",desc:"Supervisor, swarm, pipeline, hierarchy patterns",tasks:["Supervisor agent pattern","Swarm pattern","Pipeline pattern","Hierarchical agents"],tags:["Multi-Agent","Patterns"],measure:"تنفذ 3 patterns مختلفة",time:"12-16 ساعة",install:"langgraph, langchain",details:"Multi-Agent Systems هي مستقبل AI. Supervisor يدير agents. Swarm يوزع المهام.\n\n📌 الـ 4 Patterns:\n1. Supervisor: Agent رئيسي يقرر أي agent ينفذ المهمة\n2. Swarm: Agents متساوون يتعاونون على مهمة\n3. Pipeline: Agents في تسلسل — output الأول = input الثاني\n4. Hierarchy: Agent رئيسي ← ثانوي ← متخصصون\n\n📌 متى تستخدم كل pattern:\n• Supervisor: مهمة معقدة تحتاج تخصصات مختلفة\n• Swarm: مهمة واحدة كبيرة تقسم على agents\n• Pipeline: خطوات متسلسلة مثل search → analyze → summarize\n• Hierarchy: مؤسسة متكاملة تحتاج هيكل تنظيمي",tips:["ابدأ بـ Supervisor pattern","ارسم architecture قبل البرمجة","اختبر agents بشكل منفصل"],suggest:"3 patterns: Supervisor/Swarm/Pipeline على نفس المشكلة",why:"السنة الثانية تركز على الأنظمة المعقدة. Multi-Agent Systems هي المهارة الأعلى قيمة في سوق AI 2025-2027. الشركات تبحث عن من يبني أنظمة Agents متعددة.",
-practice:"اختر مشكلة (مثل: البحث عن معلومات من الإنترنت وتلخيصها). نفذها بـ 3 patterns مختلفة (Supervisor, Swarm, Pipeline). قارن النتائج من حيث السرعة والدقة."},
-    58: {title:"Agent Orchestration",desc:"Task distribution, coordination, fault tolerance",tasks:["Task decomposition + assignment","Agent coordination protocols","Fault tolerance + retry","Recovery + fallback strategies"],tags:["Orchestration","Agents"],measure:"نظام 3 agents يعمل مع tolerance",install:"langgraph, redis",details:"Orchestration ينسق العمل بين agents. Fault tolerance يمنع توقف النظام.",tips:["Retry مع exponential backoff","Fallback = agent آخر ينفذ المهمة","ارسم sequence diagram"],suggest:"3 agents: search → analyze → summarize مع fallback"},
-    59: {title:"Long-term Memory Systems",desc:"Vector memory, knowledge graphs, summarization, pruning",tasks:["Vector store as long-term memory","Knowledge graph extraction","Automatic summarization + compression","Memory pruning + consolidation"],tags:["Memory","Knowledge"],measure:"Agent يتذكر من جلسات سابقة",install:"qdrant, networkx",details:"Long-term memory يحوّل الـ agent من عديم الذاكرة إلى نظام متذكر. Pruning يمنع التخمة.",tips:["Summarize conversations كل 10 turns","Knowledge graph يربط المفاهيم","Pruning: احذف old/duplicate"],suggest:"Agent يتذكر تفضيلات المستخدم عبر 10 جلسات"},
-    60: {title:"Agent Communication",desc:"Message passing, events, shared state, tools sharing",tasks:["Message passing protocol","Event-driven agent communication","Shared state management","Tool sharing بين agents"],tags:["Communication","Agents"],measure:"نظام agents يتواصلون وينسقون",install:"redis pub/sub, langgraph",details:"Agent communication يمكّن التعاون. Shared state = تناسق المعلومات.",tips:["Redis pub/sub للـ messaging","Shared state في Redis","Tools sharing = مكتبة أدوات مشتركة"],suggest:"2 agents: Planner يخطط + Worker ينفذ, مع tool sharing"},
-    // MONTH 14
-    61: {title:"WebSockets بعمق",desc:"Connection management, rooms, broadcasting, reconnection",tasks:["WebSocket connection lifecycle","Room/channel management","Broadcasting + targeted messages","Reconnection + heartbeat"],tags:["WebSocket","Real-time"],measure:"Chat system بـ WebSocket مع rooms",install:"fastapi, websockets",details:"WebSocket = persistent connection. Rooms = channels للبث الموجه.",tips:["Heartbeat يحافظ على الاتصال","Auto-reconnect مع exponential backoff","Broadcasting = publish to all in room"],suggest:"Chat app مع rooms + broadcast + typing indicator"},
-    62: {title:"Message Queues (Redis/Celery)",desc:"Producers, consumers, queues, exchanges, routing",tasks:["Redis Queue (RQ) basics","Celery + Redis/RabbitMQ","Exchanges, queues, routing keys","Task prioritization + scheduling"],tags:["Queues","Celery"],measure:"تبني task queue مع 3 أنواع وظائف",install:"celery, redis",details:"Message queues تفصل الـ requests عن الـ processing. Celery هو الحل الأشهر.",tips:["Priority queues للمهام العاجلة","Scheduled tasks مع celery beat","Monitoring مع flower"],suggest:"Task queue: 3 priorities + scheduled daily report"},
-    63: {title:"Event-Driven Architecture",desc:"Events, event bus, CQRS, SAGA pattern",tasks:["Event bus implementation","CQRS pattern basics","SAGA pattern for distributed transactions","Event sourcing basics"],tags:["Events","Architecture"],measure:"نظام event-driven مع event bus",install:"redis, fastapi",details:"Event-driven architecture يفصل services. CQRS يفصل القراءة عن الكتابة.",tips:["ابدأ بـ simple event bus","CQRS مع separate read/write DB","SAGA = local transactions + compensating"],suggest:"Order system: create → validate → payment → notify (events)"},
-    64: {title:"Streaming LLM Responses",desc:"SSE, streaming parsers, backpressure, token streaming",tasks:["Server-Sent Events (SSE)","Streaming LLM output parser","Backpressure handling","Token streaming + progressive UI"],tags:["Streaming","LLM"],measure:"LLM streaming response مع SSE",install:"fastapi, httpx",details:"Streaming يحسّن تجربة المستخدم بشكل كبير. Backpressure يمنع التحميل الزائد.",tips:["SSE أسهل من WebSocket للـ streaming","Streaming parser يخرج الكلمات مباشرة","Progressive UI = تظهر النتائج فوراً"],suggest:"Chat interface مع streaming + progressive UI"},
-    // MONTH 15 — Multi-Agent Project
-    65: {title:"Planner Agent",desc:"Task planning, decomposition, scheduling, dependency mgmt",tasks:["Research task decomposition","Dependency graph building","Schedule + timeline generation","Re-planning on failure"],tags:["Planner","Agent"],measure:"Planner يخطط بحث كامل بـ 10+ steps",install:"langchain, langgraph",details:"Planner هو عقل الفريق. يقسم المشكلة الكبيرة إلى خطوات صغيرة.",tips:["Dependency graph مع topological sort","Re-planning إذا فشلت مهمة","Prioritize حسب المدة والتأثير"],suggest:"Planner لـ research project: 10 steps مع dependencies"},
-    66: {title:"Researcher Agent",desc:"Web search, source evaluation, information extraction",tasks:["Web search tools (SerpAPI, Tavily)","Source credibility evaluation","Information extraction + summarization","Source citation + tracking"],tags:["Research","Agent"],measure:"Researcher يجمع + يقيّم 20+ مصدراً",install:"tavily, beautifulsoup4",details:"Researcher هو جامع المعلومات. تقييم المصادر مهارة مهمة جداً.",tips:["Tavily search مخصص للـ AI","تقييم: domain age, author, citations","استخرج key facts + quotes"],suggest:"Researcher على موضوع علمي مع 20 مصدراً موثوقاً"},
-    67: {title:"Reviewer Agent",desc:"Quality check, fact-checking, consistency, feedback",tasks:["Quality criteria definition","Fact-checking pipeline","Consistency + coherence check","Feedback + revision generation"],tags:["Reviewer","Agent"],measure:"Reviewer يقيّم بدقة 90%+",install:"langchain",details:"Reviewer يضمن الجودة. Fact-checking مع LLM + search.",tips:["Fact-check = claim → search → verify","Consistency = same answer across sections","Feedback = actionable + specific"],suggest:"Reviewer مقال كامل: quality + facts + consistency"},
-    68: {title:"Coding Agent",desc:"Code generation, testing, debugging, documentation",tasks:["Code generation from specs","Test generation + execution","Debugging + fixing loop","Code documentation generation"],tags:["Coding","Agent"],measure:"Coding agent يبني module من وصف",install:"langchain, python-exec sandbox",details:"Coding agent يسرع التطوير. Test generation يضمن الجودة. Sandbox للأمان.",tips:["استخدم sandbox لتشغيل الكود","Generate tests قبل الكود","Loop: code → test → fix"],suggest:"Agent يبني FastAPI CRUD module من الوصف + tests"},
-    // MONTH 16 — Integration
-    69: {title:"Agent Integration + Workflow",desc:"دمج agents, orchestration workflow, state management",tasks:["Agent integration into single system","Orchestration workflow (LangGraph)","Shared state + memory","Error handling + recovery"],tags:["Integration","Workflow"],measure:"4 agents يعملون معاً",install:"langgraph, redis",details:"دمج agents = النظام الكامل. Orchestration workflow ينظم التدفق.",tips:["Shared state في Redis","جرب الـ workflow مع حالات خطأ","Monitor كل agentindividually"],suggest:"4 agents: Plan → Research → Review → Code → Report"},
-    70: {title:"Testing + Evaluation",desc:"Agent testing, evaluation metrics, performance",tasks:["Unit + integration tests لكل agent","End-to-end testing","Agent evaluation metrics","Performance benchmarking"],tags:["Testing","Eval"],measure:"Test suite لـ 4 agents + evaluation",install:"pytest, langchain",details:"Agent testing = behaviour tests. Evaluation = quality metrics.",tips:["Mock الـ LLM للـ unit tests","E2E tests مع real LLM","Metrics: accuracy, speed, cost"],suggest:"Test suite: unit + integration + e2e + benchmarks"},
-    71: {title:"UI + API Layer",desc:"Chat interface, task management, results display",tasks:["Chat interface للتتفاعل مع النظام","Task management + progress view","Results display + export","Streaming agent outputs"],tags:["UI","API"],measure:"واجهة متكاملة لإدارة agents",install:"fastapi, htmx أو react",details:"واجهة المستخدم تظهر قوة النظام. Task management ضروري للـ agents.",tips:["Streaming agent outputs","Status لكل agent: running/done/failed","Export results: PDF, CSV, JSON"],suggest:"Dashboard: submit task → watch agents work → see results"},
-    72: {title:"Deployment + Docs + Review",desc:"Docker, deploy, documentation, review",tasks:["Docker Compose للنظام كامل","Deploy على AWS مع domain","Full documentation","Review + lessons learned"],tags:["Deploy","Docs"],measure:"نظام multi-agent live على AWS",install:"Docker, AWS",details:"نشر نظام متكامل. Documentation تخلّد عملك.",tips:["Docker Compose لكل services","CI/CD pipeline للمشروع","Write case study"],suggest:"Multi-agent system live + case study article"},
-    // MONTH 17 — K8s
-    73: {title:"Kubernetes Fundamentals",desc:"Architecture, pods, deployments, services, namespaces",tasks:["K8s architecture (master/node)","Pods + containers","Deployments + ReplicaSets","Services (ClusterIP, NodePort, LB)"],tags:["Kubernetes"],measure:"تشغل deployment + service على minikube",install:"minikube, kubectl",details:"Kubernetes = orchestration الحاويات. Pods أصغر وحدة. Deployments يضمنون التشغيل.",tips:["ابدأ بـ minikube محلياً","kubectl get pods/watch/logs","Services تربط pods بالشبكة"],suggest:"Deploy + Service + Ingress لتطبيق FastAPI على minikube"},
-    74: {title:"K8s — Config + Storage",desc:"ConfigMaps, Secrets, persistent volumes, PVC",tasks:["ConfigMaps + environment vars","Secrets management","Persistent Volumes + Claims","Storage classes"],tags:["Kubernetes","Config"],measure:"تضبط ConfigMap + PVC لـ PostgreSQL",install:"minikube, kubectl",details:"ConfigMaps > env files. Secrets = base64 + encryption. PVC = storage للـ pods.",tips:["Secrets مش آمنة (base64) — استخدم External Secrets","PVC مع StorageClass للـ cloud","ConfigMaps للتكوين غير الحساس"],suggest:"PostgreSQL على K8s مع ConfigMap + PVC + Secret"},
-    75: {title:"K8s — Networking + Ingress",desc:"Ingress controller, TLS, network policies, service mesh",tasks:["Ingress + Ingress Controller (Nginx)","TLS termination","Network policies","Service mesh (Istio intro)"],tags:["K8s","Networking"],measure:"تضبط Ingress + TLS + network policy",install:"ingress-nginx, cert-manager",details:"Ingress يدخل الـ traffic خارجياً. TLS مع cert-manager تلقائي. Network policies = firewall.",tips:["Ingress + cert-manager = auto SSL","Network policies deny all أولاً","Service mesh (Istio) متقدم"],suggest:"FastAPI app مع Ingress + TLS + rate limiting"},
-    76: {title:"Helm + Package Management",desc:"Helm charts, templates, values, releases",tasks:["Helm basics + install","Chart structure + templates","Values + overrides","Release management + rollback"],tags:["Helm","K8s"],measure:"تبني Helm chart لنشر تطبيقك",install:"helm",details:"Helm = package manager لـ K8s. Charts = templates + values. Rollback سريع.",tips:["Chart.yaml + templates/ + values.yaml","helm template لمعاينة","helm rollback إذا فشل التحديث"],suggest:"Helm chart لتطبيق FastAPI + PostgreSQL"},
-    // MONTH 18 — Distributed Systems
-    77: {title:"Scaling + Load Balancing",desc:"Horizontal/vertical scaling, HPA, load balancers",tasks:["Horizontal Pod Autoscaler (HPA)","Vertical scaling vs horizontal","Load balancer algorithms","Auto-scaling strategies"],tags:["Scaling","K8s"],measure:"HPA يضبط pods حسب CPU",install:"metrics-server, kubernetes",details:"HPA يزيد pods تلقائياً. Vertical scaling يزيد الموارد. Load balancer يوزع traffic.",tips:["HPA مع CPU + memory","Custom metrics مع Prometheus","Test scaling مع load test"],suggest:"HPA: scale pods من 1 إلى 10 تحت load test"},
-    78: {title:"Nginx + Reverse Proxy",desc:"Nginx config, rate limiting, caching, SSL termination",tasks:["Nginx locations + upstreams","Rate limiting + buffering","Caching layer (proxy_cache)","SSL termination + HTTP/2"],tags:["Nginx","Proxy"],measure:"Nginx config مع rate limit + cache",install:"nginx",details:"Nginx هو أشهر reverse proxy. Rate limiting يحمي من DDoS. Caching يسرع.",tips:["proxy_cache مع inactive/valid","Rate limit: req/second لكل IP","HTTP/2 أسرع لـ modern apps"],suggest:"Nginx أمام FastAPI: rate limit + cache + SSL"},
-    79: {title:"Observability — Prometheus + Grafana",desc:"Metrics, dashboards, alerts, exporters",tasks:["Prometheus setup + metrics","Grafana dashboards","Alerting rules + Alertmanager","Exporters (node, postgres)"],tags:["Monitoring","Grafana"],measure:"Grafana dashboard مع 5+ panels + alert",install:"prometheus, grafana, exporters",details:"Observability = فهم النظام. Prometheus يجمع. Grafana يعرض. Alertmanager ينبه.",tips:["RED: Rate, Errors, Duration","USE: Utilization, Saturation, Errors","Grafana مع variables لـ dynamic dashboards"],suggest:"Grafana dashboard: system + app + database metrics"},
-    80: {title:"Linux Advanced Tuning",desc:"Kernel params, cgroups, namespaces, system tuning",tasks:["Kernel parameters (sysctl)","cgroups + resource limits","Network namespaces","System performance tuning"],tags:["Linux","Tuning"],measure:"تظبط kernel params لـ high-performance",install:"Linux machine",details:"Kernel tuning يحسّن أداء السيرفر. cgroups يحدد الموارد. Namespaces لعزل الـ processes.",tips:["sysctl -w net.core.somaxconn=65535","ulimit للمستخدمين","cgroups v2 مع systemd"],suggest:"Kernel tuning لـ high-traffic web server + benchmark"},
-    // MONTH 19 — Dashboard Project
-    81: {title:"Dashboard — Architecture + Backend",desc:"FastAPI backend, metrics aggregation, APIs",tasks:["Backend for dashboard (FastAPI)","Metrics aggregation API","Services discovery","Real-time updates via WebSocket"],tags:["Backend","Dashboard"],measure:"API يجمع metrics من 3 خدمات",install:"fastapi, prometheus_client",details:"Dashboard يدمج كل services. Backend يجمع metrics من مصادر متعددة.",tips:["Service discovery مع labels","WebSocket للـ real-time","استخدم async لعدم الحظر"],suggest:"Backend يجمع metrics من FastAPI + PostgreSQL + Redis"},
-    82: {title:"Dashboard — Frontend + Charts",desc:"Charts, gauges, tables, real-time updates",tasks:["Charts (Plotly/Chart.js)","Gauges + status indicators","Real-time updates (WS/SSE)","Responsive layout"],tags:["Frontend","Charts"],measure:"Dashboard بـ 5+ charts + real-time",install:"chart.js/plotly, basic HTML/JS",details:"Frontend يعرض البيانات بشكل مرئي. Real-time يحدّث دون refresh.",tips:["Chart.js خفيف وسهل","Gauges للـ utilization","Auto-refresh كل 5 ثوانٍ"],suggest:"Dashboard: system health + metrics + real-time charts"},
-    83: {title:"Dashboard — Alerting + Automation",desc:"Alert rules, notifications, auto-remediation",tasks:["Alert rules + thresholds","Notifications (email, Slack, Telegram)","Auto-remediation scripts","On-call rotation basics"],tags:["Alerting","Automation"],measure:"Alert system + auto-remediation",install:"prometheus, alertmanager",details:"Alerting = اكتشاف المشكلة قبل المستخدم. Auto-remediation = حل تلقائي.",tips:["PagerDuty / OpsGenie للـ on-call","Auto-remediation: restart pod if down","Alert مع severity levels"],suggest:"Alert + auto-remediation: restart service if 5xx > 5%"},
-    84: {title:"Integration + Deployment",desc:"Docker, K8s deployment, CI/CD, docs",tasks:["Docker Compose للنظام","Deploy على K8s","CI/CD pipeline","Full documentation"],tags:["Deploy","K8s"],measure:"Dashboard live مع monitoring كامل",install:"K8s, Docker, CI/CD",details:"نظام متكامل live مع monitoring.",tips:["GitOps مع ArgoCD","Helm للـ deployment","Grafana + Prometheus في K8s"],suggest:"Infrastructure dashboard live مع CI/CD"},
-    // MONTH 20 — Polish
-    85: {title:"Security Hardening",desc:"OWASP, secrets, network security, audit",tasks:["OWASP top 10 review","Secrets management audit","Network security review","Security audit لكل مشروع"],tags:["Security","Audit"],measure:"تأمين 3 مشاريع ضد OWASP",install:"أدوات audit",details:"Security ليس إضافة — هو أساس. OWASP top 10 أشهر الثغرات.",tips:["أبداً لا تضع secrets في code","استخدم secrets manager (AWS Secrets Manager)","Network security = firewalls + encryption"],suggest:"Security audit لـ 3 مشاريع واصلاح الثغرات"},
-    86: {title:"Performance Optimization",desc:"Profiling, bottlenecks, optimizations, load testing",tasks:["Profiling (cProfile, py-spy)","Bottleneck identification","Optimization strategies","Load testing + benchmarking"],tags:["Performance"],measure:"تحسن أداء مشروع بـ 50%+",install:"py-spy, locust",details:"Performance optimization يعلّمك كيف تعمل الأنظمة. Profile أولاً ثم تحسّن.",tips:["Profile قبل التحسين","Optimize database queries أولاً","Cache results المتكررة"],suggest:"Profile + optimize مشروعك الحالي وسجّل التحسين"},
-    87: {title:"Chaos Engineering Basics",desc:"Fault injection, resilience testing, disaster recovery",tasks:["Fault injection (Chaos Mesh)","Resilience testing","Disaster recovery plan","Backup + restore testing"],tags:["Chaos","Resilience"],measure:"Fault injection test + recovery plan",install:"chaos-mesh (K8s)",details:"Chaos engineering يختبر تحمل النظام للفشل. Kill a pod → what happens?",tips:["ابدأ بـ small blast radius","Kill pod → هل service يعمل؟","اصنع recovery plan"],suggest:"Chaos experiment: kill pod تلقائياً + verify recovery"},
-    88: {title:"مراجعة + توثيق البنية التحتية",desc:"مراجعة كل infra, توثيق, architecture diagrams",tasks:["Infrastructure review","Architecture diagrams (draw.io)","Runbooks + playbooks","Lessons learned documentation"],tags:["Review","Docs"],measure:"Infra docs كاملة + diagrams",install:"draw.io",details:"التوثيق هدية لمستقبلك. Runbooks تحل المشاكل بسرعة.",tips:["Runbook = ماذا تفعل عند المشكلة","Diagrams تحدث مع التغييرات","Lessons learned = كنز"],suggest:"Infra documentation + runbook + diagrams"},
-    // MONTH 21 — Portfolio Polish
-    89: {title:"Code Refactoring",desc:"Clean code, architecture refactor, removing debt",tasks:["Code review لكل مشروع","Architecture refactoring","Remove tech debt","Consistent code style"],tags:["Refactor","Quality"],measure:"تخلي 5 مشاريع بـ code quality ممتاز",install:"ruff, black, mypy",details:"Refactoring يحسّن الجودة بدون تغيير الوظيفة. Clean code = صيانة أسهل.",tips:["Format مع black","Sort imports مع ruff","Type hints لكل functions"],suggest:"Refactor مشروعك الأقدم ← الأحدث مع tools"},
-    90: {title:"Testing لكل مشروع",desc:"Unit, integration, e2e, coverage targets",tasks:["Unit tests لكل service","Integration tests","End-to-end tests","Coverage ≥ 80%"],tags:["Testing","Quality"],measure:"كل مشروع عنده test suite + 80% coverage",install:"pytest, pytest-cov",details:"Tests تمنع bugs وتوثّق behaviour. Coverage يقيس كمية الكود المختبر.",tips:["Start with critical paths","Mock external services","CI يمنع merge بدون tests"],suggest:"Test suite لكل مشروع + CI check"},
-    91: {title:"CI/CD لكل مشروع",desc:"GitHub Actions لكل مشروع, automated deploy",tasks:["GitHub Actions لكل مشروع","Automated test + lint + build","Automated deploy (staging)","Status badges + README"],tags:["CI/CD","Automation"],measure:"كل مشروع ليه CI pipeline شغالة",install:"GitHub Actions",details:"CI/CD = توصيل القيمة باستمرار. Status badges تظهر الجودة.",tips:["Badges في README: test, coverage, build","Deploy staging لكل PR","Scheduled jobs للـ maintenance"],suggest:"أضف CI/CD + badges لكل مشروع"},
-    92: {title:"Documentation + README",desc:"Professional README, API docs, architecture",tasks:["README احترافي لكل مشروع","API docs + examples","Architecture documentation","Deployment guide + runbook"],tags:["Docs","README"],measure:"5 مشاريع بـ README + docs كامل",install:"GitHub, markdown",details:"README = أول انطباع. Documentation = فرق المحترفين.",tips:["README: title, desc, install, usage, structure, license","Screenshots + diagrams","API docs مع OpenAPI"],suggest:"README نموذجي لكل مشروع"},
-    // MONTH 22 — Branding
-    93: {title:"LinkedIn Profile احترافي",desc:"Headline, summary, experience, projects",tasks:["Headline + about section","Experience + projects listings","Skills + endorsements","Recommendations requests"],tags:["LinkedIn","Branding"],measure:"LinkedIn profile كامل",details:"LinkedIn هو بوابتك للفرص. Headline يحدد هويتك المهنية.",tips:["Headline: 'Applied AI Engineer | Building AI Systems','Summary: قصة + ماذا تقدم + طموح","صورة احترافية"],suggest:"Profile كامل + 10+ مهارات + توصيتان"},
-    94: {title:"GitHub Profile + Pages",desc:"GitHub profile, pinned repos, GitHub Pages",tasks:["GitHub profile README","Pin 5 projects + descriptions","GitHub Pages portfolio","Open source contribution"],tags:["GitHub","Portfolio"],measure:"GitHub profile بمشاريع مرتبة + Pages",install:"GitHub account",details:"GitHub هو سيرتك الذاتية التقنية. Profile README يعرفك.",tips:["Pin top 5 مشاريع","README لكل مشروع","GitHub Pages portfolio"],suggest:"GitHub profile + Pages portfolio + أول contribution"},
-    95: {title:"Technical Writing + Content",desc:"Articles, posts, tutorials, videos",tasks:["2 articles عن مشاريعك","LinkedIn posts (3+ أسبوعياً)","عرض مشروع فيديو","Technical blog basics"],tags:["Writing","Content"],measure:"5+ LinkedIn posts + 2 articles",install:"Medium / dev.to / LinkedIn",details:"الكتابة تثبت فهمك. المحتوى يبني سمعة.",tips:["اكتب عن مشكلة وحلها","تصاميم بصرية ترفع الجودة","استخدم code snippets"],suggest:"مقال: 'How I built a Multi-Agent System' + LinkedIn سلسلة"},
-    96: {title:"Networking + Community",desc:"Hackathons, meetups, communities, conferences",tasks:["انضم لـ 3+ مجتمعات تقنية","احضر هاكاثون","تواصل مع 10+ مهندسين","شارك في مناقشات تقنية"],tags:["Networking","Community"],measure:"شبكة علاقات + مشاركة مجتمعية",install:"Telegram, LinkedIn, Meetup",details:"العلاقات تفتح أبواباً لا تفتحها المهارات وحدها.",tips:["اسأل أسئلة ذكية","اعرض مساعدتك","شارك معرفتك مجاناً"],suggest:"احضر هاكاثون + تواصل مع 5 مهندسين أسبوعياً"},
-    // MONTH 23 — Interviews
-    97: {title:"System Design Prep",desc:"Design patterns, architecture, scalability cases",tasks:["Design: Chat system, RAG, Agent system","Scalability + trade-offs","Database design cases","API design cases"],tags:["System Design"],measure:"تحل 3 system design cases",install:"draw.io, exalidraw",details:"System Design = هل تفكر كمهندس؟ المقابلات التقنية تختبر هذا.",tips:["استخدم C4 model للـ diagrams","Start small → scale","Trade-offs: SQL vs NoSQL, sync vs async"],suggest:"Design: AI Document Chat System (30 min)"},
-    98: {title:"Coding Interviews Prep",desc:"Algorithms, data structures, Python",tasks:["Arrays, strings, hash tables","Trees, graphs, recursion","Dynamic programming basics","Python-specific + concurrency"],tags:["Coding","Algorithms"],measure:"تحل 20 LeetCode medium",install:"LeetCode / HackerRank",details:"Coding interviews تختبر التفكير المنهجي. Python سريع للـ prototyping.",tips:["Focus on patterns (two pointer, sliding window, BFS/DFS)","Talk aloud while solving","Optimize only after brute force"],suggest:"20 LeetCode medium + mock interview"},
-    99: {title:"AI/ML Concepts Prep",desc:"LLMs, RAG, agents, MLOps, transformers",tasks:["LLM internals + prompting","RAG architecture + variants","Agent patterns + design","MLOps + deployment workflows"],tags:["AI","ML"],measure:"تشرح 5 AI concepts معمقاً",install:"flashcards (Anki)",details:"AI concepts = أساس المقابلات. اشرحها لصديق أو سجّل فيديو.",tips:["تعلّم بالشرح (Feynman technique)","ارسم diagrams لكل concept","أمثلة عملية من مشاريعك"],suggest:"سجل 5 فيديوهات قصيرة تشرح AI concepts"},
-    100: {title:"Mock Interviews + Behavioural",desc:"Mock interviews, STAR, behavioural stories",tasks:["Mock interviews (3+)","STAR stories: 5 scenarios","Behavioural questions prep","Salary negotiation basics"],tags:["Interviews","Career"],measure:"3 mock interviews + STAR stories",install:"pramp / interviewing.io",details:"Mock interviews تزيل الخوف. STAR = Situation, Task, Action, Result.",tips:["تدرّب على 5 قصص STAR","Saavy negotiation يعطي 10-20% أكثر","اسأل أسئلة ذكية للمقابل"],suggest:"3 mock interviews + 5 STAR stories مكتوبة"},
-    // MONTH 24 — Launch
-    101: {title:"Resume + Portfolio Final",desc:"CV, portfolio, case studies, deploy live demos",tasks:["Resume تصميم احترافي","Portfolio website مع live demos","Case studies لكل مشروع","Applied jobs tracker"],tags:["Resume","Portfolio"],measure:"Resume + portfolio website live",install:"LinkedIn, GitHub Pages",details:"Resume = 30 ثانية لتقرير. Portfolio = دليل عملك.",tips:["One-page resume","Quantify achievements","Live demos > screenshots"],suggest:"Resume + Portfolio + Case study PDF"},
-    102: {title:"Job Applications + Networking",desc:"Apply, follow up, network, referrals, interviews",tasks:["Apply لـ 20+ شركة","Follow-up system","Network for referrals","Interview scheduling"],tags:["Jobs","Apply"],measure:"20+ طلب + 5+ مقابلات",install:"LinkedIn, company sites",details:"Job search = رقماً. Track applications. Follow up = احترافية.",tips:["Customize لكل شركة","Follow up بعد 5-7 أيام","Referrals تزيد فرصك 10x"],suggest:"20 تطبيق + متابعة + مقابلات"},
-    103: {title:"Freelance Platforms Setup",desc:"Upwork, مستقل, Fiverr",tasks:["Upwork profile + proposals","مستقل profile","Pricing strategy","First freelance project"],tags:["Freelance","Business"],measure:"Upwork + مستقل profiles + أول مشروع",install:"Upwork, مستقل",details:"Freelance = تحكم بوقتك + خبرة متنوعة. ابدأ بـ small projects.",tips:["Profile = professional + portfolio","Proposals = مخصصة لكل مشروع","Prices = low first, then raise"],suggest:"Profile + أول proposal + أول مشروع"},
-    104: {title:"المراجعة النهائية + تخطيط المستقبل",desc:"مراجعة سنتين كاملة, تخطيط المسار القادم",tasks:["مراجعة كل الإنجازات","مسار العام القادم: تخصص أعمق","Smart goals للمستقبل","احتفل بتعب سنتين 🎉"],tags:["Review","Future"],measure:"خطة سنتين جديدة + احتفال!",install:"Journal + celebration",details:"104 أسابيع من العمل. راجع أين كنت وأين وصلت. خطّط للمستقبل.",tips:["اكتب lessons learned في كل مشروع","مستوى الـ AI يتغير — تعلم مدى الحياة","احتفل بالإنجازات"],suggest:"احتفل 🎉 + اكتب خطة سنتين جديدة"}
-  };
-
-  // === MONTHS STRUCTURE ===
-  const monthsConfig = [
-    {year:1,month:1,phase:"Core Engineering",title:"Python متقدم — OOP + AsyncIO"},
-    {year:1,month:2,phase:"Core Engineering",title:"SQL متقدم + Linux + Git"},
-    {year:1,month:3,phase:"Core Engineering",title:"مشروع Data API Platform + مراجعة"},
-    {year:1,month:4,phase:"Core Engineering",title:"SQL Design + PostgreSQL + Security"},
-    {year:1,month:5,phase:"Core Engineering",title:"FastAPI Sprint — مشروع Data API Platform"},
-    {year:1,month:6,phase:"Backend + AI",title:"FastAPI بعمق + PostgreSQL + Redis"},
-    {year:1,month:7,phase:"Backend + AI",title:"Docker + AI Fundamentals"},
-    {year:1,month:8,phase:"Backend + AI",title:"AI Document Chat — مشروع كامل"},
-    {year:1,month:9,phase:"Agent Engineering",title:"RAG بعمق + Qdrant + Vector DBs"},
-    {year:1,month:10,phase:"Agent Engineering",title:"LangChain + LangGraph + Agents"},
-    {year:1,month:11,phase:"Agent Engineering",title:"AI Data Analyst Agent — مشروع"},
-    {year:1,month:12,phase:"MLOps Foundations",title:"MLflow + Experiment Tracking"},
-    {year:1,month:13,phase:"MLOps Foundations",title:"CI/CD + AWS Basics"},
-    {year:1,month:14,phase:"MLOps Foundations",title:"AI Platform Deployment — مشروع"},
-    // YEAR 2
-    {year:2,month:15,phase:"Advanced AI",title:"Multi-Agent Systems + Orchestration"},
-    {year:2,month:16,phase:"Advanced AI",title:"Async + Streaming + WebSockets"},
-    {year:2,month:17,phase:"Advanced AI",title:"Multi-Agent Research — بناء"},
-    {year:2,month:18,phase:"Advanced AI",title:"Multi-Agent Integration + Polish"},
-    {year:2,month:19,phase:"Infrastructure",title:"Kubernetes + Helm"},
-    {year:2,month:20,phase:"Infrastructure",title:"Distributed Systems + Observability"},
-    {year:2,month:21,phase:"Infrastructure",title:"AI Infrastructure Dashboard"},
-    {year:2,month:22,phase:"Infrastructure",title:"تثبيت + تعمق + مراجعة"},
-    {year:2,month:23,phase:"Job Ready",title:"صقل المشاريع — Code + Tests"},
-    {year:2,month:24,phase:"Job Ready",title:"الظهور الرقمي + LinkedIn"},
-    {year:2,month:25,phase:"Job Ready",title:"الاستعداد للمقابلات"},
-    {year:2,month:26,phase:"Job Ready",title:"إطلاق + Freelance + تخطيط"}
-  ];
-
-  const weekRanges = {
-    1:[1,2,3,4],2:[5,6,7,8],3:[9,10,11,12],
-    4:[13,14,15,16],5:[17,18,19,20],6:[21,22,23,24],
-    7:[25,26,27,28],8:[29,30,31,32],9:[33,34,35,36],
-    10:[37,38,39,40],11:[41,42,43,44],12:[45,46,47,48],
-    13:[49,50,51,52],14:[53,54,55,56],15:[57,58,59,60],
-    16:[61,62,63,64],17:[65,66,67,68],18:[69,70,71,72],
-    19:[73,74,75,76],20:[77,78,79,80],21:[81,82,83,84],
-    22:[85,86,87,88],23:[89,90,91,92],24:[93,94,95,96],
-    // extra weeks
-    25:[97,98,99,100],26:[101,102,103,104]
-  };
-
-  // === MONTH 12 has weeks 45-48, MONTH 13 has 49-52
-  // Let me assign properly
-  const mw = {
-    1:[1,2,3,4],2:[5,6,7,8],3:[9,10,11,12],
-    4:[13,14,15,16],5:[17,18,19,20],6:[21,22,23,24],
-    7:[25,26,27,28],8:[29,30,31,32],9:[33,34,35,36],
-    10:[37,38,39,40],11:[41,42,43,44],12:[45,46,47,48],
-    13:[49,50,51,52],14:[53,54,55,56],15:[57,58,59,60],
-    16:[61,62,63,64],17:[65,66,67,68],18:[69,70,71,72],
-    19:[73,74,75,76],20:[77,78,79,80],21:[81,82,83,84],
-    22:[85,86,87,88],23:[89,90,91,92],24:[93,94,95,96],
-    // Extra: months 25,26 for overflow weeks 97-104
-    25:[97,98,99,100],26:[101,102,103,104]
-  };
-
-  // Override: make weeks 57-104 point to correct data
-  // Additional data for weeks 49-104
-  // Already defined in weeksData above
-
-  // === RENDER ===
-  const STORE = 'ai-roadmap3';
-  function load(){try{return JSON.parse(localStorage.getItem(STORE))||{}}catch{return{}}}
-  function save(d){localStorage.setItem(STORE,JSON.stringify(d))}
-  let done = load();
-
-  function render(){
-    const y1=document.getElementById('y1'),y2=document.getElementById('y2');
-    y1.innerHTML='';y2.innerHTML='';
-
-    monthsConfig.forEach(mc=>{
-      const wnums = mw[mc.month] || [];
-      const container = mc.year===1?y1:y2;
-
-      const div=document.createElement('div');
-      div.className='month';
-
-      const total=wnums.length;
-      let dcount=0;
-      wnums.forEach(w=>{if(done[w])dcount++});
-      const pct=total>0?Math.round(dcount/total*100):0;
-
-      div.innerHTML=`
-        <div class="month-header" onclick="this.closest('.month').classList.toggle('open')">
-          <div class="left">
-            <span class="m-phase">${mc.month}</span>
-            <h3>${mc.title}</h3>
-            <span class="m-phase">${mc.phase}</span>
-          </div>
-          <span class="m-progress">${dcount}/${total}</span>
-          <span class="arrow">▾</span>
-        </div>
-        <div class="m-bar"><div class="fill" style="width:${pct}%"></div></div>
-        <div class="month-body">
-          ${wnums.map(wk=>{
-            const d=weeksData[wk];
-            if(!d) return '';
-            const isDone=done[wk];
-            return `
-              <div class="week ${isDone?'done':''}" data-wk="${wk}" onclick="openWeek(${wk})">
-                <div class="w-check" onclick="event.stopPropagation();toggleWeek(${wk})">${isDone?'✓':''}</div>
-                <div class="w-content">
-                  <div class="w-head">
-                    <span class="w-num">الأسبوع ${wk}</span>
-                    <h4>${d.title}</h4>
-                  </div>
-                  <p>${d.desc}</p>
-                  <ul>${d.tasks.map(t=>`<li>${t}</li>`).join('')}</ul>
-                  <div class="tags">${d.tags.map(t=>`<span>${t}</span>`).join('')}</div>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      `;
-
-      container.appendChild(div);
+const LSTORE='ai-roadmap-lessons';
+function loadLessons(){try{return JSON.parse(localStorage.getItem(LSTORE))||{}}catch(e){return{}}}
+function saveLessons(d){localStorage.setItem(LSTORE,JSON.stringify(d))}
+let learned=loadLessons();
+(function migrate(){
+  if(Object.keys(learned).length)return;
+  try{
+    const old=JSON.parse(localStorage.getItem('ai-roadmap3-lessons'))||{};
+    let migrated=false;
+    Object.keys(old).forEach(function(k){
+      const nk=k.indexOf('website/')===0?k.replace('website/',''):k;
+      if(old[k]&&!learned[nk]){learned[nk]=true;migrated=true;}
     });
+    if(migrated)saveLessons(learned);
+  }catch(e){}
+})();
+function refreshGroup(g){
+  const items=g.querySelectorAll('.lesson');const total=items.length;
+  const dcount=g.querySelectorAll('.lesson.done').length;
+  const pct=total>0?Math.round(dcount/total*100):0;
+  const fill=g.querySelector('.fill');if(fill)fill.style.width=pct+'%';
+  const prog=g.querySelector('.g-progress');if(prog)prog.textContent=dcount+'/'+total;
+}
+window.toggleLesson=function(key){
+  learned[key]=!learned[key];saveLessons(learned);
+  document.querySelectorAll('.lesson[data-lesson="'+key+'"]').forEach(function(el){el.classList.toggle('done',learned[key]);});
+  document.querySelectorAll('.group').forEach(refreshGroup);updateOverall();
+};
+function updateOverall(){
+  const all=document.querySelectorAll('.lesson').length;
+  const c=document.querySelectorAll('.lesson.done').length;
+  const pct=all>0?Math.round(c/all*100):0;
+  document.getElementById('overall-progress').textContent='التقدم: '+pct+'% ('+c+'/'+all+' دروساً)';
+}
+function render(){
+  const y1=document.getElementById('y1'),y2=document.getElementById('y2');
+  y1.innerHTML=Y1C;y2.innerHTML=Y2C;
+  document.querySelectorAll('.lesson').forEach(function(el){const k=el.getAttribute('data-lesson');if(learned[k])el.classList.add('done');});
+  document.querySelectorAll('.group').forEach(refreshGroup);updateOverall();
+  document.querySelectorAll('#y1 .group:first-child, #y2 .group:first-child').forEach(function(el){el.classList.add('open');});
+}
 
-    // Open first month of each year
-    document.querySelectorAll('#y1 .month:first-child, #y2 .month:first-child').forEach(el=>el.classList.add('open'));
-    updateOverall();
-  }
-
-  window.toggleWeek=function(wk){
-    done[wk]=!done[wk];
-    save(done);
-    const el=document.querySelector(`.week[data-wk="${wk}"]`);
-    if(el){el.classList.toggle('done');el.querySelector('.w-check').textContent=done[wk]?'✓':''}
-    // Update month counts
-    document.querySelectorAll('.month').forEach(m=>{
-      const weeks=m.querySelectorAll('.week');
-      const total=weeks.length;
-      const dcount=m.querySelectorAll('.week.done').length;
-      const pct=total>0?Math.round(dcount/total*100):0;
-      const fill=m.querySelector('.fill');
-      if(fill)fill.style.width=pct+'%';
-      const prog=m.querySelector('.m-progress');
-      if(prog)prog.textContent=`${dcount}/${total}`;
-    });
-    updateOverall();
-    // Update modal if open
-    if(document.getElementById('modal').classList.contains('show')){
-      const mcb=document.getElementById('m-checkbox');
-      if(mcb) mcb.checked=done[wk]||false;
-    }
-  };
-
-  function updateOverall(){
-    const all=Object.values(weeksData).length||104;
-    let c=0;
-    for(let i=1;i<=104;i++) if(done[i]) c++;
-    const pct=Math.round(c/all*100);
-    document.getElementById('overall-progress').textContent=`التقدم: ${pct}%`;
-  }
-
-  window.openWeek=function(wk){
-    const d=weeksData[wk];
-    if(!d) return;
-    const phase = getPhaseForWeek(wk);
-    const monthNum = getMonthForWeek(wk);
-    const resources = getResources(d.tags);
-    const mistakes = getMistakes(d.tags);
-    const why = d.why || getWhy(d.tags, d.title);
-    const practice = d.practice || d.suggest || 'طبّق ما تعلمته في مشروع جانبي';
-
-    const box=document.getElementById('modal-box');
-    box.querySelector('#modal-content').innerHTML=`
-      <div class="m-badge">الأسبوع ${wk} • ${phase}</div>
-      <h2>${d.title}</h2>
-      <p class="m-desc">${d.desc}</p>
-      <div class="m-check">
-        <input type="checkbox" id="m-checkbox" ${done[wk]?'checked':''} onchange="toggleWeek(${wk})">
-        <label for="m-checkbox">${done[wk]?'✓ تم الإنجاز':'ضع علامة عند الإنجاز'}</label>
-      </div>
-      <div class="m-tags">${d.tags.map(t=>`<span>${t}</span>`).join('')}</div>
-
-      <div class="m-grid">
-        <div class="m-card"><div class="mc-l">المدة المتوقعة</div><div class="mc-v">${d.time||'8-12 ساعة'}</div></div>
-        <div class="m-card"><div class="mc-l">الأسبوع في المسار</div><div class="mc-v">${wk}/104 (${Math.round(wk/104*100)}%)</div></div>
-        <div class="m-card"><div class="mc-l">الشهر</div><div class="mc-v">${monthNum}</div></div>
-        <div class="m-card"><div class="mc-l">المرحلة</div><div class="mc-v">${phase}</div></div>
-      </div>
-
-      <div class="m-path">
-        ${wk>1?`<span class="prev">← الأسبوع ${wk-1}</span>`:''}
-        <span class="current">${wk}</span>
-        ${wk<104?`<span class="next">الأسبوع ${wk+1} →</span>`:''}
-      </div>
-
-      <div class="m-section">
-        <div class="m-s-title">🎯 لماذا هذا مهم؟</div>
-        <p>${why}</p>
-      </div>
-
-      <div class="m-section">
-        <div class="m-s-title">📖 شرح تفصيلي</div>
-        <p>${d.details||d.desc}</p>
-        <p style="margin-top:8px;color:var(--accent);font-size:.78rem;font-weight:600;">🔑 المفاهيم الرئيسية: ${d.tags.join(' • ')}</p>
-      </div>
-
-      <div class="m-section">
-        <div class="m-s-title">📋 المهام التفصيلية</div>
-        <ul>${d.tasks.map((t,i)=>`<li><strong>${i+1}.</strong> ${t}</li>`).join('')}</ul>
-      </div>
-
-      <div class="m-section">
-        <div class="m-s-title">🔧 الأدوات والتثبيت</div>
-        <p>${d.install||'لا يوجد متطلبات تثبيت خاصة — ابدأ مباشرة'}</p>
-        <p style="margin-top:6px;font-size:.75rem;color:var(--text-dim);">💡 تأكد من تحديث الأدوات إلى آخر إصدار قبل البدء</p>
-      </div>
-
-      <div class="m-section">
-        <div class="m-s-title">🧱 ماذا ستبني هذا الأسبوع؟</div>
-        <div class="m-tip">${practice}</div>
-      </div>
-
-      <div class="m-section">
-        <div class="m-s-title">💡 نصائح مهمة</div>
-        <ul>${(d.tips||['ركز على الفهم وليس الحفظ','طبق ما تعلمت فوراً','اسأل "لماذا" قبل "ماذا"']).map(t=>`<li>${t}</li>`).join('')}</ul>
-      </div>
-
-      <div class="m-section">
-        <div class="m-s-title">⚠️ أخطاء شائعة تجنبها</div>
-        <ul>${mistakes.map(t=>`<li>${t}</li>`).join('')}</ul>
-      </div>
-
-      ${resources.length?`
-      <div class="m-section">
-        <div class="m-s-title">📚 مصادر تعلم مقترحة</div>
-        ${resources.map(r=>`<div class="m-resource">${r}</div>`).join('')}
-      </div>`:''}
-
-      <div class="m-section">
-        <div class="m-s-title">📏 قياس التعلم — كيف تعرف أنك أتقنت؟</div>
-        <div class="m-measure">✅ ${d.measure}</div>
-        <p style="font-size:.75rem;color:var(--text-dim);margin-top:6px;">إذا حققت هذا القياس، فقد أتمت الأسبوع بنجاح. انتقل للأسبوع التالي.</p>
-      </div>
-    `;
-    document.getElementById('modal').classList.add('show');
-    document.body.style.overflow='hidden';
-  };
-
-  // Helper functions
-  function getPhaseForWeek(wk){
-    if(wk<=20) return 'Core Engineering';
-    if(wk<=32) return 'Backend + AI';
-    if(wk<=44) return 'Agent Engineering';
-    if(wk<=56) return 'MLOps Foundations';
-    if(wk<=72) return 'Advanced AI Systems';
-    if(wk<=88) return 'Systems + Infrastructure';
-    return 'Portfolio + Job Ready';
-  }
-
-  function getMonthForWeek(wk){ return Math.ceil(wk/4); }
-
-  function getWhy(tags, title){
-    const map={
-      'Python':'Python هي اللغة رقم 1 في AI. كل مكتبات AI مبنية عليها.',
-      'SQL':'بدون SQL لا يمكنك التعامل مع البيانات الحقيقية. الشركات كلها تستخدم SQL.',
-      'Linux':'Linux هو نظام تشغيل الـ Cloud. 99% من سيرفرات AI تشتغل عليه.',
-      'FastAPI':'أسرع وأفضل إطار Backend لتطبيقات AI. توثيق تلقائي + أداء عالي.',
-      'Docker':'Docker يحل مشكلة "طالع عندي" — بيئة موحدة للتطوير والإنتاج.',
-      'PostgreSQL':'أفضل قاعدة بيانات مفتوحة المصدر. تدعم JSON, Full-Text, Vector.',
-      'Redis':'أسرع cache و message broker. أساسي لتطبيقات الـ real-time.',
-      'Transformers':'أساس كل نماذج AI الحديثة. فهمها = فهم كل شيء.',
-      'RAG':'RAG هو أشهر Pattern في AI التطبيقي. كل شركة تحتاجه.',
-      'Agents':'وكلاء AI هم مستقبل البرمجيات. مهارة 2025-2026 الأكثر طلباً.',
-      'LangChain':'الإطار الأكثر استخداماً لبناء تطبيقات LLM.',
-      'MLflow':'Standard لإدارة تجارب AI وتتبع النماذج.',
-      'CI/CD':'التسليم المستمر يضمن جودة الكود ووصوله للمستخدم بسرعة.',
-      'AWS':'السحابة الأكثر استخداماً في السعودية والشرق الأوسط.',
-      'Kubernetes':'أداة orchestration الحاويات القياسية.'
-    };
-    for(const tag of tags){
-      if(map[tag]) return map[tag];
-    }
-    return 'هذه المهارة تبني أساساً قوياً لمسار Applied AI Engineer. ركز على التطبيق العملي.';
-  }
-
-  function getResources(tags){
-    const map={
-      'Python':['Python Official Docs: docs.python.org','Real Python: realpython.com','Python Crash Course Book'],
-      'SQL':['PostgreSQL Docs: postgresql.org/docs','SQL Bolt: sqlbolt.com','Pgexercises: pgexercises.com'],
-      'Linux':['Linux Journey: linuxjourney.com','Ubuntu Server Guide','The Linux Command Line Book'],
-      'Git':['GitHub Skills: skills.github.com','Pro Git Book','Learn Git Branching: learngitbranching.js.org'],
-      'FastAPI':['FastAPI Official Docs: fastapi.tiangolo.com','FastAPI Best Practices: github.com/zhanymkanov/fastapi-best-practices'],
-      'Docker':['Docker Docs: docs.docker.com','Docker Curriculum: docker-curriculum.com'],
-      'PostgreSQL':['PostgreSQL Tutorial: postgresqltutorial.com','Use The Index, Luke: use-the-index-luke.com'],
-      'Redis':['Redis Docs: redis.io/docs','Redis University: university.redis.com'],
-      'Transformers':['HuggingFace Course: huggingface.co/course','Transformers Docs: huggingface.co/docs/transformers'],
-      'RAG':['LangChain RAG Docs: python.langchain.com','RAG from Scratch: youtube.com','Building RAG with Qdrant'],
-      'Agents':['LangGraph Docs: langchain-ai.github.io/langgraph','Agent Patterns Guide'],
-      'LangChain':['LangChain Docs: python.langchain.com','LangChain Academy'],
-      'MLflow':['MLflow Docs: mlflow.org/docs','MLflow Tracking Guide'],
-      'AWS':['AWS Free Tier: aws.amazon.com/free','AWS Docs: docs.aws.amazon.com'],
-      'Kubernetes':['Kubernetes Docs: kubernetes.io/docs','K8s Tutorial: kubernetes.io/docs/tutorials'],
-      'Testing':['pytest Docs: docs.pytest.org','Test-Driven Development Book']
-    };
-    const res=[];
-    for(const tag of tags){
-      if(map[tag]) map[tag].forEach(r=>{if(!res.includes(r))res.push(r);});
-    }
-    return res.slice(0,4);
-  }
-
-  function getMistakes(tags){
-    const m=[
-      'تحاول تعلم كل شيء مرة واحدة — ركز على أسبوع واحد فقط',
-      'تنسى التطبيق العملي — اقرأ ثم اطبق فوراً',
-      'تخاف من الأخطاء — الأخطاء جزء من التعلم',
-      'تتخطى الأساسيات — الأساس المتين يحدد مستقبلك',
-      'لا توثق ما تعلمته — اكتب ملخصاً لكل أسبوع'
-    ];
-    if(tags.includes('Python')) m.push('تستخدم loops حيث يمكن list comprehension');
-    if(tags.includes('SQL')) m.push('تنسى indexing ويصبح query بطيئاً');
-    if(tags.includes('Docker')) m.push('تستخدم :latest في الإنتاج');
-    if(tags.includes('AsyncIO')) m.push('تخلط between await و run_in_executor');
-    if(tags.includes('FastAPI')) m.push('تنسى Pydantic validation للـ request/response');
-    if(tags.includes('Testing')) m.push('تختبر الـ happy path فقط وتنسى edge cases');
-    return m.slice(0,4);
-  }
-
-  window.closeModal=function(){
-    document.getElementById('modal').classList.remove('show');
-    document.body.style.overflow='';
-  };
-
-  // Close on overlay click
-  document.getElementById('modal').addEventListener('click',function(e){
-    if(e.target===this) closeModal();
-  });
-
-  // ESC key
-  document.addEventListener('keydown',function(e){
-    if(e.key==='Escape') closeModal();
-  });
-
-  render();
+const bar=document.getElementById('progress');
+function up(){const h=document.documentElement;const t=h.scrollHeight-h.clientHeight;const p=t>0?(h.scrollTop/t):0;bar.style.scale=p+' 1';}
+addEventListener('scroll',up,{passive:true});up();
+(function(){
+  const c=document.getElementById('bg-canvas'),cx=c.getContext('2d');let w,h,pts=[];
+  function sz(){w=c.width=innerWidth;h=c.height=innerHeight}
+  addEventListener('resize',sz);sz();
+  class Pt{constructor(){this.reset()}
+    reset(){this.x=Math.random()*w;this.y=Math.random()*h;this.r=Math.random()*2+.4;this.dx=(Math.random()-.5)*.3;this.dy=(Math.random()-.5)*.3;this.a=Math.random()*.3+.05}
+    upd(){this.x+=this.dx;this.y+=this.dy;if(this.x<0||this.x>w)this.dx*=-1;if(this.y<0||this.y>h)this.dy*=-1}
+    dr(){cx.beginPath();cx.arc(this.x,this.y,this.r,0,Math.PI*2);cx.fillStyle='rgba(0,212,255,'+this.a+')';cx.fill()}}
+  function link(a,b){cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);const d=Math.hypot(a.x-b.x,a.y-b.y);cx.strokeStyle='rgba(0,212,255,'+Math.max(0,.12-d/4000)+')';cx.stroke()}
+  for(let i=0;i<60;i++)pts.push(new Pt());
+  (function loop(){cx.clearRect(0,0,w,h);pts.forEach(p=>{p.upd();p.dr()});for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++)if(Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y)<130)link(pts[i],pts[j]);requestAnimationFrame(loop)})();
+})();
+render();
 </script>
 </body>
 </html>

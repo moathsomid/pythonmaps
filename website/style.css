@@ -634,6 +634,10 @@ body.sidebar-active .main-content { margin-right: 320px; }
 .prevnext .pn-title { font-size: 14.5px; font-weight: 800; color: var(--primary-light); }
 .prevnext a.next { text-align: left; }
 .prevnext a.next .pn-label { justify-content: flex-start; flex-direction: row-reverse; }
+.swipe-hint { display: none; text-align: center; font-size: 12px; color: var(--text-light); margin: 4px 0 18px; opacity: .85; }
+@media (max-width: 767px) {
+  .swipe-hint { display: block; }
+}
 
 /* زر العودة للأعلى */
 .back-top {
@@ -779,3 +783,10 @@ body.sidebar-active .main-content { margin-right: 320px; }
   .sidebar-toggle { right: 15px; }
   body.sidebar-active .sidebar-toggle { right: 335px; }
 }
+
+/* === جداول البيانات === */
+.styled-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.85rem;border-radius:var(--radius-sm);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border);}
+.styled-table thead th{background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(168,85,247,.12));color:var(--accent,#00d4ff);font-weight:800;padding:11px 12px;text-align:right;border-bottom:2px solid rgba(0,212,255,.35);}
+.styled-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);}
+.styled-table tbody tr:hover{background:var(--card-hover)}
+.styled-table tbody tr:last-child td{border-bottom:none}

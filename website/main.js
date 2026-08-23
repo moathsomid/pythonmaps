@@ -29,8 +29,13 @@
       if (window.innerWidth >= 768) {
         document.body.classList.remove('sidebar-active');
         sidebar.classList.remove('open');
+        sidebar.style.transform = '';
       } else {
         document.body.classList.remove('sidebar-active');
+        sidebar.style.transform = 'translateX(320px)';
+        if (!sidebar.classList.contains('open')) {
+          sidebar.style.transform = 'translateX(320px)';
+        }
       }
     }
     updateSidebar();
@@ -172,6 +177,34 @@
     }
     pn.innerHTML = html;
     content.appendChild(pn);
+
+    var hint = document.createElement('div');
+    hint.className = 'swipe-hint';
+    hint.textContent = '👆 اسحب يميناً/يساراً للتنقل بين الدروس';
+    content.appendChild(hint);
+
+    /* ---------- 6b) التنقل بالسحب (Swipe) بين الدروس على الهاتف ---------- */
+    var prevHref = prev ? prev.getAttribute('href') : null;
+    var nextHref = next ? next.getAttribute('href') : null;
+    var touchX = null, touchY = null;
+    document.addEventListener('touchstart', function (e) {
+      touchX = e.touches[0].clientX;
+      touchY = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener('touchend', function (e) {
+      if (touchX == null) return;
+      var dx = e.changedTouches[0].clientX - touchX;
+      var dy = e.changedTouches[0].clientY - touchY;
+      touchX = touchY = null;
+      // إهمال السحب الرأسي (التمرير) والسحب القصير
+      if (Math.abs(dy) > Math.abs(dx) || Math.abs(dx) < 60) return;
+      // في RTL: السحب لليمين = التالي، لليسار = السابق
+      if (dx > 0) {
+        if (nextHref) window.location.href = nextHref;
+      } else {
+        if (prevHref) window.location.href = prevHref;
+      }
+    }, { passive: true });
   }
 
   /* ---------- 7) زر العودة للأعلى ---------- */

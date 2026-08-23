@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مشروع: AI Infra Dashboard - دورة بايثون المكثفة</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="../index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <a href="../roadmap.html" style="font-weight:600;color:#00d4ff;">🗺️ الخطة — حسب الدروس</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="python_advanced.html" class="chapter-link">🐍 Python Advanced</a>
+    <a href="asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="postgresql.html" class="chapter-link">PostgreSQL متقدم</a>
+    <a href="linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <a href="docker.html" class="chapter-link">Docker - الحاويات</a>
+    <div class="part-label">🚀 Backend + AI</div>
+    <a href="fastapi.html" class="chapter-link">FastAPI - تطبيقات الويب</a>
+    <a href="redis.html" class="chapter-link">Redis - التخزين المؤقت</a>
+    <a href="ai_fundamentals.html" class="chapter-link">🤖 أساسيات الذكاء الاصطناعي</a>
+    <div class="part-label">🧠 Agent Engineering</div>
+    <a href="rag.html" class="chapter-link">RAG - التوليد المعزز بالاسترجاع</a>
+    <a href="vector_databases.html" class="chapter-link">Vector Databases - Qdrant</a>
+    <a href="ollama.html" class="chapter-link">Ollama - النماذج المحلية</a>
+    <a href="langchain.html" class="chapter-link">LangChain - بناء تطبيقات LLM</a>
+    <a href="langgraph.html" class="chapter-link">LangGraph - الرسوم البيانية</a>
+    <a href="agents.html" class="chapter-link">🤖 وكلاء الذكاء الاصطناعي</a>
+    <div class="part-label">⚙️ MLOps Foundations</div>
+    <a href="mlflow.html" class="chapter-link">MLflow - تتبع التجارب</a>
+    <a href="cicd.html" class="chapter-link">CI/CD - GitHub Actions</a>
+    <a href="aws.html" class="chapter-link">AWS - EC2 + S3 + IAM</a>
+    <div class="part-label">🔷 مواضيع متقدمة</div>
+    <a href="oop.html" class="chapter-link">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 المشاريع - السنة الأولى</div>
+    <a href="project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <a href="project_data_api.html" class="chapter-link">المشروع 4: Data API Platform</a>
+    <a href="project_ai_doc_chat.html" class="chapter-link">المشروع 5: AI Document Chat</a>
+    <a href="project_ai_platform.html" class="chapter-link">المشروع 6: AI Platform Deployment</a>
+    <div class="part-label">🧠 السنة الثانية - Advanced AI</div>
+    <a href="multi_agents.html" class="chapter-link">🧠 أنظمة Multi-Agent</a>
+    <a href="websockets.html" class="chapter-link">WebSockets بعمق</a>
+    <a href="message_queues.html" class="chapter-link">Message Queues - Redis/Celery</a>
+    <a href="event_driven.html" class="chapter-link">Event-Driven Architecture</a>
+    <a href="streaming_llm.html" class="chapter-link">Streaming - استجابات LLM</a>
+    <a href="specialized_agents.html" class="chapter-link">وكلاء متخصصون - Research/Review</a>
+    <a href="project_ai_research.html" class="chapter-link">مشروع: Multi-Agent Research</a>
+    <div class="part-label">🏗️ السنة الثانية — Infrastructure</div>
+    <a href="kubernetes.html" class="chapter-link">Kubernetes + Helm</a>
+    <a href="observability.html" class="chapter-link">Observability - Monitoring</a>
+    <a href="infra_dashboard.html" class="chapter-link" style="color:#ffd166;font-weight:700;">مشروع: AI Infra Dashboard</a>
+    <a href="security_perf.html" class="chapter-link">Security + Performance</a>
+    <div class="part-label">🚀 السنة الثانية — Career</div>
+    <a href="code_quality.html" class="chapter-link">إعادة هيكلة + جودة الكود</a>
+    <a href="career_digital.html" class="chapter-link">الظهور الرقمي + LinkedIn</a>
+    <a href="interview_prep.html" class="chapter-link">الاستعداد للمقابلات</a>
+    <a href="career_launch.html" class="chapter-link">إطلاق + Freelance</a>
+    <div class="part-label">📎 تمارين إضافية</div>
+    <a href="exercises.html" class="chapter-link">📝 تمارين + حلول</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header">
+      <span class="part-badge">🏗️ السنة الثانية — Infrastructure</span>
+      <h1>مشروع AI Infrastructure Dashboard</h1>
+      <p>الأسابيع 81-84: لوحة مراقبة مركزية لكل نظامك — مقاييس، إنذارات، أتمتة</p>
+    </div>
+    <div class="chapter-content">
+
+      <a href="../index.html" class="back-link">← العودة إلى الرئيسية</a>
+
+
+      <p>
+        المشروع: لوحة تحكم مركزية تعرض <strong>صحة كل نظامك</strong> في مكان واحد: الـ API، قاعدة
+        البيانات، الـ RAG، الوكلاء، والخوادم — مع إنذارات تنبّهك فور حدوث مشكلة.
+      </p>
+
+      <div class="note">
+        <strong>🎯 القياس:</strong> لوحة تعرض 10+ مؤشراً حياً، إنذارات عبر البريد/Telegram عند تجاوز الحدود، وسجل أحداث، منشورة على الإنترنت.
+      </div>
+
+      <h2 class="section-title">1. المؤشرات المراقبة</h2>
+
+      <ul>
+        <li><strong>API</strong>: طلبات/ثانية، زمن استجابة p95، نسبة الأخطاء</li>
+        <li><strong>Database</strong>: اتصالات نشطة، حجم، بطء الاستعلامات</li>
+        <li><strong>RAG</strong>: زمن الاسترجاع، دقة الإجابات (RAGAS أسبوعياً)</li>
+        <li><strong>Agents</strong>: مدة التنفيذ، نسبة النجاح، عدد الجولات</li>
+        <li><strong>Infra</strong>: CPU، RAM، Disk لكل خادم</li>
+      </ul>
+
+      <h2 class="section-title">2. الواجهة الخلفية</h2>
+
+      <div class="code-block">
+<span class="cm"># API للوحة: يجمع المقاييس من Prometheus</span>
+<span class="kw">from</span> <span class="bu">prometheus_api_client</span> <span class="kw">import</span> PrometheusConnect
+
+prom = PrometheusConnect(url=<span class="str">"http://prometheus:9090"</span>)
+
+<span class="kw">@app</span>.get(<span class="str">"/metrics/summary"</span>)
+<span class="kw">def</span> <span class="fn">summary</span>():
+    <span class="kw">return</span> {
+        <span class="str">"requests"</span>: prom.get_metric_range_data(<span class="str">"http_requests_total"</span>),
+        <span class="str">"latency_p95"</span>: prom.get_metric_range_data(<span class="str">"http_request_duration_seconds"</span>),
+    }
+      </div>
+
+      <h2 class="section-title">3. الواجهة الأمامية</h2>
+
+      <p>لوحة بسيطة بـ Chart.js أو أداة جاهزة مثل Grafana مدمجة. تُحدَّث تلقائياً كل 10 ثوانٍ.</p>
+
+      <div class="code-block">
+<span class="cm">// تحديث دوري</span>
+<span class="kw">setInterval</span>(<span class="kw">async</span> () =&gt; {
+  <span class="kw">const</span> data = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"/metrics/summary"</span>).then(<span class="fn">r</span> =&gt; <span class="fn">r</span>.json());
+  updateCharts(data);
+  updateStatusBadges(data);
+}, <span class="num">10000</span>);
+      </div>
+
+      <h2 class="section-title">4. الإنذارات (Alerting)</h2>
+
+      <div class="code-block">
+<span class="cm"># prometheus alert rule: زمن استجابة مرتفع</span>
+groups:
+  - name: api
+    rules:
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "زمن الاستجابة تجاوز ثانيتين"
+      </div>
+
+      <div class="code-block">
+<span class="cm"># إشعار Telegram عند التنبيه (webhook بسيط)</span>
+<span class="kw">def</span> <span class="fn">notify_telegram</span>(message):
+    url = <span class="str">f"https://api.telegram.org/bot{TOKEN}/sendMessage"</span>
+    requests.post(url, json={<span class="str">"chat_id"</span>: CHAT_ID, <span class="str">"text"</span>: message})
+      </div>
+
+      <h2 class="section-title">5. خطوات التنفيذ (4 أسابيع)</h2>
+
+      <div class="exercise">
+        <strong>الأسبوع 81: البنية + جمع المقاييس</strong><br>
+        هيكل المشروع، ربط Prometheus، Backend يجمّع المقاييس.
+      </div>
+
+      <div class="exercise">
+        <strong>الأسبوع 82: الواجهة + الرسوم</strong><br>
+        لوحة أمامية بالرسوم البيانية الحية.
+      </div>
+
+      <div class="exercise">
+        <strong>الأسبوع 83: الإنذارات + الأتمتة</strong><br>
+        قواعد تنبيه + إشعارات Telegram + إعادة تشغيل تلقائية.
+      </div>
+
+      <div class="exercise">
+        <strong>الأسبوع 84: النشر</strong><br>
+        نشر اللوحة على الإنترنت + توثيق + مراجعة.
+      </div>
+
+      <h2 class="section-title">6. التمارين</h2>
+
+      <div class="exercise">
+        <strong>تمرين: إنذار فشل API</strong><br>
+        أعد تشغيل تطبيقك يدوياً وتأكد أن الإنذار يصل لـ Telegram خلال دقيقة.
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>

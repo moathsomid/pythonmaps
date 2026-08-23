@@ -3,115 +3,359 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>أحبك ❤️</title>
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; user-select:none; }
-  html,body { height:100%; }
-  body {
-    display:flex; align-items:center; justify-content:center;
-    min-height:100vh; background:radial-gradient(circle at 50% 40%, #3d1a5e, #150820 70%, #0a0410);
-    font-family:'Segoe UI', Tahoma, Arial, sans-serif;
-    cursor:pointer; overflow:hidden; position:relative;
-  }
-
-  .glow {
-    position:absolute; border-radius:50%; filter:blur(80px); z-index:0;
-    animation:float 8s ease-in-out infinite;
-  }
-  .glow1 { width:420px; height:420px; background:rgba(255,60,120,.35); top:-80px; left:-80px; }
-  .glow2 { width:360px; height:360px; background:rgba(168,85,247,.3); bottom:-60px; right:-60px; animation-delay:3s; }
-  .glow3 { width:260px; height:260px; background:rgba(0,212,255,.25); top:50%; left:55%; animation-delay:-4s; }
-
-  @keyframes float {
-    0%,100% { transform:translate(0,0) scale(1); }
-    50% { transform:translate(30px,-30px) scale(1.15); }
-  }
-
-  .container { text-align:center; position:relative; z-index:2; padding:20px; }
-
-  .text {
-    font-size:clamp(3rem, 12vw, 7rem);
-    font-weight:800; color:#ffd1e0; line-height:1.15;
-    letter-spacing:1px;
-    text-shadow:0 0 25px rgba(255,60,120,.6), 0 4px 12px rgba(0,0,0,.5);
-    transition:opacity .3s ease, transform .3s ease;
-    font-family:'Segoe UI', 'Noto Naskh Arabic', Tahoma, sans-serif;
-  }
-
-  .sparkles { position:absolute; inset:0; pointer-events:none; z-index:1; }
-  .spark {
-    position:absolute; color:#ffd6e6; font-size:20px; opacity:0;
-    animation:rise linear infinite;
-  }
-  @keyframes rise {
-    0% { transform:translateY(20vh) scale(.5) rotate(0); opacity:0; }
-    15% { opacity:.9; }
-    100% { transform:translateY(-70vh) scale(1.4) rotate(280deg); opacity:0; }
-  }
-</style>
+<title>دورة بايثون المكثفة - Python Crash Course</title>
+<link rel="stylesheet" href="website/style.css">
 </head>
-<body onclick="nextPhrase()">
-  <div class="glow glow1"></div>
-  <div class="glow glow2"></div>
-  <div class="glow glow3"></div>
+<body>
 
-  <div class="sparkles" id="sparkles"></div>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
 
-  <div class="container">
-    <div class="text" id="text">أنا أحبك</div>
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <a href="roadmap.html" style="font-weight:600;color:#00d4ff;">🗺️ الخطة — حسب الدروس</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="website/chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="website/chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="website/chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="website/chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="website/chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="website/chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="website/chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="website/chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="website/chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="website/chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="website/chapter11.html" class="chapter-link">11. اختبار الكود</a>
+    <div class="part-label">⚙️ Core Engineering</div>
+    <a href="website/python_advanced.html" class="chapter-link">🐍 Python Advanced</a>
+    <a href="website/asyncio.html" class="chapter-link">AsyncIO - البرمجة غير المتزامنة</a>
+    <a href="website/sql.html" class="chapter-link">SQL - قواعد البيانات</a>
+    <a href="website/postgresql.html" class="chapter-link">PostgreSQL متقدم</a>
+    <a href="website/linux.html" class="chapter-link">Linux - سطر الأوامر</a>
+    <a href="website/git.html" class="chapter-link">Git/GitHub - التحكم بالنسخ</a>
+    <a href="website/docker.html" class="chapter-link">Docker - الحاويات</a>
+    <div class="part-label">🚀 Backend + AI</div>
+    <a href="website/fastapi.html" class="chapter-link">FastAPI - تطبيقات الويب</a>
+    <a href="website/redis.html" class="chapter-link">Redis - التخزين المؤقت</a>
+    <a href="website/ai_fundamentals.html" class="chapter-link">🤖 أساسيات الذكاء الاصطناعي</a>
+    <div class="part-label">🧠 Agent Engineering</div>
+    <a href="website/rag.html" class="chapter-link">RAG - التوليد المعزز بالاسترجاع</a>
+    <a href="website/vector_databases.html" class="chapter-link">Vector Databases - Qdrant</a>
+    <a href="website/ollama.html" class="chapter-link">Ollama - النماذج المحلية</a>
+    <a href="website/langchain.html" class="chapter-link">LangChain - بناء تطبيقات LLM</a>
+    <a href="website/langgraph.html" class="chapter-link">LangGraph - الرسوم البيانية</a>
+    <a href="website/agents.html" class="chapter-link">🤖 وكلاء الذكاء الاصطناعي</a>
+    <div class="part-label">⚙️ MLOps Foundations</div>
+    <a href="website/mlflow.html" class="chapter-link">MLflow - تتبع التجارب</a>
+    <a href="website/cicd.html" class="chapter-link">CI/CD - GitHub Actions</a>
+    <a href="website/aws.html" class="chapter-link">AWS - EC2 + S3 + IAM</a>
+    <div class="part-label">🔷 مواضيع متقدمة</div>
+    <a href="website/oop.html" class="chapter-link">🔷 البرمجة كائنية التوجه OOP</a>
+    <div class="part-label">🚀 المشاريع - السنة الأولى</div>
+    <a href="website/project1.html" class="chapter-link">المشروع 1: غزو الفضائيين</a>
+    <a href="website/project2.html" class="chapter-link">المشروع 2: تصور البيانات</a>
+    <a href="website/project3.html" class="chapter-link">المشروع 3: تطبيقات الويب</a>
+    <a href="website/project_data_api.html" class="chapter-link">المشروع 4: Data API Platform</a>
+    <a href="website/project_ai_doc_chat.html" class="chapter-link">المشروع 5: AI Document Chat</a>
+    <a href="website/project_ai_platform.html" class="chapter-link">المشروع 6: AI Platform Deployment</a>
+    <div class="part-label">🧠 السنة الثانية - Advanced AI</div>
+    <a href="website/multi_agents.html" class="chapter-link">🧠 أنظمة Multi-Agent</a>
+    <a href="website/websockets.html" class="chapter-link">WebSockets بعمق</a>
+    <a href="website/message_queues.html" class="chapter-link">Message Queues - Redis/Celery</a>
+    <a href="website/event_driven.html" class="chapter-link">Event-Driven Architecture</a>
+    <a href="website/streaming_llm.html" class="chapter-link">Streaming - استجابات LLM</a>
+    <a href="website/specialized_agents.html" class="chapter-link">وكلاء متخصصون - Research/Review</a>
+    <a href="website/project_ai_research.html" class="chapter-link">مشروع: Multi-Agent Research</a>
+    <div class="part-label">🏗️ السنة الثانية — Infrastructure</div>
+    <a href="website/kubernetes.html" class="chapter-link">Kubernetes + Helm</a>
+    <a href="website/observability.html" class="chapter-link">Observability - Monitoring</a>
+    <a href="website/infra_dashboard.html" class="chapter-link">مشروع: AI Infra Dashboard</a>
+    <a href="website/security_perf.html" class="chapter-link">Security + Performance</a>
+    <div class="part-label">🚀 السنة الثانية — Career</div>
+    <a href="website/code_quality.html" class="chapter-link">إعادة هيكلة + جودة الكود</a>
+    <a href="website/career_digital.html" class="chapter-link">الظهور الرقمي + LinkedIn</a>
+    <a href="website/interview_prep.html" class="chapter-link">الاستعداد للمقابلات</a>
+    <a href="website/career_launch.html" class="chapter-link">إطلاق + Freelance</a>
+    <div class="part-label">📎 تمارين إضافية</div>
+    <a href="website/exercises.html" class="chapter-link">📝 تمارين + حلول</a>
+    <div class="part-label">📎 الملاحق</div>
+    <a href="website/appendices.html" class="chapter-link">الملاحق أ-د</a>
+  </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="hero">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>ترجمة وتعريب كامل لكتاب Python Crash Course بقلم إريك ماتيس<br>
+    شرح مبسط وعملي لتعلم البرمجة بلغة بايثون من الصفر إلى الاحتراف<br>
+    <span style="opacity:0.75;font-size:15px;">➕ مسار Applied AI Engineer: Python → Backend → RAG → Agents → MLOps</span></p>
+    <div style="margin-top:25px;">
+      <a href="roadmap.html" style="display:inline-block;padding:12px 34px;border-radius:60px;background:linear-gradient(135deg,#00d4ff,#a855f7);color:#fff;text-decoration:none;font-weight:700;box-shadow:0 4px 24px rgba(0,212,255,.3);transition:.3s;">🗺️ الخطة — حسب الدروس</a>
+    </div>
   </div>
 
-<script>
-  const phrases = ["أنا أحبك", "I love you", "Ich liebe dich"];
-  let index = 0;
-  const textEl = document.getElementById('text');
-  const sparkles = document.getElementById('sparkles');
+  <div class="container">
+    <h2 style="font-size:26px;margin-bottom:10px;">📚 عن الكتاب</h2>
+    <p style="font-size:16px;color:var(--text-light);margin-bottom:30px;">
+      هذا الكتاب هو دليل عملي شامل لتعلم لغة بايثون. ستتعلم أساسيات البرمجة ثم تبني ثلاثة مشاريع كاملة:
+      لعبة فضائية، تصور بيانات، وتطبيق ويب. المحتوى التالي هو ترجمة كاملة لجميع شروحات الكتاب مع الحفاظ
+      على أمثلة الكود البرمجية بلغة بايثون الأصلية.
+    </p>
 
-  function spawnSparkle() {
-    const s = document.createElement('div');
-    s.className = 'spark';
-    s.textContent = ['✦','♥','✦','❥','✦'][Math.floor(Math.random()*5)];
-    s.style.left = Math.random()*100 + '%';
-    s.style.fontSize = (14 + Math.random()*22) + 'px';
-    s.style.animationDuration = (6 + Math.random()*6) + 's';
-    s.style.animationDelay = (Math.random()*6) + 's';
-    sparkles.appendChild(s);
-  }
-  for (let i = 0; i < 18; i++) spawnSparkle();
+    <h2 style="font-size:24px;margin-bottom:20px;">📖 المحتويات</h2>
 
-  function spawnBurst() {
-    for (let i = 0; i < 14; i++) {
-      const s = document.createElement('div');
-      s.className = 'spark';
-      s.textContent = '♥';
-      s.style.left = '50%'; s.style.top = '50%';
-      const ang = (i/14)*Math.PI*2;
-      const dist = 120;
-      s.style.setProperty('--tx', Math.cos(ang)*dist + 'px');
-      s.style.setProperty('--ty', Math.sin(ang)*dist + 'px');
-      s.style.animation = 'none';
-      s.style.transition = 'all .7s ease-out';
-      s.style.opacity = 1; s.style.fontSize = '18px';
-      document.body.appendChild(s);
-      requestAnimationFrame(()=> {
-        s.style.transform = 'translate(var(--tx), var(--ty)) scale(1)';
-        s.style.opacity = 0;
-      });
-      setTimeout(()=> s.remove(), 750);
-    }
-  }
+    <div style="background:var(--card-bg);border-radius:12px;padding:25px;box-shadow:var(--shadow);margin-bottom:30px;">
+      <h3 style="color:var(--primary);font-size:20px;margin-bottom:15px;">📘 الجزء الأول: الأساسيات</h3>
+      <div class="chapter-grid">
+        <a href="website/chapter1.html" class="chapter-card">
+          <div class="num">1</div>
+          <h3>البدء مع بايثون</h3>
+          <p>تثبيت بايثون، تشغيل أول برنامج، التعامل مع الأخطاء</p>
+        </a>
+        <a href="website/chapter2.html" class="chapter-card">
+          <div class="num">2</div>
+          <h3>المتغيرات والبيانات</h3>
+          <p>المتغيرات، السلاسل النصية، الأرقام، التعليقات</p>
+        </a>
+        <a href="website/chapter3.html" class="chapter-card">
+          <div class="num">3</div>
+          <h3>مقدمة إلى القوائم</h3>
+          <p>ما هي القوائم، الوصول للعناصر، التعديل والتنظيم</p>
+        </a>
+        <a href="website/chapter4.html" class="chapter-card">
+          <div class="num">4</div>
+          <h3>التعامل مع القوائم</h3>
+          <p>الحلقات، الشريحة، tuples، تنسيق الكود</p>
+        </a>
+        <a href="website/chapter5.html" class="chapter-card">
+          <div class="num">5</div>
+          <h3>جمل if</h3>
+          <p>الاختبارات الشرطية، if-elif-else، القيم المنطقية</p>
+        </a>
+        <a href="website/chapter6.html" class="chapter-card">
+          <div class="num">6</div>
+          <h3>القواميس</h3>
+          <p>إنشاء القواميس، التعديل، التكرار، التداخل</p>
+        </a>
+        <a href="website/chapter7.html" class="chapter-card">
+          <div class="num">7</div>
+          <h3>الإدخال والحلقات</h3>
+          <p>input()، حلقات while، break/continue</p>
+        </a>
+        <a href="website/chapter8.html" class="chapter-card">
+          <div class="num">8</div>
+          <h3>الدوال</h3>
+          <p>تعريف الدوال، الوسائط، قيم الإرجاع، الوحدات</p>
+        </a>
+        <a href="website/chapter9.html" class="chapter-card">
+          <div class="num">9</div>
+          <h3>الكلاسات</h3>
+          <p>إنشاء الكلاسات، الوراثة، المكتبة القياسية</p>
+        </a>
+        <a href="website/chapter10.html" class="chapter-card">
+          <div class="num">10</div>
+          <h3>الملفات والاستثناءات</h3>
+          <p>قراءة/كتابة الملفات، try-except، JSON</p>
+        </a>
+        <a href="website/chapter11.html" class="chapter-card">
+          <div class="num">11</div>
+          <h3>اختبار الكود</h3>
+          <p>اختبار الدوال، اختبار الكلاسات، unittest</p>
+        </a>
+      </div>
+    </div>
 
-  function nextPhrase() {
-    index = (index + 1) % phrases.length;
-    textEl.style.opacity = 0;
-    textEl.style.transform = 'scale(.85)';
-    setTimeout(() => {
-      textEl.textContent = phrases[index];
-      textEl.style.opacity = 1;
-      textEl.style.transform = 'scale(1)';
-    }, 200);
-    spawnBurst();
-  }
-</script>
+    <div style="background:var(--card-bg);border-radius:12px;padding:25px;box-shadow:var(--shadow);margin-bottom:30px;">
+      <h3 style="color:var(--primary);font-size:20px;margin-bottom:15px;">⚙️ Core Engineering</h3>
+      <div class="chapter-grid">
+        <a href="website/python_advanced.html" class="chapter-card">
+          <div class="num" style="background:#22c55e;">🐍</div>
+          <h3>Python Advanced</h3>
+          <p>Typing، Logging، Architecture Patterns، Dataclasses، Context Managers</p>
+        </a>
+        <a href="website/asyncio.html" class="chapter-card">
+          <div class="num" style="background:#00b4d8;">⚡</div>
+          <h3>AsyncIO</h3>
+          <p>البرمجة غير المتزامنة، async/await، coroutines، asyncio.gather</p>
+        </a>
+        <a href="website/sql.html" class="chapter-card">
+          <div class="num" style="background:#f59e0b;">🗄️</div>
+          <h3>SQL - قواعد البيانات</h3>
+          <p>SQLite، استعلامات، JOINs، تصميم قواعد البيانات</p>
+        </a>
+        <a href="website/postgresql.html" class="chapter-card">
+          <div class="num" style="background:#336791;">PG</div>
+          <h3>PostgreSQL متقدم</h3>
+          <p>JOINs المتقدمة، CTE، Indexing، Optimization، psycopg2، SQLAlchemy</p>
+        </a>
+        <a href="website/linux.html" class="chapter-card">
+          <div class="num" style="background:#e34f26;">🐧</div>
+          <h3>Linux - سطر الأوامر</h3>
+          <p>الأوامر الأساسية، bash scripting، grep، awk، إدارة العمليات</p>
+        </a>
+        <a href="website/git.html" class="chapter-card">
+          <div class="num" style="background:#f05032;">GIT</div>
+          <h3>Git/GitHub</h3>
+          <p>التحكم بالنسخ، commit، branch، merge، pull requests</p>
+        </a>
+        <a href="website/docker.html" class="chapter-card">
+          <div class="num" style="background:#2496ed;">D</div>
+          <h3>Docker - الحاويات</h3>
+          <p>Dockerfile، Compose، Volumes، Networking، نشر التطبيقات</p>
+        </a>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#1a1a2e,#2b5b84);border-radius:12px;padding:25px;box-shadow:var(--shadow);margin-bottom:30px;">
+      <h3 style="color:#ffd166;font-size:20px;margin-bottom:15px;">🚀 Backend + AI</h3>
+      <div class="chapter-grid">
+        <a href="website/fastapi.html" class="chapter-card" style="border:2px solid #00b4d8;">
+          <div class="num" style="background:#00b4d8;">F</div>
+          <h3>FastAPI</h3>
+          <p>تطبيقات ويب حديثة، paths، Dependency Injection، async، CORS، PostgreSQL</p>
+        </a>
+        <a href="website/redis.html" class="chapter-card">
+          <div class="num" style="background:#dc382c;">R</div>
+          <h3>Redis</h3>
+          <p>التخزين المؤقت، جلسات، قوائم انتظار، Rate Limiting، Pub/Sub</p>
+        </a>
+        <a href="website/ai_fundamentals.html" class="chapter-card" style="border:2px solid #ffd166;">
+          <div class="num" style="background:#ffd166;color:#1a1a2e;">AI</div>
+          <h3>أساسيات الذكاء الاصطناعي</h3>
+          <p>NLP، Embeddings، Transformers، RAG، Vector Databases، LLM APIs</p>
+        </a>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#1a1a2e,#5b2b84);border-radius:12px;padding:25px;box-shadow:var(--shadow);margin-bottom:30px;">
+      <h3 style="color:#ffd166;font-size:20px;margin-bottom:15px;">🧠 Agent Engineering</h3>
+      <div class="chapter-grid">
+        <a href="website/rag.html" class="chapter-card" style="border:2px solid #a78bfa;">
+          <div class="num" style="background:#a78bfa;color:#1a1a2e;">RAG</div>
+          <h3>RAG - التوليد المعزز بالاسترجاع</h3>
+          <p>Chunking، Embeddings، Hybrid Search، Reranking، تقييم RAGAS</p>
+        </a>
+        <a href="website/vector_databases.html" class="chapter-card" style="border:2px solid #a78bfa;">
+          <div class="num" style="background:#a78bfa;color:#1a1a2e;">VD</div>
+          <h3>Vector Databases - Qdrant</h3>
+          <p>Collection، Points، Payload، HNSW، البحث بالمتجهات والتصفية</p>
+        </a>
+        <a href="website/ollama.html" class="chapter-card" style="border:2px solid #a78bfa;">
+          <div class="num" style="background:#a78bfa;color:#1a1a2e;">🦙</div>
+          <h3>Ollama - النماذج المحلية</h3>
+          <p>نشر LLM محلياً، GGUF، Quantization، Modelfile، API متوافق مع OpenAI</p>
+        </a>
+        <a href="website/langchain.html" class="chapter-card" style="border:2px solid #a78bfa;">
+          <div class="num" style="background:#a78bfa;color:#1a1a2e;">LC</div>
+          <h3>LangChain - بناء تطبيقات LLM</h3>
+          <p>Prompts، Chains (LCEL)، Parsers، Memory، Agents + Tools</p>
+        </a>
+        <a href="website/langgraph.html" class="chapter-card" style="border:2px solid #a78bfa;">
+          <div class="num" style="background:#a78bfa;color:#1a1a2e;">LG</div>
+          <h3>LangGraph - الرسوم البيانية</h3>
+          <p>StateGraph، Nodes، Conditional Edges، Checkpoints، Streaming</p>
+        </a>
+        <a href="website/agents.html" class="chapter-card" style="border:2px solid #ffd166;">
+          <div class="num" style="background:#ffd166;color:#1a1a2e;">🤖</div>
+          <h3>وكلاء الذكاء الاصطناعي</h3>
+          <p>ReAct، أنماط Multi-Agent، Supervisor، Swarm، Data Analyst Agent</p>
+        </a>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#0a3d1a,#1a5b2e);border-radius:12px;padding:25px;box-shadow:var(--shadow);margin-bottom:30px;">
+      <h3 style="color:#4ade80;font-size:20px;margin-bottom:15px;">⚙️ MLOps Foundations</h3>
+      <div class="chapter-grid">
+        <a href="website/mlflow.html" class="chapter-card" style="border:2px solid #4ade80;">
+          <div class="num" style="background:#4ade80;color:#1a1a2e;">ML</div>
+          <h3>MLflow - تتبع التجارب</h3>
+          <p>Tracking، Autolog، Model Registry، Serving، إدارة دورة حياة النماذج</p>
+        </a>
+        <a href="website/cicd.html" class="chapter-card" style="border:2px solid #4ade80;">
+          <div class="num" style="background:#4ade80;color:#1a1a2e;">CI</div>
+          <h3>CI/CD - GitHub Actions</h3>
+          <p>Workflows، Matrix Builds، Secrets، Artifacts، نشر تلقائي</p>
+        </a>
+        <a href="website/aws.html" class="chapter-card" style="border:2px solid #4ade80;">
+          <div class="num" style="background:#4ade80;color:#1a1a2e;">AWS</div>
+          <h3>AWS - EC2 + S3 + IAM + VPC</h3>
+          <p>خوادم EC2، تخزين S3، صلاحيات IAM، شبكات VPC، نشر التطبيقات</p>
+        </a>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#1a1a2e,#5b2b84);border-radius:12px;padding:25px;box-shadow:var(--shadow);margin-bottom:30px;">
+      <h3 style="color:#ffd166;font-size:20px;margin-bottom:15px;">🔷 مواضيع متقدمة</h3>
+      <div class="chapter-grid">
+        <a href="website/oop.html" class="chapter-card" style="border:2px solid #ffd166;">
+          <div class="num" style="background:#ffd166;color:#1a1a2e;">OOP</div>
+          <h3>البرمجة كائنية التوجه OOP</h3>
+          <p>كلاس، وراثة، بوليمورفيزم، Dunder methods، Decorators، Descriptors، SOLID - شرح متعمق</p>
+        </a>
+      </div>
+    </div>
+
+    <div style="background:var(--card-bg);border-radius:12px;padding:25px;box-shadow:var(--shadow);margin-bottom:30px;">
+      <h3 style="color:var(--primary);font-size:20px;margin-bottom:15px;">🚀 المشاريع</h3>
+      <div class="chapter-grid">
+        <a href="website/project1.html" class="chapter-card">
+          <div class="num">P1</div>
+          <h3>غزو الفضائيين</h3>
+          <p>بناء لعبة كاملة باستخدام Pygame</p>
+        </a>
+        <a href="website/project2.html" class="chapter-card">
+          <div class="num">P2</div>
+          <h3>تصور البيانات</h3>
+          <p>الرسوم البيانية، تحميل البيانات، APIs</p>
+        </a>
+        <a href="website/project3.html" class="chapter-card">
+          <div class="num">P3</div>
+          <h3>تطبيقات الويب</h3>
+          <p>تطبيق ويب كامل باستخدام Django</p>
+        </a>
+        <a href="website/project_data_api.html" class="chapter-card" style="border:2px solid #22c55e;">
+          <div class="num" style="background:#22c55e;">P4</div>
+          <h3>Data API Platform</h3>
+          <p>منصة API متكاملة: FastAPI + PostgreSQL + Redis + Docker</p>
+        </a>
+        <a href="website/project_ai_doc_chat.html" class="chapter-card" style="border:2px solid #ffd166;">
+          <div class="num" style="background:#ffd166;color:#1a1a2e;">P5</div>
+          <h3>AI Document Chat</h3>
+          <p>نظام RAG: رفع مستندات، بحث متجه، إجابة بالذكاء الاصطناعي</p>
+        </a>
+        <a href="website/project_ai_platform.html" class="chapter-card" style="border:2px solid #a78bfa;">
+          <div class="num" style="background:#a78bfa;color:#1a1a2e;">P6</div>
+          <h3>AI Platform Deployment</h3>
+          <p>منصة AI كاملة للإنتاج: RAG + FastAPI + Docker + CI/CD + AWS</p>
+        </a>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#0a3d1a,#1a5b2e);border-radius:12px;padding:25px;box-shadow:var(--shadow);margin-bottom:30px;">
+      <h3 style="color:#4ade80;font-size:20px;margin-bottom:15px;">📝 تمارين إضافية + حلول</h3>
+      <div class="chapter-grid">
+        <a href="website/exercises.html" class="chapter-card" style="border:2px solid #22c55e;">
+          <div class="num" style="background:#22c55e;">📝</div>
+          <h3>تمارين وحلول إضافية</h3>
+          <p>13 تمريناً عملياً مع الحلول — بايثون، OOP، SQL، FastAPI، Redis، Docker، AI</p>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+    <p style="margin-top:5px;">جميع أكواد بايثون محفوظة بحقوقها &copy; No Starch Press</p>
+  </div>
+</div>
+
+<script src="website/main.js"></script>
+
 </body>
 </html>
