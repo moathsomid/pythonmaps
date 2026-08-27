@@ -3,8 +3,6 @@
    Python Crash Course — Unified Lesson Stylesheet
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500&display=swap');
-
 :root {
   --primary: #58a6ff;
   --primary-light: #79c0ff;

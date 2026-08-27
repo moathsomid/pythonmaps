@@ -83,11 +83,19 @@
     btn.className = 'copy-btn';
     btn.textContent = '📋';
     btn.title = 'نسخ الكود';
-    btn.addEventListener('click', function () {
+     btn.addEventListener('click', function () {
       var c = b.cloneNode(true);
       var cb = c.querySelector('.copy-btn');
       if (cb) cb.remove();
-      var code = c.textContent.trim();
+      var lis = c.querySelectorAll('li');
+      var code;
+      if (lis.length) {
+        code = Array.prototype.map.call(lis, function (li) {
+          return li.textContent.replace(/\u00a0/g, ' ');
+        }).join('\n');
+      } else {
+        code = c.textContent.trim();
+      }
       navigator.clipboard.writeText(code).then(function () {
         btn.textContent = '✅';
         btn.classList.add('copied');

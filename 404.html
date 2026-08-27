@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الصفحة غير موجودة - دورة بايثون المكثفة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500&display=swap">
+<link rel="stylesheet" href="website/style.css">
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>🐍 دورة بايثون المكثفة</h1>
+    <p>Python Crash Course</p>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="index.html" style="font-weight:600;color:#ffd166;">🏠 الرئيسية</a>
+    <a href="roadmap.html" style="font-weight:600;color:#00d4ff;">🗺️ الخطة — حسب الدروس</a>
+    <div class="part-label">📘 الجزء الأول: الأساسيات</div>
+    <a href="website/chapter1.html" class="chapter-link">1. البدء مع بايثون</a>
+    <a href="website/chapter2.html" class="chapter-link">2. المتغيرات وأنواع البيانات البسيطة</a>
+    <a href="website/chapter3.html" class="chapter-link">3. مقدمة إلى القوائم</a>
+    <a href="website/chapter4.html" class="chapter-link">4. التعامل مع القوائم</a>
+    <a href="website/chapter5.html" class="chapter-link">5. جمل if</a>
+    <a href="website/chapter6.html" class="chapter-link">6. القواميس</a>
+    <a href="website/chapter7.html" class="chapter-link">7. إدخال المستخدم وحلقات while</a>
+    <a href="website/chapter8.html" class="chapter-link">8. الدوال</a>
+    <a href="website/chapter9.html" class="chapter-link">9. الكلاسات</a>
+    <a href="website/chapter10.html" class="chapter-link">10. الملفات والاستثناءات</a>
+    <a href="website/chapter11.html" class="chapter-link">11. اختبار الكود</a>
+  </nav>
+</div>
+<div class="main-content">
+  <div class="chapter-page">
+    <div class="chapter-header" style="text-align:center;padding:80px 24px;">
+      <span class="part-badge">404</span>
+      <h1>الصفحة غير موجودة</h1>
+      <p>عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها.</p>
+    </div>
+    <div class="chapter-content" style="text-align:center;padding:40px 24px;">
+      <div class="note" style="max-width:600px;margin:0 auto 30px;text-align:right;">
+        <strong>💡 جرب أحد الحلول التالية:</strong>
+        <ul style="margin-top:15px;padding-right:30px;">
+          <li>تحقق من صحة الرابط في شريط العناوين</li>
+          <li>عد إلى <a href="index.html">الصفحة الرئيسية</a></li>
+          <li>استخدم <a href="roadmap.html">الخطة الدراسية</a> للتصفح المنظم</li>
+          <li>استخدم القائمة الجانبية (☰) للتنقل بين الدروس</li>
+        </ul>
+      </div>
+      <a href="index.html" class="back-link" style="display:inline-flex;margin-top:20px;">← العودة إلى الرئيسية</a>
+    </div>
+    <div class="footer">
+      <p>دورة بايثون المكثفة - ترجمة وتعريب بناءً على كتاب Python Crash Course بقلم Eric Matthes</p>
+    </div>
+  </div>
+</div>
+<script src="website/main.js"></script>
+<script>
+  // Handle GitHub Pages subdirectory redirect
+  (function() {
+    var path = window.location.pathname;
+    var repo = '/nullhost/';
+    if (path.startsWith(repo) && path.length > repo.length) {
+      var newPath = path.substring(repo.length - 1);
+      if (newPath.endsWith('/')) newPath += 'index.html';
+      window.location.href = newPath;
+    }
+  })();
+</script>
+</body>
+</html>
